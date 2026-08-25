@@ -1,0 +1,231 @@
+---
+title: "Sesión 2: La computadora también aproxima"
+subtitle: "Punto flotante, error absoluto y error relativo"
+author: "Francisco Sergio Salem Silva"
+date: "25 de agosto de 2026"
+format:
+  html:
+    toc: true
+    code-fold: false
+    code-copy: true
+jupyter: julia-1.10
+---
+## Material complementario
+
+📄 [Representación binaria y punto flotante](../material/binario1.pdf)
+
+# Antes de comenzar
+
+Hoy queremos comprender tres ideas: una computadora sólo puede representar un conjunto finito de números; los cálculos numéricos introducen errores; y necesitamos medir esos errores.
+
+# El experimento pendiente
+
+Antes de ejecutar, vota: **¿será `true` o `false`?**
+
+```{julia}
+0.1 + 0.2 == 0.3
+```
+
+## Dos minutos en pareja
+
+> ¿Cómo puede ocurrir esto en una suma tan sencilla?
+
+Elaboren una explicación posible antes de continuar.
+
+# Veamos los números
+
+```{julia}
+x = 0.1 + 0.2
+y = 0.3
+x
+y
+x-y
+```
+
+Con más cifras:
+
+```{julia}
+using Printf
+@printf("%.20f\n", x)
+@printf("%.20f\n", y)
+```
+
+# Una idea fundamental
+
+En aritmética de punto flotante, esquemáticamente,
+
+$$
+x=\pm m\,\beta^e,
+$$
+
+donde $\beta$ es la base, $m$ la significancia y $e$ el exponente. La memoria es finita, por lo que sólo ciertos números pueden representarse exactamente.
+
+# ¿Por qué 0.1 causa problemas?
+
+En decimal,
+
+$$
+0.1=\frac{1}{10}.
+$$
+
+Su expansión en base 2 no termina. Así como
+
+$$
+\frac{1}{3}=0.333333\ldots
+$$
+
+no termina en base 10, $1/10$ no termina en base 2. La computadora debe redondear esa expansión.
+
+# Los números vecinos
+
+```{julia}
+x = 1.0
+prevfloat(x), x, nextfloat(x)
+```
+
+```{julia}
+x-prevfloat(x), nextfloat(x)-x, eps(Float64)
+```
+
+## Experimento en parejas
+
+```{julia}
+for x in [1.0, 10.0, 1000.0, 1.0e10]
+    println(x, "   ", nextfloat(x)-x)
+end
+```
+
+**Pregunta:** ¿los números de punto flotante están igualmente separados en toda la recta real?
+
+# Error absoluto
+
+Si $x$ es el valor exacto y $\widehat{x}$ una aproximación, definimos
+
+$$
+E_a=|x-\widehat{x}|.
+$$
+
+Por ejemplo, para $x=100$ y $\widehat{x}=99$,
+
+$$
+E_a=1.
+$$
+
+# Error relativo
+
+Cuando $x\neq0$,
+
+$$
+E_r=\frac{|x-\widehat{x}|}{|x|}.
+$$
+
+En el ejemplo anterior,
+
+$$
+E_r=\frac{1}{100}=0.01,
+$$
+
+es decir, $1\%$.
+
+# ¿Un error de 1 es grande o pequeño?
+
+Comparemos:
+
+$$
+x=100,\qquad \widehat{x}=99
+$$
+
+con
+
+$$
+x=2,\qquad \widehat{x}=1.
+$$
+
+En ambos casos $E_a=1$, pero
+
+$$
+E_r^{(A)}=0.01,\qquad E_r^{(B)}=0.5.
+$$
+
+## Votación rápida
+
+¿Cuál aproximación considerarías mejor? Explica tu elección a tu compañero.
+
+# Julia como laboratorio
+
+```{julia}
+error_absoluto(x,xaprox) = abs(x-xaprox)
+error_relativo(x,xaprox) = abs(x-xaprox)/abs(x)
+```
+
+```{julia}
+error_absoluto(100.0,99.0), error_relativo(100.0,99.0)
+```
+
+```{julia}
+error_absoluto(2.0,1.0), error_relativo(2.0,1.0)
+```
+
+# Mini laboratorio en parejas
+
+Calculen primero a mano y después comprueben con Julia.
+
+| Valor exacto $x$ | Aproximación $\widehat{x}$ |
+|---:|---:|
+| 1000 | 999 |
+| 10 | 9 |
+| 0.1 | 0.09 |
+| 0.001 | 0.0009 |
+
+Discutan:
+
+1. ¿Cuándo el error absoluto parece pequeño?
+2. ¿Cuándo el error relativo aporta más información?
+3. ¿Puede una aproximación tener error absoluto pequeño y ser mala?
+
+# Una precaución
+
+Prueba:
+
+```{julia}
+sqrt(2.0)^2
+```
+
+y después:
+
+```{julia}
+sqrt(2.0)^2 == 2.0
+```
+
+No todos los experimentos de punto flotante producen resultados sorprendentes. Un redondeo puede ocultar otro. Por eso no debemos sacar conclusiones generales de un solo ejemplo.
+
+# Lo que debemos llevarnos hoy
+
+1. Los números almacenados forman un conjunto discreto.
+2. Muchos números reales no pueden representarse exactamente.
+3. Las operaciones pueden introducir errores de redondeo.
+4. El error absoluto mide una distancia.
+5. El error relativo compara esa distancia con la magnitud del valor exacto.
+
+# Pregunta de salida
+
+> Si una computadora muestra 15 cifras decimales, ¿podemos concluir que las 15 cifras son correctas?
+
+Escribe dos o tres líneas justificando tu respuesta.
+
+# Para la siguiente sesión
+
+Investiga brevemente:
+
+- error de redondeo;
+- error de truncamiento;
+- condicionamiento de un problema;
+- estabilidad de un algoritmo.
+
+Trae un ejemplo, real o matemático, donde un cambio pequeño en los datos pueda producir un cambio grande en el resultado.
+
+# Cierre
+
+Obtener un número es apenas el principio.
+
+> **¿Cuánto podemos confiar en ese número?**

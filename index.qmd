@@ -1,0 +1,60 @@
+---
+title: "Análisis Numérico"
+subtitle: "Curso 2026"
+---
+
+# Bienvenidos
+
+Este sitio reúne el material de trabajo del curso de **Análisis Numérico**.
+
+La idea central del curso es aprender a construir, utilizar y analizar métodos numéricos para resolver problemas matemáticos con ayuda de la computadora.
+
+Trabajaremos con **Julia** como lenguaje principal.
+
+## ¿Cómo trabajaremos?
+
+Usaremos un esquema de **aula inversa**. Antes de algunas clases habrá una lectura breve, una pregunta, un experimento o un pequeño fragmento de código.
+
+En las sesiones presenciales dedicaremos la mayor parte del tiempo a:
+
+- discutir ideas;
+- resolver problemas;
+- programar;
+- comparar métodos;
+- analizar errores;
+- interpretar resultados.
+
+No se espera que el material previo sustituya la clase. Su propósito es llegar con una primera idea para aprovechar mejor el trabajo presencial.
+
+## Sesiones
+
+### Sesión 1
+
+**¿Qué significa calcular numéricamente?**
+
+Presentación del curso, diagnóstico y primeras preguntas sobre aproximación y cálculo numérico.
+
+[Ir a la Sesión 1](sesiones/sesion01.qmd)
+
+### Sesión 2
+
+**La computadora también aproxima**
+
+Punto flotante, representación finita, error absoluto y error relativo.
+
+[Ir a la Sesión 2](sesiones/sesion02.qmd)
+
+## Herramientas
+
+Para las actividades computacionales utilizaremos principalmente:
+
+- Julia;
+- Jupyter;
+- un navegador web.
+
+El material del curso estará disponible en este sitio. No es necesario instalar Quarto para consultar las notas.
+
+## Una pregunta que nos acompañará todo el semestre
+
+> Obtener un número es apenas el principio.  
+> **¿Cuánto podemos confiar en ese número?**

@@ -1,0 +1,8 @@
+.DS_Store
+.quarto/
+_site/
+.Rhistory
+*.aux
+*.log
+*.out
+*.synctex.gz

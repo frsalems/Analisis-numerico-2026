@@ -1,0 +1,286 @@
+---
+title: "Sesión 1: ¿Qué significa calcular numéricamente?"
+subtitle: "Análisis Numérico"
+author: "Francisco Sergio Salem Silva"
+date: "20 de agosto de 2026"
+format:
+  html:
+    toc: true
+    toc-title: "Contenido"
+    code-fold: false
+    code-copy: true
+    self-contained: true
+jupyter: julia-1.10
+execute:
+  echo: true
+  warning: false
+---
+
+# Propósito de la sesión
+
+Esta primera sesión tiene dos objetivos:
+
+1. Presentar la dinámica general del curso y el esquema de **aula inversa**.
+2. Hacer un diagnóstico breve de los conocimientos que utilizaremos durante el semestre.
+
+Además, comenzaremos con una idea fundamental del Análisis Numérico:
+
+> Una computadora no trabaja con los números reales de manera exacta; trabaja con representaciones finitas y, por lo tanto, con aproximaciones.
+
+# ¿Qué estudia el Análisis Numérico?
+
+En muchos problemas matemáticos conocemos con precisión qué queremos calcular, pero no siempre podemos obtener una solución exacta mediante una fórmula cerrada.
+
+El Análisis Numérico estudia métodos para obtener aproximaciones y, sobre todo, para responder preguntas como:
+
+- ¿Qué tan buena es una aproximación?
+- ¿Qué error estamos cometiendo?
+- ¿Cómo cambia el error cuando modificamos los parámetros del método?
+- ¿Cuánto trabajo computacional requiere el cálculo?
+- ¿Podemos confiar en el algoritmo?
+
+Durante el curso estudiaremos estas preguntas desde dos perspectivas:
+
+- el análisis matemático de los métodos;
+- la experimentación computacional con **Julia**.
+
+# Cómo trabajaremos
+
+Usaremos un esquema de **aula inversa**.
+
+Antes de algunas sesiones encontrarás aquí:
+
+- una lectura breve;
+- un video o ejemplo;
+- una pregunta de reflexión;
+- o un pequeño fragmento de código.
+
+La idea no es aprender todo antes de llegar al salón.
+
+La idea es llegar con suficiente contexto para dedicar la clase a:
+
+- resolver problemas;
+- discutir ideas;
+- comparar métodos;
+- programar;
+- experimentar;
+- y analizar errores.
+
+# Primer experimento
+
+Ejecuta en Julia:
+
+```{julia}
+0.1 + 0.2
+```
+
+Ahora pregunta:
+
+```{julia}
+0.1 + 0.2 == 0.3
+```
+
+## Para discutir
+
+Sin buscar todavía una explicación:
+
+1. ¿Esperabas ese resultado?
+2. ¿Está equivocada la computadora?
+3. ¿Qué significa realmente escribir `0.1` dentro de una computadora?
+4. ¿Mostrar muchas cifras decimales garantiza precisión?
+
+No necesitamos responder todo hoy. Esta pequeña anomalía será la puerta de entrada a la aritmética de punto flotante.
+
+# ¿Qué tan cerca estamos?
+
+Podemos observar directamente el error:
+
+```{julia}
+x = 0.1 + 0.2
+y = 0.3
+
+abs(x - y)
+```
+
+También podemos preguntar cuál es aproximadamente la separación entre números de punto flotante cercanos a 1:
+
+```{julia}
+eps(Float64)
+```
+
+Esta cantidad es extremadamente pequeña, pero no es cero.
+
+Ese detalle será importante durante todo el curso.
+
+# Diagnóstico
+
+El diagnóstico **no es un examen calificado**.
+
+Su propósito es conocer qué herramientas matemáticas y computacionales tenemos disponibles como grupo.
+
+Trabaja individualmente durante unos minutos. Si no recuerdas algo, indícalo y continúa.
+
+## Problema 1. Aproximación
+
+Aproxima
+
+$$
+\sqrt{2}
+$$
+
+con cuatro cifras decimales.
+
+Después responde:
+
+**¿Qué significa decir que tu resultado es una aproximación?**
+
+## Problema 2. Sistemas lineales
+
+Sean
+
+$$
+A=
+\begin{pmatrix}
+2 & 1\\
+1 & 3
+\end{pmatrix},
+\qquad
+b=
+\begin{pmatrix}
+1\\
+2
+\end{pmatrix}.
+$$
+
+Resuelve el sistema
+
+$$
+Ax=b.
+$$
+
+Si puedes, indica qué procedimiento utilizaste.
+
+## Problema 3. Raíces de funciones
+
+Considera
+
+$$
+f(x)=x^2-2.
+$$
+
+Supón que no puedes utilizar directamente una función para calcular $\sqrt{2}$.
+
+**¿Cómo intentarías encontrar aproximadamente una raíz positiva de $f$?**
+
+No necesitas conocer ningún método numérico específico. Describe una estrategia.
+
+## Problema 4. Derivación
+
+Sea
+
+$$
+f(x)=e^x.
+$$
+
+Sabemos que
+
+\[
+f'(0)=1.
+\]
+
+Si solamente pudieras evaluar la función \(f\), ¿cómo intentarías aproximar \(f'(0)\)?
+
+## Problema 5. Integración
+
+Considera
+
+$$
+\int_0^1 e^{-x^2}\,dx.
+$$
+
+Supón que no conoces una antiderivada.
+
+**¿Cómo intentarías obtener una aproximación numérica de esta integral?**
+
+## Problema 6. Ecuaciones diferenciales
+
+Considera el problema de valor inicial
+
+$$
+y'(t)=y(t), \qquad y(0)=1.
+$$
+
+Supón que no conoces la solución exacta.
+
+**¿Cómo intentarías aproximar $y(0.1)$?**
+
+# Una primera prueba con Julia
+
+Podemos pedirle a Julia que resuelva el sistema del diagnóstico:
+
+```{julia}
+using LinearAlgebra
+
+A = [2.0 1.0;
+     1.0 3.0]
+
+b = [1.0, 2.0]
+
+x = A \ b
+```
+
+Y podemos comprobar el residuo:
+
+```{julia}
+A*x - b
+```
+
+## Pregunta
+
+Si el residuo es muy pequeño, ¿significa necesariamente que la solución calculada es exacta?
+
+Guardaremos esta pregunta para más adelante.
+
+# Las cuatro preguntas del curso
+
+Una y otra vez volveremos a estas cuatro preguntas:
+
+1. **¿Cómo obtenemos la aproximación?**
+2. **¿Qué error cometemos?**
+3. **¿Cómo se comporta el error cuando refinamos el método?**
+4. **¿Cuánto cuesta obtener el resultado?**
+
+Estas preguntas serán nuestro hilo conductor.
+
+# Para la siguiente sesión
+
+Antes de la próxima clase revisa brevemente los conceptos:
+
+- aritmética de punto flotante;
+- error absoluto;
+- error relativo.
+
+No necesitas estudiar una teoría completa.
+
+Trae una respuesta breve, escrita con tus propias palabras, a la pregunta:
+
+> ¿Por qué una computadora no puede representar exactamente todos los números reales?
+
+Y ejecuta este pequeño experimento:
+
+```{julia}
+x = 1.0
+y = nextfloat(x)
+
+x
+y
+y - x
+```
+
+Anota qué observas.
+
+# Cierre
+
+En Análisis Numérico no basta con obtener un número.
+
+Queremos saber **de dónde salió, qué tan confiable es y cuánto nos costó obtenerlo**.

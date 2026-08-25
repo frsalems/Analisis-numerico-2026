@@ -1,0 +1,150 @@
+\documentclass[12pt,letterpaper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage[margin=2.5cm]{geometry}
+
+\title{Preparación para la sesión: Aritmética de punto flotante}
+\author{Análisis Numérico}
+\date{Sesión inversa}
+
+\begin{document}
+
+\maketitle
+
+\begin{center}
+\textbf{Objetivo:} Que al llegar a clase ya se hayan encontrado con el problema de que $0.2 + 0.3 \neq 0.5$ en una computadora.
+\end{center}
+
+\section*{1. Repaso de representación binaria}
+
+En nuestra vida cotidiana usamos el sistema decimal (base 10). Sin embargo, las computadoras almacenan la información en binario (base 2). Para entender por qué ocurren errores al sumar números ``sencillos'', necesitamos recordar cómo se escriben los números fraccionarios en binario.
+
+\subsection*{Números enteros en binario}
+Un número entero se representa como una suma de potencias de 2:
+
+\[
+1011_2 = 1\cdot 2^3 + 0\cdot 2^2 + 1\cdot 2^1 + 1\cdot 2^0 = 8 + 0 + 2 + 1 = 11_{10}
+\]
+
+\subsection*{Números fraccionarios en binario}
+Para la parte fraccionaria, usamos potencias negativas de 2:
+
+\[
+0.101_2 = 1\cdot 2^{-1} + 0\cdot 2^{-2} + 1\cdot 2^{-3} = \frac{1}{2} + 0 + \frac{1}{8} = 0.625_{10}
+\]
+
+\subsection*{Algoritmo para convertir una fracción decimal a binario}
+Para convertir un número fraccionario a binario, multiplicamos sucesivamente por 2 y tomamos la parte entera:
+
+\begin{enumerate}
+    \item Multiplicar la fracción por 2.
+    \item La parte entera del resultado es el primer dígito binario.
+    \item Repetir con la parte fraccionaria restante.
+\end{enumerate}
+
+\subsection*{Ejemplos}
+
+\subsubsection*{Ejemplo 1: Convertir $0.625_{10}$ a binario}
+\begin{align*}
+    0.625 \times 2 &= 1.25 && \text{parte entera } 1 \\
+    0.25 \times 2  &= 0.5  && \text{parte entera } 0 \\
+    0.5 \times 2   &= 1.0  && \text{parte entera } 1
+\end{align*}
+Por lo tanto,
+\[
+0.625_{10} = 0.101_2
+\]
+
+\subsubsection*{Ejemplo 2: Convertir $0.3_{10}$ a binario}
+Este es el que nos interesa:
+\begin{align*}
+    0.3 \times 2 &= 0.6 && \text{parte entera } 0 \\
+    0.6 \times 2 &= 1.2 && \text{parte entera } 1 \\
+    0.2 \times 2 &= 0.4 && \text{parte entera } 0 \\
+    0.4 \times 2 &= 0.8 && \text{parte entera } 0 \\
+    0.8 \times 2 &= 1.6 && \text{parte entera } 1 \\
+    0.6 \times 2 &= 1.2 && \text{parte entera } 1
+\end{align*}
+Observamos que el patrón se repite: $0.3_{10} = 0.01001100110011\ldots_2$, ¡es un número periódico en binario!
+
+\subsubsection*{Ejemplo 3: Convertir $0.2_{10}$ a binario}
+\begin{align*}
+    0.2 \times 2 &= 0.4 && \text{parte entera } 0 \\
+    0.4 \times 2 &= 0.8 && \text{parte entera } 0 \\
+    0.8 \times 2 &= 1.6 && \text{parte entera } 1 \\
+    0.6 \times 2 &= 1.2 && \text{parte entera } 1 \\
+    0.2 \times 2 &= 0.4 && \text{parte entera } 0
+\end{align*}
+Nuevamente, el patrón se repite: $0.2_{10} = 0.001100110011\ldots_2$. 
+
+\begin{center}
+\fbox{\begin{minipage}{0.9\textwidth}
+\textbf{Conclusión importante:} 
+$0.3$ y $0.2$ son números con una representación binaria \textbf{infinita y periódica}. Como la computadora solo puede almacenar un número finito de dígitos, estos números se \textbf{redondean} o \textbf{truncan}. Esto introduce un pequeño error desde el momento en que se guardan.
+\end{minipage}}
+\end{center}
+
+\section*{2. Errores absoluto y relativo}
+
+\subsection*{Definiciones}
+
+\begin{itemize}
+    \item \textbf{Error absoluto:} 
+    \[
+    E_a = |\text{Valor real} - \text{Valor aproximado}|
+    \]
+    \item \textbf{Error relativo:}
+    \[
+    E_r = \frac{|\text{Valor real} - \text{Valor aproximado}|}{|\text{Valor real}|}
+    \]
+    (siempre que el valor real no sea cero)
+\end{itemize}
+
+El error relativo es más útil porque nos dice la magnitud del error en relación con el tamaño del número.
+
+\subsection*{Ejemplo práctico:}
+Si al aproximar $\pi = 3.14159265\ldots$ usamos $3.14$:
+\begin{itemize}
+    \item Error absoluto: $|3.14159265 - 3.14| = 0.00159265$
+    \item Error relativo: $\frac{0.00159265}{3.14159265} \approx 0.000507$, es decir, un $0.05\%$
+\end{itemize}
+
+\section*{3. Tarea para antes de la sesión}
+
+Para que lleguemos con material para discutir, realicen lo siguiente:
+
+\begin{enumerate}
+    \item Tomen una calculadora o abran \texttt{Julia} y calculen:
+    \[
+    0.2 + 0.3
+    \]
+    \item Comparen el resultado con $0.5$. En Julia, escriban:
+    \begin{verbatim}
+    0.2 + 0.3 == 0.5
+    \end{verbatim}
+    \item Reflexionen sobre el resultado. ¿Obtuvieron \texttt{true} o \texttt{false}?
+    \item Investiguen: ¿a qué tipo de número en punto flotante corresponde el resultado de $0.2+0.3$? ¿Por qué no es exactamente $0.5$?
+\end{enumerate}
+
+\section*{4. Lo que haremos en clase}
+
+En la sesión presencial:
+\begin{itemize}
+    \item Discutiremos sus hallazgos sobre $0.2 + 0.3$.
+    \item Veremos cómo se almacena un número en el estándar IEEE 754 (punto flotante).
+    \item Analizaremos ejemplos concretos de errores de redondeo en operaciones sencillas.
+    \item Definiremos formalmente los errores absoluto y relativo.
+    \item Haremos algunos ejercicios para que vean cómo estos errores afectan los métodos numéricos.
+\end{itemize}
+
+\section*{Pregunta final (para que piensen antes de llegar)}
+¿Qué creen que pasaría si en una computadora sumamos $0.1$ diez veces? ¿Obtendremos exactamente $1.0$?
+
+\vspace{1cm}
+\textit{“El primer paso para dominar el análisis numérico es desconfiar de las respuestas que da la computadora.”}
+
+\end{document}

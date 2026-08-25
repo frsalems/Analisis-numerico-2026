@@ -1,0 +1,35 @@
+project:
+  type: website
+  render:
+    - index.qmd
+    - sesiones/*.qmd
+  
+
+website:
+  title: "Análisis Numérico"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Inicio
+      - href: sesiones/sesion01.qmd
+        text: Sesión 1
+      - href: sesiones/sesion02.qmd
+        text: Sesión 2
+  sidebar:
+    style: "docked"
+    search: true
+    contents:
+      - index.qmd
+      - section: "Sesiones"
+        contents:
+          - sesiones/sesion01.qmd
+          - sesiones/sesion02.qmd
+
+format:
+  html:
+    toc: true
+    code-copy: true
+    code-overflow: wrap
+
+execute:
+  freeze: auto

@@ -1,0 +1,125 @@
+\documentclass[12pt,letterpaper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage[margin=2.5cm]{geometry}
+
+\title{Sesión 2: IEEE 754 y errores numéricos}
+\author{Análisis Numérico \\ \small{Universidad de la Nopalera}}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{center}
+\textbf{Objetivo:} Entender cómo la compu guarda los números y por qué a veces se pone loca.
+\end{center}
+
+\section*{1. ¿Cómo se guarda un número real en la computadora?}
+
+En la vida real usamos decimales, pero la computadora solo entiende binario. Para guardar números con punto decimal, usa el estándar \textbf{IEEE 754}.
+
+Un número en este estándar se guarda como:
+
+\[
+\text{Número} = (-1)^s \times (1 + m) \times 2^{e - \text{bias}}
+\]
+
+Donde:
+\begin{itemize}
+    \item $s$ es el bit de signo (0 para positivo, 1 para negativo).
+    \item $m$ es la mantisa (los decimales en binario).
+    \item $e$ es el exponente (un entero guardado con un sesgo o \textit{bias}).
+\end{itemize}
+
+En \textbf{doble precisión} (el que usan casi todos los programas), los tamaños son:
+
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+\textbf{Componente} & \textbf{Bits} \\
+\hline
+Signo & 1 \\
+Exponente & 11 \\
+Mantisa & 52 \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection*{Ejemplo: $0.3$ en binario}
+Ya vimos que:
+\[
+0.3_{10} = 0.01001100110011\ldots_2
+\]
+En notación científica binaria:
+\[
+0.3_{10} = 1.001100110011\ldots_2 \times 2^{-2}
+\]
+La compu guarda solo los primeros 52 bits de la mantisa. El resto se pierde. ¡Ese es el origen del error!
+
+\section*{2. El problema de $0.1 + 0.2$}
+
+Tanto $0.1$ como $0.2$ tienen representación binaria \textbf{infinita y periódica}. La compu los redondea al guardarlos.
+
+Cuando los suma, el error de cada uno se acumula y el resultado no es exactamente $0.3$.
+
+En Julia (y en casi todos los lenguajes):
+\begin{verbatim}
+julia> 0.1 + 0.2 == 0.3
+false
+\end{verbatim}
+
+\section*{3. Errores que truenan métodos numéricos}
+
+\subsection*{3.1 Resta de números casi iguales (cancelación)}
+Si calculas $\sqrt{x+1} - \sqrt{x}$ para $x$ muy grande, los dos números son casi iguales y la resta pierde precisión.
+
+\textbf{Solución:} Usar la identidad equivalente:
+\[
+\sqrt{x+1} - \sqrt{x} = \frac{1}{\sqrt{x+1} + \sqrt{x}}
+\]
+
+\subsection*{3.2 Evaluación de polinomios}
+El polinomio $P(x) = (x-1)^{10}$ se puede abrir como:
+\[
+x^{10} - 10x^9 + 45x^8 - \cdots + 1
+\]
+Si evalúas en $x = 0.999$, la forma desarrollada da errores enormes. La forma factorizada es mucho más estable.
+
+\subsection*{3.3 Orden de la suma}
+La suma en punto flotante \textbf{no es asociativa}. Sumar primero los números más pequeños evita que se pierdan al sumarlos con los grandes.
+
+\section*{4. Ejercicios para la sesión}
+
+\begin{enumerate}
+    \item En Julia, calculen:
+    \begin{verbatim}
+    0.1 + 0.2 == 0.3
+    0.1 + 0.2 - 0.3
+    \end{verbatim}
+    Expliquen el resultado.
+
+    \item Evalúen $(1.001 - 1)^6$ usando la forma factorizada y la forma desarrollada. Comparen.
+
+    \item Sumen $\sum_{n=1}^{1000} \frac{1}{n^2}$ en dos órdenes diferentes:
+    \begin{itemize}
+        \item De $n=1$ a $1000$.
+        \item De $n=1000$ a $1$.
+    \end{itemize}
+    Comparen con $\pi^2/6 \approx 1.644934$.
+\end{enumerate}
+
+\section*{5. Frase para cerrar}
+
+\begin{center}
+\fbox{\begin{minipage}{0.9\textwidth}
+\centering
+\textit{“En análisis numérico no se trata de que la compu te dé el resultado exacto, sino de que no te dé un resultado bien pendejo.”}
+\end{minipage}}
+\end{center}
+
+\end{document}
