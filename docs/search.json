@@ -1,0 +1,345 @@
+[
+  {
+    "objectID": "sesiones/sesion03.html",
+    "href": "sesiones/sesion03.html",
+    "title": "Sesión 03: Números de punto flotante",
+    "section": "",
+    "text": "Esta sesión se trabaja con dos herramientas diferentes:\n\nQuarto es nuestro material de estudio.\nJupyter con Julia es nuestro laboratorio computacional.\n\nAntes de asistir a clase:\n\nLee con atención el material hasta la sección Epsilon de máquina.\nNo es necesario memorizar fórmulas.\nIntenta responder las preguntas marcadas como Antes de ejecutar.\nDurante la clase realizaremos los experimentos en un notebook de Jupyter.\n\n\nRegla del laboratorio: antes de ejecutar una celda, intenta predecir qué va a ocurrir.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 03: Números de punto flotante"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion03.html#pregunta",
+    "href": "sesiones/sesion03.html#pregunta",
+    "title": "Sesión 03: Números de punto flotante",
+    "section": "Pregunta",
+    "text": "Pregunta\n¿Dónde quedó, por ejemplo, \\(1.3\\)?\nEl número real existe, pero no pertenece a este conjunto de números representables. La computadora tendría que sustituirlo por alguno de sus vecinos.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 03: Números de punto flotante"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion03.html#antes-de-ejecutar",
+    "href": "sesiones/sesion03.html#antes-de-ejecutar",
+    "title": "Sesión 03: Números de punto flotante",
+    "section": "Antes de ejecutar",
+    "text": "Antes de ejecutar\n¿Crees que Julia considera del mismo tipo los números 1 y 1.0?\ntypeof(1)\ntypeof(1.0)\nAunque matemáticamente representan el mismo valor, 1 es normalmente Int64, mientras que 1.0 es Float64.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 03: Números de punto flotante"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion03.html#antes-de-ejecutar-1",
+    "href": "sesiones/sesion03.html#antes-de-ejecutar-1",
+    "title": "Sesión 03: Números de punto flotante",
+    "section": "Antes de ejecutar",
+    "text": "Antes de ejecutar\n¿Cuántos bits esperas encontrar en un Float64?\nbitstring(1.0)\nCompara:\nbitstring(1.0)\nbitstring(-1.0)\ny después:\nbitstring(1.0)\nbitstring(2.0)\nObserva qué bits cambian.\nEn IEEE 754 de doble precisión se utilizan 64 bits: 1 para el signo, 11 para el exponente y 52 para la parte fraccionaria del significando.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 03: Números de punto flotante"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion03.html#antes-de-ejecutar-2",
+    "href": "sesiones/sesion03.html#antes-de-ejecutar-2",
+    "title": "Sesión 03: Números de punto flotante",
+    "section": "Antes de ejecutar",
+    "text": "Antes de ejecutar\n¿Qué esperas obtener?\neps()\nComprueba además:\nlog2(eps())\nDeberías encontrar -52.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 03: Números de punto flotante"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion03.html#antes-de-ejecutar-3",
+    "href": "sesiones/sesion03.html#antes-de-ejecutar-3",
+    "title": "Sesión 03: Números de punto flotante",
+    "section": "Antes de ejecutar",
+    "text": "Antes de ejecutar\nCompara:\neps(1.618)\neps(161.8)\nAhora prueba:\nnextfloat(161.8)\nnextfloat(161.8) - 161.8",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 03: Números de punto flotante"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion03.html#pregunta-1",
+    "href": "sesiones/sesion03.html#pregunta-1",
+    "title": "Sesión 03: Números de punto flotante",
+    "section": "Pregunta",
+    "text": "Pregunta\n¿Por qué aumenta la separación cuando aumenta la magnitud?\nLa clave es que el punto flotante busca mantener aproximadamente constante la precisión relativa, no la precisión absoluta.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 03: Números de punto flotante"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion03.html#pregunta-2",
+    "href": "sesiones/sesion03.html#pregunta-2",
+    "title": "Sesión 03: Números de punto flotante",
+    "section": "Pregunta",
+    "text": "Pregunta\n¿Cuántos dígitos aproximadamente correctos tiene \\(22/7\\)?",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 03: Números de punto flotante"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion03.html#antes-de-ejecutar-4",
+    "href": "sesiones/sesion03.html#antes-de-ejecutar-4",
+    "title": "Sesión 03: Números de punto flotante",
+    "section": "Antes de ejecutar",
+    "text": "Antes de ejecutar\nPredice:\n(1.0 + e) - 1.0\nDespués prueba:\n1.0 + (e - 1.0)",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 03: Números de punto flotante"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion03.html#pregunta-3",
+    "href": "sesiones/sesion03.html#pregunta-3",
+    "title": "Sesión 03: Números de punto flotante",
+    "section": "Pregunta",
+    "text": "Pregunta\n¿Por qué dos expresiones matemáticamente equivalentes producen resultados diferentes?",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 03: Números de punto flotante"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion01.html",
+    "href": "sesiones/sesion01.html",
+    "title": "Sesión 1: ¿Qué significa calcular numéricamente?",
+    "section": "",
+    "text": "Esta primera sesión tiene dos objetivos:\n\nPresentar la dinámica general del curso y el esquema de aula inversa.\nHacer un diagnóstico breve de los conocimientos que utilizaremos durante el semestre.\n\nAdemás, comenzaremos con una idea fundamental del Análisis Numérico:\n\nUna computadora no trabaja con los números reales de manera exacta; trabaja con representaciones finitas y, por lo tanto, con aproximaciones.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 1: ¿Qué significa calcular numéricamente?"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion01.html#para-discutir",
+    "href": "sesiones/sesion01.html#para-discutir",
+    "title": "Sesión 1: ¿Qué significa calcular numéricamente?",
+    "section": "Para discutir",
+    "text": "Para discutir\nSin buscar todavía una explicación:\n\n¿Esperabas ese resultado?\n¿Está equivocada la computadora?\n¿Qué significa realmente escribir 0.1 dentro de una computadora?\n¿Mostrar muchas cifras decimales garantiza precisión?\n\nNo necesitamos responder todo hoy. Esta pequeña anomalía será la puerta de entrada a la aritmética de punto flotante.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 1: ¿Qué significa calcular numéricamente?"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion01.html#problema-1.-aproximación",
+    "href": "sesiones/sesion01.html#problema-1.-aproximación",
+    "title": "Sesión 1: ¿Qué significa calcular numéricamente?",
+    "section": "Problema 1. Aproximación",
+    "text": "Problema 1. Aproximación\nAproxima\n\\[\n\\sqrt{2}\n\\]\ncon cuatro cifras decimales.\nDespués responde:\n¿Qué significa decir que tu resultado es una aproximación?",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 1: ¿Qué significa calcular numéricamente?"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion01.html#problema-2.-sistemas-lineales",
+    "href": "sesiones/sesion01.html#problema-2.-sistemas-lineales",
+    "title": "Sesión 1: ¿Qué significa calcular numéricamente?",
+    "section": "Problema 2. Sistemas lineales",
+    "text": "Problema 2. Sistemas lineales\nSean\n\\[\nA=\n\\begin{pmatrix}\n2 & 1\\\\\n1 & 3\n\\end{pmatrix},\n\\qquad\nb=\n\\begin{pmatrix}\n1\\\\\n2\n\\end{pmatrix}.\n\\]\nResuelve el sistema\n\\[\nAx=b.\n\\]\nSi puedes, indica qué procedimiento utilizaste.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 1: ¿Qué significa calcular numéricamente?"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion01.html#problema-3.-raíces-de-funciones",
+    "href": "sesiones/sesion01.html#problema-3.-raíces-de-funciones",
+    "title": "Sesión 1: ¿Qué significa calcular numéricamente?",
+    "section": "Problema 3. Raíces de funciones",
+    "text": "Problema 3. Raíces de funciones\nConsidera\n\\[\nf(x)=x^2-2.\n\\]\nSupón que no puedes utilizar directamente una función para calcular \\(\\sqrt{2}\\).\n¿Cómo intentarías encontrar aproximadamente una raíz positiva de \\(f\\)?\nNo necesitas conocer ningún método numérico específico. Describe una estrategia.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 1: ¿Qué significa calcular numéricamente?"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion01.html#problema-4.-derivación",
+    "href": "sesiones/sesion01.html#problema-4.-derivación",
+    "title": "Sesión 1: ¿Qué significa calcular numéricamente?",
+    "section": "Problema 4. Derivación",
+    "text": "Problema 4. Derivación\nSea\n\\[\nf(x)=e^x.\n\\]\nSabemos que\n[ f’(0)=1. ]\nSi solamente pudieras evaluar la función (f), ¿cómo intentarías aproximar (f’(0))?",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 1: ¿Qué significa calcular numéricamente?"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion01.html#problema-5.-integración",
+    "href": "sesiones/sesion01.html#problema-5.-integración",
+    "title": "Sesión 1: ¿Qué significa calcular numéricamente?",
+    "section": "Problema 5. Integración",
+    "text": "Problema 5. Integración\nConsidera\n\\[\n\\int_0^1 e^{-x^2}\\,dx.\n\\]\nSupón que no conoces una antiderivada.\n¿Cómo intentarías obtener una aproximación numérica de esta integral?",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 1: ¿Qué significa calcular numéricamente?"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion01.html#problema-6.-ecuaciones-diferenciales",
+    "href": "sesiones/sesion01.html#problema-6.-ecuaciones-diferenciales",
+    "title": "Sesión 1: ¿Qué significa calcular numéricamente?",
+    "section": "Problema 6. Ecuaciones diferenciales",
+    "text": "Problema 6. Ecuaciones diferenciales\nConsidera el problema de valor inicial\n\\[\ny'(t)=y(t), \\qquad y(0)=1.\n\\]\nSupón que no conoces la solución exacta.\n¿Cómo intentarías aproximar \\(y(0.1)\\)?",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 1: ¿Qué significa calcular numéricamente?"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion01.html#pregunta",
+    "href": "sesiones/sesion01.html#pregunta",
+    "title": "Sesión 1: ¿Qué significa calcular numéricamente?",
+    "section": "Pregunta",
+    "text": "Pregunta\nSi el residuo es muy pequeño, ¿significa necesariamente que la solución calculada es exacta?\nGuardaremos esta pregunta para más adelante.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 1: ¿Qué significa calcular numéricamente?"
+    ]
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Análisis Numérico",
+    "section": "",
+    "text": "Este sitio reúne el material de trabajo del curso de Análisis Numérico.\nLa idea central del curso es aprender a construir, utilizar y analizar métodos numéricos para resolver problemas matemáticos con ayuda de la computadora.\nTrabajaremos con Julia como lenguaje principal.\n\n\nUsaremos un esquema de aula inversa. Antes de algunas clases habrá una lectura breve, una pregunta, un experimento o un pequeño fragmento de código.\nEn las sesiones presenciales dedicaremos la mayor parte del tiempo a:\n\ndiscutir ideas;\nresolver problemas;\nprogramar;\ncomparar métodos;\nanalizar errores;\ninterpretar resultados.\n\nNo se espera que el material previo sustituya la clase. Su propósito es llegar con una primera idea para aprovechar mejor el trabajo presencial.\n\n\n\n\n\n¿Qué significa calcular numéricamente?\nPresentación del curso, diagnóstico y primeras preguntas sobre aproximación y cálculo numérico.\nIr a la Sesión 1\n\n\n\nLa computadora también aproxima\nPunto flotante, representación finita, error absoluto y error relativo.\nIr a la Sesión 2\n\n\n\n\nPara las actividades computacionales utilizaremos principalmente:\n\nJulia;\nJupyter;\nun navegador web.\n\nEl material del curso estará disponible en este sitio. No es necesario instalar Quarto para consultar las notas.\n\n\n\n\nObtener un número es apenas el principio.\n¿Cuánto podemos confiar en ese número?",
+    "crumbs": [
+      "Inicio",
+      "Análisis Numérico"
+    ]
+  },
+  {
+    "objectID": "index.html#cómo-trabajaremos",
+    "href": "index.html#cómo-trabajaremos",
+    "title": "Análisis Numérico",
+    "section": "",
+    "text": "Usaremos un esquema de aula inversa. Antes de algunas clases habrá una lectura breve, una pregunta, un experimento o un pequeño fragmento de código.\nEn las sesiones presenciales dedicaremos la mayor parte del tiempo a:\n\ndiscutir ideas;\nresolver problemas;\nprogramar;\ncomparar métodos;\nanalizar errores;\ninterpretar resultados.\n\nNo se espera que el material previo sustituya la clase. Su propósito es llegar con una primera idea para aprovechar mejor el trabajo presencial.",
+    "crumbs": [
+      "Inicio",
+      "Análisis Numérico"
+    ]
+  },
+  {
+    "objectID": "index.html#sesiones",
+    "href": "index.html#sesiones",
+    "title": "Análisis Numérico",
+    "section": "",
+    "text": "¿Qué significa calcular numéricamente?\nPresentación del curso, diagnóstico y primeras preguntas sobre aproximación y cálculo numérico.\nIr a la Sesión 1\n\n\n\nLa computadora también aproxima\nPunto flotante, representación finita, error absoluto y error relativo.\nIr a la Sesión 2",
+    "crumbs": [
+      "Inicio",
+      "Análisis Numérico"
+    ]
+  },
+  {
+    "objectID": "index.html#herramientas",
+    "href": "index.html#herramientas",
+    "title": "Análisis Numérico",
+    "section": "",
+    "text": "Para las actividades computacionales utilizaremos principalmente:\n\nJulia;\nJupyter;\nun navegador web.\n\nEl material del curso estará disponible en este sitio. No es necesario instalar Quarto para consultar las notas.",
+    "crumbs": [
+      "Inicio",
+      "Análisis Numérico"
+    ]
+  },
+  {
+    "objectID": "index.html#una-pregunta-que-nos-acompañará-todo-el-semestre",
+    "href": "index.html#una-pregunta-que-nos-acompañará-todo-el-semestre",
+    "title": "Análisis Numérico",
+    "section": "",
+    "text": "Obtener un número es apenas el principio.\n¿Cuánto podemos confiar en ese número?",
+    "crumbs": [
+      "Inicio",
+      "Análisis Numérico"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion02.html",
+    "href": "sesiones/sesion02.html",
+    "title": "Sesión 2: La computadora también aproxima",
+    "section": "",
+    "text": "📄 Representación binaria y punto flotante",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 2: La computadora también aproxima"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion02.html#material-complementario",
+    "href": "sesiones/sesion02.html#material-complementario",
+    "title": "Sesión 2: La computadora también aproxima",
+    "section": "",
+    "text": "📄 Representación binaria y punto flotante",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 2: La computadora también aproxima"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion02.html#dos-minutos-en-pareja",
+    "href": "sesiones/sesion02.html#dos-minutos-en-pareja",
+    "title": "Sesión 2: La computadora también aproxima",
+    "section": "Dos minutos en pareja",
+    "text": "Dos minutos en pareja\n\n¿Cómo puede ocurrir esto en una suma tan sencilla?\n\nElaboren una explicación posible antes de continuar.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 2: La computadora también aproxima"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion02.html#experimento-en-parejas",
+    "href": "sesiones/sesion02.html#experimento-en-parejas",
+    "title": "Sesión 2: La computadora también aproxima",
+    "section": "Experimento en parejas",
+    "text": "Experimento en parejas\n\nfor x in [1.0, 10.0, 1000.0, 1.0e10]\n    println(x, \"   \", nextfloat(x)-x)\nend\n\n1.0   2.220446049250313e-16\n10.0   1.7763568394002505e-15\n1000.0   1.1368683772161603e-13\n1.0e10   1.9073486328125e-6\n\n\nPregunta: ¿los números de punto flotante están igualmente separados en toda la recta real?",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 2: La computadora también aproxima"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion02.html#votación-rápida",
+    "href": "sesiones/sesion02.html#votación-rápida",
+    "title": "Sesión 2: La computadora también aproxima",
+    "section": "Votación rápida",
+    "text": "Votación rápida\n¿Cuál aproximación considerarías mejor? Explica tu elección a tu compañero.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 2: La computadora también aproxima"
+    ]
+  }
+]
