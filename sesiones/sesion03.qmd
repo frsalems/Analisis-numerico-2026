@@ -1,0 +1,368 @@
+---
+title: "Sesión 03: Números de punto flotante"
+subtitle: "Análisis Numérico"
+format:
+  html:
+    toc: true
+    code-copy: true
+---
+
+# Antes de la clase
+
+Esta sesión se trabaja con dos herramientas diferentes:
+
+- **Quarto** es nuestro material de estudio.
+- **Jupyter con Julia** es nuestro laboratorio computacional.
+
+Antes de asistir a clase:
+
+1. Lee con atención el material hasta la sección **Epsilon de máquina**.
+2. No es necesario memorizar fórmulas.
+3. Intenta responder las preguntas marcadas como **Antes de ejecutar**.
+4. Durante la clase realizaremos los experimentos en un notebook de Jupyter.
+
+> **Regla del laboratorio:** antes de ejecutar una celda, intenta predecir qué va a ocurrir.
+
+# 1. Una pregunta aparentemente inocente
+
+En nuestros cursos de matemáticas trabajamos continuamente con
+
+$$
+\mathbb{R}.
+$$
+
+Pero una computadora tiene memoria finita. Por tanto:
+
+> **¿Puede una computadora representar exactamente todos los números reales?**
+
+Piensa la respuesta antes de continuar.
+
+Los números reales forman un conjunto continuo, mientras que una computadora sólo puede almacenar una cantidad finita de información. En cálculo numérico trabajamos normalmente con un conjunto finito de números representables: los **números de punto flotante**.
+
+# 2. Representación de punto flotante
+
+Un modelo simplificado tiene la forma
+
+$$
+\pm(1+f)2^n,
+$$
+
+donde $n$ es el **exponente** y
+
+$$
+f=\sum_{i=1}^{d} b_i2^{-i},\qquad b_i\in\{0,1\}.
+$$
+
+El número $1+f$ recibe el nombre de **significando** o **mantisa**, y $d$ representa la precisión binaria disponible.
+
+> Una computadora dispone de un número finito de bits para representar un número.
+
+Por ello, sólo algunos números reales pueden representarse exactamente.
+
+# 3. Un pequeño universo: $d=2$
+
+Supongamos que sólo disponemos de dos bits para la parte fraccionaria. Para $n=0$, los números representables en $[1,2)$ son
+
+$$
+1,\qquad 1+\frac14,\qquad 1+\frac24,\qquad 1+\frac34,
+$$
+
+es decir,
+
+$$
+1,\qquad 1.25,\qquad 1.5,\qquad 1.75.
+$$
+
+## Pregunta
+
+¿Dónde quedó, por ejemplo, $1.3$?
+
+El número real existe, pero **no pertenece a este conjunto de números representables**. La computadora tendría que sustituirlo por alguno de sus vecinos.
+
+# 4. El espaciamiento no es constante
+
+Si $n=1$, obtenemos
+
+$$
+2,\qquad 2.5,\qquad 3,\qquad 3.5,
+$$
+
+con espaciamiento $0.5$.
+
+Si $n=-1$, obtenemos números en $[1/2,1)$ y el espaciamiento se reduce a la mitad.
+
+> Los números de punto flotante no están uniformemente espaciados sobre la recta real.
+
+Al aumentar la magnitud, aumenta también la distancia entre números representables consecutivos.
+
+# 5. Primer experimento en Jupyter
+
+Abre un notebook con Julia.
+
+## Antes de ejecutar
+
+¿Crees que Julia considera del mismo tipo los números `1` y `1.0`?
+
+```julia
+typeof(1)
+typeof(1.0)
+```
+
+Aunque matemáticamente representan el mismo valor, `1` es normalmente `Int64`, mientras que `1.0` es `Float64`.
+
+# 6. Mirando los bits
+
+## Antes de ejecutar
+
+¿Cuántos bits esperas encontrar en un `Float64`?
+
+```julia
+bitstring(1.0)
+```
+
+Compara:
+
+```julia
+bitstring(1.0)
+bitstring(-1.0)
+```
+
+y después:
+
+```julia
+bitstring(1.0)
+bitstring(2.0)
+```
+
+Observa qué bits cambian.
+
+En IEEE 754 de doble precisión se utilizan 64 bits: 1 para el signo, 11 para el exponente y 52 para la parte fraccionaria del significando.
+
+# 7. Epsilon de máquina
+
+Entre $1$ y el siguiente número de punto flotante representable existe una distancia mínima. En nuestro modelo,
+
+$$
+\epsilon_{\mathrm{mach}}=2^{-d}.
+$$
+
+En doble precisión,
+
+$$
+\epsilon_{\mathrm{mach}}=2^{-52}\approx2.22\times10^{-16}.
+$$
+
+## Antes de ejecutar
+
+¿Qué esperas obtener?
+
+```julia
+eps()
+```
+
+Comprueba además:
+
+```julia
+log2(eps())
+```
+
+Deberías encontrar `-52`.
+
+# 🛑 Punto sugerido para la sesión del miércoles
+
+Hasta aquí quedan establecidas las ideas esenciales:
+
+1. la computadora no representa todos los números reales;
+2. utiliza números de punto flotante;
+3. los números representables no están igualmente espaciados;
+4. Julia utiliza normalmente `Float64`;
+5. `eps()` mide la separación entre $1$ y el siguiente número representable.
+
+El resto queda preparado para la sesión del viernes.
+
+# 8. ¿El espaciamiento siempre es `eps()`?
+
+## Antes de ejecutar
+
+Compara:
+
+```julia
+eps(1.618)
+eps(161.8)
+```
+
+Ahora prueba:
+
+```julia
+nextfloat(161.8)
+nextfloat(161.8) - 161.8
+```
+
+## Pregunta
+
+¿Por qué aumenta la separación cuando aumenta la magnitud?
+
+La clave es que el punto flotante busca mantener aproximadamente constante la **precisión relativa**, no la precisión absoluta.
+
+# 9. Precisión y exactitud
+
+Supongamos que $x$ es el valor verdadero y $\widetilde{x}$ una aproximación.
+
+El **error absoluto** es
+
+$$
+|\widetilde{x}-x|,
+$$
+
+mientras que el **error relativo** es
+
+$$
+\frac{|\widetilde{x}-x|}{|x|}.
+$$
+
+Una medida del número de dígitos decimales correctos es
+
+$$
+-\log_{10}\left|\frac{\widetilde{x}-x}{x}\right|.
+$$
+
+# 10. El viejo $22/7$
+
+Tomemos
+
+$$
+\pi\approx\frac{22}{7}.
+$$
+
+En Jupyter:
+
+```julia
+p = 22/7
+error_abs = abs(p - π)
+error_rel = error_abs / π
+
+println("Error absoluto = ", error_abs)
+println("Error relativo = ", error_rel)
+println("Dígitos correctos ≈ ", -log10(error_rel))
+```
+
+## Pregunta
+
+¿Cuántos dígitos aproximadamente correctos tiene $22/7$?
+
+# 11. Una aproximación mucho mejor
+
+Repite con
+
+$$
+\frac{355}{113}.
+$$
+
+```julia
+p = 355/113
+error_abs = abs(p - π)
+error_rel = error_abs / π
+
+println("Error absoluto = ", error_abs)
+println("Error relativo = ", error_rel)
+println("Dígitos correctos ≈ ", -log10(error_rel))
+```
+
+Compara los resultados con $22/7$.
+
+# 12. Números enormes y números diminutos
+
+```julia
+floatmin()
+floatmax()
+```
+
+Prueba también:
+
+```julia
+1.0 / 0.0
+0.0 / 0.0
+```
+
+Aparecen dos valores especiales:
+
+- `Inf`, un infinito de punto flotante.
+- `NaN`, **Not a Number**, resultado de ciertas operaciones indefinidas.
+
+En doble precisión el exponente está limitado, por lo que pueden aparecer **overflow** y **underflow**.
+
+# 13. La sorpresa final: la asociatividad
+
+En los reales,
+
+$$
+(a+b)+c=a+(b+c).
+$$
+
+¿Seguirá siendo exactamente cierto en punto flotante?
+
+```julia
+e = eps()/2
+```
+
+## Antes de ejecutar
+
+Predice:
+
+```julia
+(1.0 + e) - 1.0
+```
+
+Después prueba:
+
+```julia
+1.0 + (e - 1.0)
+```
+
+## Pregunta
+
+¿Por qué dos expresiones matemáticamente equivalentes producen resultados diferentes?
+
+# 14. La lección importante
+
+> Dos expresiones matemáticamente equivalentes no necesariamente producen exactamente el mismo resultado cuando se calculan usando aritmética de punto flotante.
+
+En cálculo numérico debemos estudiar cuándo los resultados computados son **suficientemente cercanos** a los valores que pretendemos calcular.
+
+La diferencia entre matemática exacta y computación finita será una idea central del curso.
+
+# Para pensar antes de la siguiente clase
+
+Sin utilizar Julia primero, intenta responder:
+
+1. ¿Por qué una computadora no puede representar exactamente todos los números reales?
+2. ¿Qué significa `Float64`?
+3. ¿Qué representa `eps()`?
+4. ¿Por qué el espaciamiento aumenta con la magnitud?
+5. ¿Cuál es la diferencia entre error absoluto y error relativo?
+6. ¿Por qué dos expresiones algebraicamente equivalentes pueden producir resultados distintos?
+
+Después utiliza Jupyter para poner a prueba tus respuestas.
+
+# Ejercicios adicionales
+
+1. Para
+   $$
+   \frac{355}{113}
+   \qquad\text{y}\qquad
+   \frac{103638}{32989},
+   $$
+   calcula el error absoluto, el error relativo y el número aproximado de dígitos correctos respecto de $\pi$.
+
+2. Antes de ejecutar, predice el resultado de:
+
+```julia
+nextfloat(floatmax())
+nextfloat(-Inf)
+```
+
+Luego comprueba tus predicciones en Jupyter.
+
+# Referencia
+
+T. A. Driscoll y R. J. Braun, *Fundamentals of Numerical Computation*, sección 1.1: **Floating-point numbers**.
