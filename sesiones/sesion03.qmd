@@ -59,6 +59,12 @@ El número $1+f$ recibe el nombre de **significando** o **mantisa**, y $d$ repre
 
 Por ello, sólo algunos números reales pueden representarse exactamente.
 
+## Material complementario
+
+Para una explicación más detallada de la representación de los números de punto flotante, el espaciamiento entre números representables y el error de redondeo, consulta:
+
+📄 [**Nota sobre números de punto flotante**](flotante.pdf)
+
 # 3. Un pequeño universo: $d=2$
 
 Supongamos que sólo disponemos de dos bits para la parte fraccionaria. Para $n=0$, los números representables en $[1,2)$ son
