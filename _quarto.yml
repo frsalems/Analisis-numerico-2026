@@ -18,6 +18,8 @@ website:
         text: Sesión 2
       - href: sesiones/sesion03.qmd
         text: Sesión 3
+      - href: sesiones/sesion04.qmd
+        text: Sesión 4
 
   sidebar:
     style: "docked"
@@ -29,6 +31,7 @@ website:
           - sesiones/sesion01.qmd
           - sesiones/sesion02.qmd
           - sesiones/sesion03.qmd
+          - sesiones/sesion04.qmd
 
 format:
   html:

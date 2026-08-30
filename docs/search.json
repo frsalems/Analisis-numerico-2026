@@ -1,5 +1,468 @@
 [
   {
+    "objectID": "sesiones/sesion04.html",
+    "href": "sesiones/sesion04.html",
+    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
+    "section": "",
+    "text": "En la sesión anterior vimos que los números de punto flotante representan sólo una parte finita de los números reales y que las operaciones realizadas por una computadora pueden introducir errores de redondeo.\nAhora aparecen dos preguntas fundamentales:\n\n¿El problema matemático es sensible a pequeñas perturbaciones en los datos?\n¿El algoritmo que elegimos amplifica innecesariamente los errores?\n\nEstas preguntas conducen a dos conceptos centrales del análisis numérico:\n\ncondicionamiento, que es una propiedad del problema;\nestabilidad, que es una propiedad del algoritmo.\n\n\nIdea guía. Un problema puede estar bien condicionado y, sin embargo, ser resuelto por un algoritmo inestable.\n\nDurante esta sesión seguiremos el esquema:\npredecir → ejecutar → observar → explicar.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion04.html#cancelación-sustractiva",
+    "href": "sesiones/sesion04.html#cancelación-sustractiva",
+    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
+    "section": "2.1 Cancelación sustractiva",
+    "text": "2.1 Cancelación sustractiva\nCuando se restan dos números cercanos, el resultado puede ser mucho menor que cualquiera de los operandos. En ese proceso pueden perderse cifras significativas.\nPor ejemplo,\n\\[\n1.0000-1.0012=-0.0012.\n\\]\nLos operandos tienen cinco cifras significativas, pero el resultado contiene mucha menos información útil.\nA este fenómeno se le llama cancelación sustractiva.\n\nLa cancelación sustractiva es una de las causas más frecuentes de pérdida importante de precisión en aritmética de punto flotante.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion04.html#experimento-1-una-resta-aparentemente-inocente",
+    "href": "sesiones/sesion04.html#experimento-1-una-resta-aparentemente-inocente",
+    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
+    "section": "2.2 Experimento 1: una resta aparentemente inocente",
+    "text": "2.2 Experimento 1: una resta aparentemente inocente\nAntes de ejecutar, predice qué debería ocurrir matemáticamente.\nx = 1.0\nfor k in 1:17\n    δ = 10.0^(-k)\n    y = (x + δ) - x\n    println(k, \"   \", δ, \"   \", y)\nend\nObserva cuándo el resultado deja de coincidir con \\(\\delta\\).\nPreguntas\n\n¿Por qué comienza a perderse información?\n¿Qué relación tiene esto con eps()?\n¿Es un error de Julia o una consecuencia de la representación finita?",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion04.html#interpretación",
+    "href": "sesiones/sesion04.html#interpretación",
+    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
+    "section": "3.1 Interpretación",
+    "text": "3.1 Interpretación\nAproximadamente,\n\\[\n\\frac{|\\Delta f|}{|f|}\n\\approx\n\\kappa_f(x)\n\\frac{|\\Delta x|}{|x|}.\n\\]\nPor tanto:\n\nsi \\(\\kappa_f(x)\\) es moderado, el problema está bien condicionado;\nsi \\(\\kappa_f(x)\\) es muy grande, el problema está mal condicionado.\n\nSi\n\\[\n\\kappa_f(x)\\approx 10^d,\n\\]\npodemos esperar perder aproximadamente \\(d\\) cifras decimales de precisión.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion04.html#algunos-ejemplos",
+    "href": "sesiones/sesion04.html#algunos-ejemplos",
+    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
+    "section": "3.2 Algunos ejemplos",
+    "text": "3.2 Algunos ejemplos\n\n3.2.1 Multiplicación por una constante\nSi\n\\[\nf(x)=cx,\n\\]\nentonces\n\\[\n\\kappa_f(x)\n=\n\\left|\\frac{x c}{cx}\\right|\n=1.\n\\]\nLa multiplicación por una constante no amplifica el error relativo.\n\n\n3.2.2 Suma o resta de una constante\nPara\n\\[\nf(x)=x-c,\n\\]\ntenemos\n\\[\n\\kappa_f(x)\n=\n\\left|\n\\frac{x}{x-c}\n\\right|.\n\\]\nCuando \\(x\\approx c\\), el denominador es pequeño y el número de condición puede ser enorme.\nEsto conecta directamente con la cancelación sustractiva.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion04.html#experimento-2-observar-el-condicionamiento",
+    "href": "sesiones/sesion04.html#experimento-2-observar-el-condicionamiento",
+    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
+    "section": "3.3 Experimento 2: observar el condicionamiento",
+    "text": "3.3 Experimento 2: observar el condicionamiento\nConsideremos\n\\[\nf(x)=x-1.\n\\]\nκ(x) = abs(x / (x - 1))\n\nfor k in 1:12\n    x = 1 + 10.0^(-k)\n    println(k, \"   x = \", x, \"   κ = \", κ(x))\nend\nAntes de ejecutarlo:\n¿qué esperas que ocurra con \\(\\kappa_f(x)\\) cuando \\(x\\to1\\)?",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion04.html#implementación-en-julia",
+    "href": "sesiones/sesion04.html#implementación-en-julia",
+    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
+    "section": "6.1 Implementación en Julia",
+    "text": "6.1 Implementación en Julia\nNo utilizaremos la biblioteca FNC. Escribiremos nuestro propio algoritmo.\nfunction horner(c, x)\n    n = length(c)\n    y = c[n]\n\n    for k in n-1:-1:1\n        y = x*y + c[k]\n    end\n\n    return y\nend\nProbemos con\n\\[\np(x)=(x-1)^3=x^3-3x^2+3x-1.\n\\]\nLos coeficientes se introducen en orden ascendente:\nc = [-1, 3, -3, 1]\n\nhorner(c, 1.6)",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion04.html#experimento-3-directo-contra-horner",
+    "href": "sesiones/sesion04.html#experimento-3-directo-contra-horner",
+    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
+    "section": "6.2 Experimento 3: directo contra Horner",
+    "text": "6.2 Experimento 3: directo contra Horner\np_directo(x) = 5*x^3 + 4*x^2 + 3*x + 2\np_horner(x)  = 2 + x*(3 + x*(4 + 5*x))\n\nx = 1.23456789\n\np_directo(x), p_horner(x)\nDiscusión\nLos dos algoritmos representan el mismo polinomio.\nPero:\n\n¿realizan las mismas operaciones?\n¿cuál necesita menos?\n¿ser matemáticamente equivalentes garantiza que se comporten igual en punto flotante?\n\nLa última pregunta nos conduce a la estabilidad.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion04.html#experimento-4-el-algoritmo-ingenuo",
+    "href": "sesiones/sesion04.html#experimento-4-el-algoritmo-ingenuo",
+    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
+    "section": "8.1 Experimento 4: el algoritmo ingenuo",
+    "text": "8.1 Experimento 4: el algoritmo ingenuo\nAntes de ejecutar: ambas raíces son conocidas exactamente. ¿Esperas obtenerlas con precisión comparable?\na = 1.0\nb = -(1e6 + 1e-6)\nc = 1.0\n\nx1 = (-b + sqrt(b^2 - 4*a*c)) / (2*a)\nx2 = (-b - sqrt(b^2 - 4*a*c)) / (2*a)\n\nprintln(\"x1 = \", x1)\nprintln(\"x2 = \", x2)\n\nerror1 = abs(x1 - 1e6) / 1e6\nerror2 = abs(x2 - 1e-6) / 1e-6\n\nprintln(\"error relativo x1 = \", error1)\nprintln(\"error relativo x2 = \", error2)\nUna raíz se obtiene con gran precisión y la otra pierde varias cifras.\n¿Dónde está el culpable?\nEn la raíz pequeña aparece una resta entre números casi iguales:\n\\[\n-b-\\sqrt{b^2-4ac}.\n\\]\nOtra vez encontramos cancelación sustractiva.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion04.html#experimento-5-evitar-la-cancelación",
+    "href": "sesiones/sesion04.html#experimento-5-evitar-la-cancelación",
+    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
+    "section": "9.1 Experimento 5: evitar la cancelación",
+    "text": "9.1 Experimento 5: evitar la cancelación\na = 1.0\nb = -(1e6 + 1e-6)\nc = 1.0\n\nx1 = (-b + sqrt(b^2 - 4*a*c)) / (2*a)\nx2 = c / (a*x1)\n\nprintln(\"x1 = \", x1)\nprintln(\"x2 = \", x2)\n\nerror2 = abs(x2 - 1e-6) / 1e-6\nprintln(\"error relativo x2 = \", error2)\nAhora compara el error de la raíz pequeña con el obtenido mediante la fórmula directa.\nTenemos dos algoritmos algebraicamente equivalentes en aritmética exacta, pero no necesariamente equivalentes en aritmética de punto flotante.\n\nLección: en análisis numérico importa no sólo qué fórmula usamos, sino también cómo la evaluamos.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion04.html#representación",
+    "href": "sesiones/sesion04.html#representación",
+    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
+    "section": "12.1 Representación",
+    "text": "12.1 Representación\nLos números reales deben aproximarse mediante números de punto flotante.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion04.html#problema",
+    "href": "sesiones/sesion04.html#problema",
+    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
+    "section": "12.2 Problema",
+    "text": "12.2 Problema\n\\[\ny=f(x)\n\\]\nEl condicionamiento describe la sensibilidad inherente del problema frente a perturbaciones en los datos.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion04.html#algoritmo",
+    "href": "sesiones/sesion04.html#algoritmo",
+    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
+    "section": "12.3 Algoritmo",
+    "text": "12.3 Algoritmo\n\\[\n\\widetilde y=\\widetilde f(x)\n\\]\nEs la secuencia concreta de operaciones utilizada para aproximar la solución.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion04.html#estabilidad-1",
+    "href": "sesiones/sesion04.html#estabilidad-1",
+    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
+    "section": "12.4 Estabilidad",
+    "text": "12.4 Estabilidad\nDescribe si el algoritmo introduce una amplificación de errores mayor de la que el propio problema exige.\nEn forma esquemática:\n\\[\n\\boxed{\\text{datos}}\n\\longrightarrow\n\\boxed{\\text{problema}}\n\\longrightarrow\n\\boxed{\\text{condicionamiento}}\n\\]\n\\[\n\\boxed{\\text{datos en punto flotante}}\n\\longrightarrow\n\\boxed{\\text{algoritmo}}\n\\longrightarrow\n\\boxed{\\text{estabilidad}}\n\\longrightarrow\n\\boxed{\\text{resultado calculado}}\n\\]\nÉsta será una distinción recurrente durante todo el curso.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion04.html#ejercicio-1.-número-de-condición",
+    "href": "sesiones/sesion04.html#ejercicio-1.-número-de-condición",
+    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
+    "section": "13.1 Ejercicio 1. Número de condición",
+    "text": "13.1 Ejercicio 1. Número de condición\nUtilizando\n\\[\n\\kappa_f(x)\n=\n\\left|\n\\frac{x f'(x)}{f(x)}\n\\right|,\n\\]\ncalcula el número de condición relativo de:\n\\[\n\\text{a) } f(x)=x^p,\n\\qquad\n\\text{b) } f(x)=e^x,\n\\qquad\n\\text{c) } f(x)=\\cos x.\n\\]\nIdentifica valores de \\(x\\) para los cuales el problema pueda estar mal condicionado.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion04.html#ejercicio-2.-condicionamiento-y-composición",
+    "href": "sesiones/sesion04.html#ejercicio-2.-condicionamiento-y-composición",
+    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
+    "section": "13.2 Ejercicio 2. Condicionamiento y composición",
+    "text": "13.2 Ejercicio 2. Condicionamiento y composición\nSean\n\\[\nh(x)=f(g(x)).\n\\]\nDemuestra, utilizando la regla de la cadena, que\n\\[\n\\kappa_h(x)\n=\n\\kappa_f(g(x))\\,\\kappa_g(x).\n\\]\nComprueba después la fórmula para\n\\[\nh(x)=\\sqrt{x+5}.\n\\]",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion04.html#ejercicio-3.-horner",
+    "href": "sesiones/sesion04.html#ejercicio-3.-horner",
+    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
+    "section": "13.3 Ejercicio 3. Horner",
+    "text": "13.3 Ejercicio 3. Horner\nEscribe en Julia una función que evalúe mediante el algoritmo de Horner\n\\[\np(x)=2x^4-3x^3+5x^2-x+7.\n\\]\nEvalúa el polinomio en\n\\[\nx=1.5.\n\\]\nDespués evalúalo directamente mediante potencias y compara los resultados y el número de multiplicaciones requeridas por cada método.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion04.html#ejercicio-4.-dos-fórmulas-equivalentes",
+    "href": "sesiones/sesion04.html#ejercicio-4.-dos-fórmulas-equivalentes",
+    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
+    "section": "13.4 Ejercicio 4. Dos fórmulas equivalentes",
+    "text": "13.4 Ejercicio 4. Dos fórmulas equivalentes\nLas expresiones\n\\[\nf(x)=\\frac{1-\\cos x}{\\sin x},\n\\qquad\ng(x)=\\frac{2\\sin^2(x/2)}{\\sin x}\n\\]\nson matemáticamente equivalentes.\nEn Julia, evalúa ambas para\n\\[\nx=10^{-2},10^{-4},10^{-6},10^{-8}.\n\\]\nConstruye una tabla con los resultados.\nExplica por qué una de las fórmulas puede perder precisión más rápidamente que la otra.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion04.html#ejercicio-5.-la-fórmula-cuadrática",
+    "href": "sesiones/sesion04.html#ejercicio-5.-la-fórmula-cuadrática",
+    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
+    "section": "13.5 Ejercicio 5. La fórmula cuadrática",
+    "text": "13.5 Ejercicio 5. La fórmula cuadrática\nConsidera\n\\[\np(x)\n=\n(x-10^8)(x-10^{-8}).\n\\]\n\nExpande el polinomio e identifica \\(a,b,c\\).\nCalcula ambas raíces mediante la fórmula cuadrática usual.\nCalcula el error relativo de cada raíz.\nCalcula la raíz grande mediante la fórmula cuadrática y la pequeña usando\n\n\\[\nx_1x_2=\\frac ca.\n\\]\n\nCompara ambos procedimientos y explica el resultado utilizando los conceptos de cancelación sustractiva y estabilidad.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion04.html#fuente-principal",
+    "href": "sesiones/sesion04.html#fuente-principal",
+    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
+    "section": "15.1 Fuente principal",
+    "text": "15.1 Fuente principal\nEl material de esta sesión está basado principalmente en los apartados 1.2–1.5 de:\nTobin A. Driscoll y Richard J. Braun, Fundamentals of Numerical Computation, edición Julia.\nhttps://tobydriscoll.net/fnc-julia/home.html",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion02.html",
+    "href": "sesiones/sesion02.html",
+    "title": "Sesión 2: La computadora también aproxima",
+    "section": "",
+    "text": "📄 Representación binaria y punto flotante",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 2: La computadora también aproxima"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion02.html#material-complementario",
+    "href": "sesiones/sesion02.html#material-complementario",
+    "title": "Sesión 2: La computadora también aproxima",
+    "section": "",
+    "text": "📄 Representación binaria y punto flotante",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 2: La computadora también aproxima"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion02.html#dos-minutos-en-pareja",
+    "href": "sesiones/sesion02.html#dos-minutos-en-pareja",
+    "title": "Sesión 2: La computadora también aproxima",
+    "section": "Dos minutos en pareja",
+    "text": "Dos minutos en pareja\n\n¿Cómo puede ocurrir esto en una suma tan sencilla?\n\nElaboren una explicación posible antes de continuar.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 2: La computadora también aproxima"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion02.html#experimento-en-parejas",
+    "href": "sesiones/sesion02.html#experimento-en-parejas",
+    "title": "Sesión 2: La computadora también aproxima",
+    "section": "Experimento en parejas",
+    "text": "Experimento en parejas\n\nfor x in [1.0, 10.0, 1000.0, 1.0e10]\n    println(x, \"   \", nextfloat(x)-x)\nend\n\n1.0   2.220446049250313e-16\n10.0   1.7763568394002505e-15\n1000.0   1.1368683772161603e-13\n1.0e10   1.9073486328125e-6\n\n\nPregunta: ¿los números de punto flotante están igualmente separados en toda la recta real?",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 2: La computadora también aproxima"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion02.html#votación-rápida",
+    "href": "sesiones/sesion02.html#votación-rápida",
+    "title": "Sesión 2: La computadora también aproxima",
+    "section": "Votación rápida",
+    "text": "Votación rápida\n¿Cuál aproximación considerarías mejor? Explica tu elección a tu compañero.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 2: La computadora también aproxima"
+    ]
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Análisis Numérico",
+    "section": "",
+    "text": "Este sitio reúne el material de trabajo del curso de Análisis Numérico.\nLa idea central del curso es aprender a construir, utilizar y analizar métodos numéricos para resolver problemas matemáticos con ayuda de la computadora.\nTrabajaremos con Julia como lenguaje principal.\n\n\nUsaremos un esquema de aula inversa. Antes de algunas clases habrá una lectura breve, una pregunta, un experimento o un pequeño fragmento de código.\nEn las sesiones presenciales dedicaremos la mayor parte del tiempo a:\n\ndiscutir ideas;\nresolver problemas;\nprogramar;\ncomparar métodos;\nanalizar errores;\ninterpretar resultados.\n\nNo se espera que el material previo sustituya la clase. Su propósito es llegar con una primera idea para aprovechar mejor el trabajo presencial.\n\n\n\n\n\n¿Qué significa calcular numéricamente?\nPresentación del curso, diagnóstico y primeras preguntas sobre aproximación y cálculo numérico.\nIr a la Sesión 1\n\n\n\nLa computadora también aproxima\nPunto flotante, representación finita, error absoluto y error relativo.\nIr a la Sesión 2\n\n\n\n\nPara las actividades computacionales utilizaremos principalmente:\n\nJulia;\nJupyter;\nun navegador web.\n\nEl material del curso estará disponible en este sitio. No es necesario instalar Quarto para consultar las notas.\n\n\n\n\nObtener un número es apenas el principio.\n¿Cuánto podemos confiar en ese número?",
+    "crumbs": [
+      "Inicio",
+      "Análisis Numérico"
+    ]
+  },
+  {
+    "objectID": "index.html#cómo-trabajaremos",
+    "href": "index.html#cómo-trabajaremos",
+    "title": "Análisis Numérico",
+    "section": "",
+    "text": "Usaremos un esquema de aula inversa. Antes de algunas clases habrá una lectura breve, una pregunta, un experimento o un pequeño fragmento de código.\nEn las sesiones presenciales dedicaremos la mayor parte del tiempo a:\n\ndiscutir ideas;\nresolver problemas;\nprogramar;\ncomparar métodos;\nanalizar errores;\ninterpretar resultados.\n\nNo se espera que el material previo sustituya la clase. Su propósito es llegar con una primera idea para aprovechar mejor el trabajo presencial.",
+    "crumbs": [
+      "Inicio",
+      "Análisis Numérico"
+    ]
+  },
+  {
+    "objectID": "index.html#sesiones",
+    "href": "index.html#sesiones",
+    "title": "Análisis Numérico",
+    "section": "",
+    "text": "¿Qué significa calcular numéricamente?\nPresentación del curso, diagnóstico y primeras preguntas sobre aproximación y cálculo numérico.\nIr a la Sesión 1\n\n\n\nLa computadora también aproxima\nPunto flotante, representación finita, error absoluto y error relativo.\nIr a la Sesión 2",
+    "crumbs": [
+      "Inicio",
+      "Análisis Numérico"
+    ]
+  },
+  {
+    "objectID": "index.html#herramientas",
+    "href": "index.html#herramientas",
+    "title": "Análisis Numérico",
+    "section": "",
+    "text": "Para las actividades computacionales utilizaremos principalmente:\n\nJulia;\nJupyter;\nun navegador web.\n\nEl material del curso estará disponible en este sitio. No es necesario instalar Quarto para consultar las notas.",
+    "crumbs": [
+      "Inicio",
+      "Análisis Numérico"
+    ]
+  },
+  {
+    "objectID": "index.html#una-pregunta-que-nos-acompañará-todo-el-semestre",
+    "href": "index.html#una-pregunta-que-nos-acompañará-todo-el-semestre",
+    "title": "Análisis Numérico",
+    "section": "",
+    "text": "Obtener un número es apenas el principio.\n¿Cuánto podemos confiar en ese número?",
+    "crumbs": [
+      "Inicio",
+      "Análisis Numérico"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion01.html",
+    "href": "sesiones/sesion01.html",
+    "title": "Sesión 1: ¿Qué significa calcular numéricamente?",
+    "section": "",
+    "text": "Esta primera sesión tiene dos objetivos:\n\nPresentar la dinámica general del curso y el esquema de aula inversa.\nHacer un diagnóstico breve de los conocimientos que utilizaremos durante el semestre.\n\nAdemás, comenzaremos con una idea fundamental del Análisis Numérico:\n\nUna computadora no trabaja con los números reales de manera exacta; trabaja con representaciones finitas y, por lo tanto, con aproximaciones.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 1: ¿Qué significa calcular numéricamente?"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion01.html#para-discutir",
+    "href": "sesiones/sesion01.html#para-discutir",
+    "title": "Sesión 1: ¿Qué significa calcular numéricamente?",
+    "section": "Para discutir",
+    "text": "Para discutir\nSin buscar todavía una explicación:\n\n¿Esperabas ese resultado?\n¿Está equivocada la computadora?\n¿Qué significa realmente escribir 0.1 dentro de una computadora?\n¿Mostrar muchas cifras decimales garantiza precisión?\n\nNo necesitamos responder todo hoy. Esta pequeña anomalía será la puerta de entrada a la aritmética de punto flotante.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 1: ¿Qué significa calcular numéricamente?"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion01.html#problema-1.-aproximación",
+    "href": "sesiones/sesion01.html#problema-1.-aproximación",
+    "title": "Sesión 1: ¿Qué significa calcular numéricamente?",
+    "section": "Problema 1. Aproximación",
+    "text": "Problema 1. Aproximación\nAproxima\n\\[\n\\sqrt{2}\n\\]\ncon cuatro cifras decimales.\nDespués responde:\n¿Qué significa decir que tu resultado es una aproximación?",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 1: ¿Qué significa calcular numéricamente?"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion01.html#problema-2.-sistemas-lineales",
+    "href": "sesiones/sesion01.html#problema-2.-sistemas-lineales",
+    "title": "Sesión 1: ¿Qué significa calcular numéricamente?",
+    "section": "Problema 2. Sistemas lineales",
+    "text": "Problema 2. Sistemas lineales\nSean\n\\[\nA=\n\\begin{pmatrix}\n2 & 1\\\\\n1 & 3\n\\end{pmatrix},\n\\qquad\nb=\n\\begin{pmatrix}\n1\\\\\n2\n\\end{pmatrix}.\n\\]\nResuelve el sistema\n\\[\nAx=b.\n\\]\nSi puedes, indica qué procedimiento utilizaste.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 1: ¿Qué significa calcular numéricamente?"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion01.html#problema-3.-raíces-de-funciones",
+    "href": "sesiones/sesion01.html#problema-3.-raíces-de-funciones",
+    "title": "Sesión 1: ¿Qué significa calcular numéricamente?",
+    "section": "Problema 3. Raíces de funciones",
+    "text": "Problema 3. Raíces de funciones\nConsidera\n\\[\nf(x)=x^2-2.\n\\]\nSupón que no puedes utilizar directamente una función para calcular \\(\\sqrt{2}\\).\n¿Cómo intentarías encontrar aproximadamente una raíz positiva de \\(f\\)?\nNo necesitas conocer ningún método numérico específico. Describe una estrategia.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 1: ¿Qué significa calcular numéricamente?"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion01.html#problema-4.-derivación",
+    "href": "sesiones/sesion01.html#problema-4.-derivación",
+    "title": "Sesión 1: ¿Qué significa calcular numéricamente?",
+    "section": "Problema 4. Derivación",
+    "text": "Problema 4. Derivación\nSea\n\\[\nf(x)=e^x.\n\\]\nSabemos que\n[ f’(0)=1. ]\nSi solamente pudieras evaluar la función (f), ¿cómo intentarías aproximar (f’(0))?",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 1: ¿Qué significa calcular numéricamente?"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion01.html#problema-5.-integración",
+    "href": "sesiones/sesion01.html#problema-5.-integración",
+    "title": "Sesión 1: ¿Qué significa calcular numéricamente?",
+    "section": "Problema 5. Integración",
+    "text": "Problema 5. Integración\nConsidera\n\\[\n\\int_0^1 e^{-x^2}\\,dx.\n\\]\nSupón que no conoces una antiderivada.\n¿Cómo intentarías obtener una aproximación numérica de esta integral?",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 1: ¿Qué significa calcular numéricamente?"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion01.html#problema-6.-ecuaciones-diferenciales",
+    "href": "sesiones/sesion01.html#problema-6.-ecuaciones-diferenciales",
+    "title": "Sesión 1: ¿Qué significa calcular numéricamente?",
+    "section": "Problema 6. Ecuaciones diferenciales",
+    "text": "Problema 6. Ecuaciones diferenciales\nConsidera el problema de valor inicial\n\\[\ny'(t)=y(t), \\qquad y(0)=1.\n\\]\nSupón que no conoces la solución exacta.\n¿Cómo intentarías aproximar \\(y(0.1)\\)?",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 1: ¿Qué significa calcular numéricamente?"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion01.html#pregunta",
+    "href": "sesiones/sesion01.html#pregunta",
+    "title": "Sesión 1: ¿Qué significa calcular numéricamente?",
+    "section": "Pregunta",
+    "text": "Pregunta\nSi el residuo es muy pequeño, ¿significa necesariamente que la solución calculada es exacta?\nGuardaremos esta pregunta para más adelante.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 1: ¿Qué significa calcular numéricamente?"
+    ]
+  },
+  {
     "objectID": "sesiones/sesion03.html",
     "href": "sesiones/sesion03.html",
     "title": "Sesión 03: Números de punto flotante",
@@ -130,1586 +593,5 @@
       "Sesiones",
       "Sesión 03: Números de punto flotante"
     ]
-  },
-  {
-    "objectID": "sesiones/sesion01.html",
-    "href": "sesiones/sesion01.html",
-    "title": "Sesión 1: ¿Qué significa calcular numéricamente?",
-    "section": "",
-    "text": "Esta primera sesión tiene dos objetivos:\n\nPresentar la dinámica general del curso y el esquema de aula inversa.\nHacer un diagnóstico breve de los conocimientos que utilizaremos durante el semestre.\n\nAdemás, comenzaremos con una idea fundamental del Análisis Numérico:\n\nUna computadora no trabaja con los números reales de manera exacta; trabaja con representaciones finitas y, por lo tanto, con aproximaciones.",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 1: ¿Qué significa calcular numéricamente?"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion01.html#para-discutir",
-    "href": "sesiones/sesion01.html#para-discutir",
-    "title": "Sesión 1: ¿Qué significa calcular numéricamente?",
-    "section": "Para discutir",
-    "text": "Para discutir\nSin buscar todavía una explicación:\n\n¿Esperabas ese resultado?\n¿Está equivocada la computadora?\n¿Qué significa realmente escribir 0.1 dentro de una computadora?\n¿Mostrar muchas cifras decimales garantiza precisión?\n\nNo necesitamos responder todo hoy. Esta pequeña anomalía será la puerta de entrada a la aritmética de punto flotante.",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 1: ¿Qué significa calcular numéricamente?"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion01.html#problema-1.-aproximación",
-    "href": "sesiones/sesion01.html#problema-1.-aproximación",
-    "title": "Sesión 1: ¿Qué significa calcular numéricamente?",
-    "section": "Problema 1. Aproximación",
-    "text": "Problema 1. Aproximación\nAproxima\n\\[\n\\sqrt{2}\n\\]\ncon cuatro cifras decimales.\nDespués responde:\n¿Qué significa decir que tu resultado es una aproximación?",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 1: ¿Qué significa calcular numéricamente?"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion01.html#problema-2.-sistemas-lineales",
-    "href": "sesiones/sesion01.html#problema-2.-sistemas-lineales",
-    "title": "Sesión 1: ¿Qué significa calcular numéricamente?",
-    "section": "Problema 2. Sistemas lineales",
-    "text": "Problema 2. Sistemas lineales\nSean\n\\[\nA=\n\\begin{pmatrix}\n2 & 1\\\\\n1 & 3\n\\end{pmatrix},\n\\qquad\nb=\n\\begin{pmatrix}\n1\\\\\n2\n\\end{pmatrix}.\n\\]\nResuelve el sistema\n\\[\nAx=b.\n\\]\nSi puedes, indica qué procedimiento utilizaste.",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 1: ¿Qué significa calcular numéricamente?"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion01.html#problema-3.-raíces-de-funciones",
-    "href": "sesiones/sesion01.html#problema-3.-raíces-de-funciones",
-    "title": "Sesión 1: ¿Qué significa calcular numéricamente?",
-    "section": "Problema 3. Raíces de funciones",
-    "text": "Problema 3. Raíces de funciones\nConsidera\n\\[\nf(x)=x^2-2.\n\\]\nSupón que no puedes utilizar directamente una función para calcular \\(\\sqrt{2}\\).\n¿Cómo intentarías encontrar aproximadamente una raíz positiva de \\(f\\)?\nNo necesitas conocer ningún método numérico específico. Describe una estrategia.",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 1: ¿Qué significa calcular numéricamente?"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion01.html#problema-4.-derivación",
-    "href": "sesiones/sesion01.html#problema-4.-derivación",
-    "title": "Sesión 1: ¿Qué significa calcular numéricamente?",
-    "section": "Problema 4. Derivación",
-    "text": "Problema 4. Derivación\nSea\n\\[\nf(x)=e^x.\n\\]\nSabemos que\n[ f’(0)=1. ]\nSi solamente pudieras evaluar la función (f), ¿cómo intentarías aproximar (f’(0))?",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 1: ¿Qué significa calcular numéricamente?"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion01.html#problema-5.-integración",
-    "href": "sesiones/sesion01.html#problema-5.-integración",
-    "title": "Sesión 1: ¿Qué significa calcular numéricamente?",
-    "section": "Problema 5. Integración",
-    "text": "Problema 5. Integración\nConsidera\n\\[\n\\int_0^1 e^{-x^2}\\,dx.\n\\]\nSupón que no conoces una antiderivada.\n¿Cómo intentarías obtener una aproximación numérica de esta integral?",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 1: ¿Qué significa calcular numéricamente?"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion01.html#problema-6.-ecuaciones-diferenciales",
-    "href": "sesiones/sesion01.html#problema-6.-ecuaciones-diferenciales",
-    "title": "Sesión 1: ¿Qué significa calcular numéricamente?",
-    "section": "Problema 6. Ecuaciones diferenciales",
-    "text": "Problema 6. Ecuaciones diferenciales\nConsidera el problema de valor inicial\n\\[\ny'(t)=y(t), \\qquad y(0)=1.\n\\]\nSupón que no conoces la solución exacta.\n¿Cómo intentarías aproximar \\(y(0.1)\\)?",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 1: ¿Qué significa calcular numéricamente?"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion01.html#pregunta",
-    "href": "sesiones/sesion01.html#pregunta",
-    "title": "Sesión 1: ¿Qué significa calcular numéricamente?",
-    "section": "Pregunta",
-    "text": "Pregunta\nSi el residuo es muy pequeño, ¿significa necesariamente que la solución calculada es exacta?\nGuardaremos esta pregunta para más adelante.",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 1: ¿Qué significa calcular numéricamente?"
-    ]
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Análisis Numérico",
-    "section": "",
-    "text": "Este sitio reúne el material de trabajo del curso de Análisis Numérico.\nLa idea central del curso es aprender a construir, utilizar y analizar métodos numéricos para resolver problemas matemáticos con ayuda de la computadora.\nTrabajaremos con Julia como lenguaje principal.\n\n\nUsaremos un esquema de aula inversa. Antes de algunas clases habrá una lectura breve, una pregunta, un experimento o un pequeño fragmento de código.\nEn las sesiones presenciales dedicaremos la mayor parte del tiempo a:\n\ndiscutir ideas;\nresolver problemas;\nprogramar;\ncomparar métodos;\nanalizar errores;\ninterpretar resultados.\n\nNo se espera que el material previo sustituya la clase. Su propósito es llegar con una primera idea para aprovechar mejor el trabajo presencial.\n\n\n\n\n\n¿Qué significa calcular numéricamente?\nPresentación del curso, diagnóstico y primeras preguntas sobre aproximación y cálculo numérico.\nIr a la Sesión 1\n\n\n\nLa computadora también aproxima\nPunto flotante, representación finita, error absoluto y error relativo.\nIr a la Sesión 2\n\n\n\n\nPara las actividades computacionales utilizaremos principalmente:\n\nJulia;\nJupyter;\nun navegador web.\n\nEl material del curso estará disponible en este sitio. No es necesario instalar Quarto para consultar las notas.\n\n\n\n\nObtener un número es apenas el principio.\n¿Cuánto podemos confiar en ese número?",
-    "crumbs": [
-      "Inicio",
-      "Análisis Numérico"
-    ]
-  },
-  {
-    "objectID": "index.html#cómo-trabajaremos",
-    "href": "index.html#cómo-trabajaremos",
-    "title": "Análisis Numérico",
-    "section": "",
-    "text": "Usaremos un esquema de aula inversa. Antes de algunas clases habrá una lectura breve, una pregunta, un experimento o un pequeño fragmento de código.\nEn las sesiones presenciales dedicaremos la mayor parte del tiempo a:\n\ndiscutir ideas;\nresolver problemas;\nprogramar;\ncomparar métodos;\nanalizar errores;\ninterpretar resultados.\n\nNo se espera que el material previo sustituya la clase. Su propósito es llegar con una primera idea para aprovechar mejor el trabajo presencial.",
-    "crumbs": [
-      "Inicio",
-      "Análisis Numérico"
-    ]
-  },
-  {
-    "objectID": "index.html#sesiones",
-    "href": "index.html#sesiones",
-    "title": "Análisis Numérico",
-    "section": "",
-    "text": "¿Qué significa calcular numéricamente?\nPresentación del curso, diagnóstico y primeras preguntas sobre aproximación y cálculo numérico.\nIr a la Sesión 1\n\n\n\nLa computadora también aproxima\nPunto flotante, representación finita, error absoluto y error relativo.\nIr a la Sesión 2",
-    "crumbs": [
-      "Inicio",
-      "Análisis Numérico"
-    ]
-  },
-  {
-    "objectID": "index.html#herramientas",
-    "href": "index.html#herramientas",
-    "title": "Análisis Numérico",
-    "section": "",
-    "text": "Para las actividades computacionales utilizaremos principalmente:\n\nJulia;\nJupyter;\nun navegador web.\n\nEl material del curso estará disponible en este sitio. No es necesario instalar Quarto para consultar las notas.",
-    "crumbs": [
-      "Inicio",
-      "Análisis Numérico"
-    ]
-  },
-  {
-    "objectID": "index.html#una-pregunta-que-nos-acompañará-todo-el-semestre",
-    "href": "index.html#una-pregunta-que-nos-acompañará-todo-el-semestre",
-    "title": "Análisis Numérico",
-    "section": "",
-    "text": "Obtener un número es apenas el principio.\n¿Cuánto podemos confiar en ese número?",
-    "crumbs": [
-      "Inicio",
-      "Análisis Numérico"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion02.html",
-    "href": "sesiones/sesion02.html",
-    "title": "Sesión 2: La computadora también aproxima",
-    "section": "",
-    "text": "📄 Representación binaria y punto flotante",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 2: La computadora también aproxima"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion02.html#material-complementario",
-    "href": "sesiones/sesion02.html#material-complementario",
-    "title": "Sesión 2: La computadora también aproxima",
-    "section": "",
-    "text": "📄 Representación binaria y punto flotante",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 2: La computadora también aproxima"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion02.html#dos-minutos-en-pareja",
-    "href": "sesiones/sesion02.html#dos-minutos-en-pareja",
-    "title": "Sesión 2: La computadora también aproxima",
-    "section": "Dos minutos en pareja",
-    "text": "Dos minutos en pareja\n\n¿Cómo puede ocurrir esto en una suma tan sencilla?\n\nElaboren una explicación posible antes de continuar.",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 2: La computadora también aproxima"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion02.html#experimento-en-parejas",
-    "href": "sesiones/sesion02.html#experimento-en-parejas",
-    "title": "Sesión 2: La computadora también aproxima",
-    "section": "Experimento en parejas",
-    "text": "Experimento en parejas\n\nfor x in [1.0, 10.0, 1000.0, 1.0e10]\n    println(x, \"   \", nextfloat(x)-x)\nend\n\n1.0   2.220446049250313e-16\n10.0   1.7763568394002505e-15\n1000.0   1.1368683772161603e-13\n1.0e10   1.9073486328125e-6\n\n\nPregunta: ¿los números de punto flotante están igualmente separados en toda la recta real?",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 2: La computadora también aproxima"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion02.html#votación-rápida",
-    "href": "sesiones/sesion02.html#votación-rápida",
-    "title": "Sesión 2: La computadora también aproxima",
-    "section": "Votación rápida",
-    "text": "Votación rápida\n¿Cuál aproximación considerarías mejor? Explica tu elección a tu compañero.",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 2: La computadora también aproxima"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion04.html",
-    "href": "sesiones/sesion04.html",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "",
-    "text": "En la sesión anterior vimos que los números de punto flotante representan sólo una parte finita de los números reales y que las operaciones realizadas por una computadora pueden introducir errores de redondeo.\nAhora aparecen dos preguntas fundamentales:\n\n¿El problema matemático es sensible a pequeñas perturbaciones en los datos?\n¿El algoritmo que elegimos amplifica innecesariamente los errores?\n\nEstas preguntas conducen a dos conceptos centrales del análisis numérico:\n\ncondicionamiento, que es una propiedad del problema;\nestabilidad, que es una propiedad del algoritmo.\n\n\nIdea guía. Un problema puede estar bien condicionado y, sin embargo, ser resuelto por un algoritmo inestable.\n\nDurante esta sesión seguiremos el esquema:\npredecir → ejecutar → observar → explicar."
-  },
-  {
-    "objectID": "sesiones/sesion04.html#cancelación-sustractiva",
-    "href": "sesiones/sesion04.html#cancelación-sustractiva",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "2.1 Cancelación sustractiva",
-    "text": "2.1 Cancelación sustractiva\nCuando se restan dos números cercanos, el resultado puede ser mucho menor que cualquiera de los operandos. En ese proceso pueden perderse cifras significativas.\nPor ejemplo,\n\\[\n1.0000-1.0012=-0.0012.\n\\]\nLos operandos tienen cinco cifras significativas, pero el resultado contiene mucha menos información útil.\nA este fenómeno se le llama cancelación sustractiva.\n\nLa cancelación sustractiva es una de las causas más frecuentes de pérdida importante de precisión en aritmética de punto flotante."
-  },
-  {
-    "objectID": "sesiones/sesion04.html#experimento-1-una-resta-aparentemente-inocente",
-    "href": "sesiones/sesion04.html#experimento-1-una-resta-aparentemente-inocente",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "2.2 Experimento 1: una resta aparentemente inocente",
-    "text": "2.2 Experimento 1: una resta aparentemente inocente\nAntes de ejecutar, predice qué debería ocurrir matemáticamente.\nx = 1.0\nfor k in 1:17\n    δ = 10.0^(-k)\n    y = (x + δ) - x\n    println(k, \"   \", δ, \"   \", y)\nend\nObserva cuándo el resultado deja de coincidir con \\(\\delta\\).\nPreguntas\n\n¿Por qué comienza a perderse información?\n¿Qué relación tiene esto con eps()?\n¿Es un error de Julia o una consecuencia de la representación finita?"
-  },
-  {
-    "objectID": "sesiones/sesion04.html#interpretación",
-    "href": "sesiones/sesion04.html#interpretación",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "3.1 Interpretación",
-    "text": "3.1 Interpretación\nAproximadamente,\n\\[\n\\frac{|\\Delta f|}{|f|}\n\\approx\n\\kappa_f(x)\n\\frac{|\\Delta x|}{|x|}.\n\\]\nPor tanto:\n\nsi \\(\\kappa_f(x)\\) es moderado, el problema está bien condicionado;\nsi \\(\\kappa_f(x)\\) es muy grande, el problema está mal condicionado.\n\nSi\n\\[\n\\kappa_f(x)\\approx 10^d,\n\\]\npodemos esperar perder aproximadamente \\(d\\) cifras decimales de precisión."
-  },
-  {
-    "objectID": "sesiones/sesion04.html#algunos-ejemplos",
-    "href": "sesiones/sesion04.html#algunos-ejemplos",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "3.2 Algunos ejemplos",
-    "text": "3.2 Algunos ejemplos\n\n3.2.1 Multiplicación por una constante\nSi\n\\[\nf(x)=cx,\n\\]\nentonces\n\\[\n\\kappa_f(x)\n=\n\\left|\\frac{x c}{cx}\\right|\n=1.\n\\]\nLa multiplicación por una constante no amplifica el error relativo.\n\n\n3.2.2 Suma o resta de una constante\nPara\n\\[\nf(x)=x-c,\n\\]\ntenemos\n\\[\n\\kappa_f(x)\n=\n\\left|\n\\frac{x}{x-c}\n\\right|.\n\\]\nCuando \\(x\\approx c\\), el denominador es pequeño y el número de condición puede ser enorme.\nEsto conecta directamente con la cancelación sustractiva."
-  },
-  {
-    "objectID": "sesiones/sesion04.html#experimento-2-observar-el-condicionamiento",
-    "href": "sesiones/sesion04.html#experimento-2-observar-el-condicionamiento",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "3.3 Experimento 2: observar el condicionamiento",
-    "text": "3.3 Experimento 2: observar el condicionamiento\nConsideremos\n\\[\nf(x)=x-1.\n\\]\nκ(x) = abs(x / (x - 1))\n\nfor k in 1:12\n    x = 1 + 10.0^(-k)\n    println(k, \"   x = \", x, \"   κ = \", κ(x))\nend\nAntes de ejecutarlo:\n¿qué esperas que ocurra con \\(\\kappa_f(x)\\) cuando \\(x\\to1\\)?"
-  },
-  {
-    "objectID": "sesiones/sesion04.html#implementación-en-julia",
-    "href": "sesiones/sesion04.html#implementación-en-julia",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "6.1 Implementación en Julia",
-    "text": "6.1 Implementación en Julia\nNo utilizaremos la biblioteca FNC. Escribiremos nuestro propio algoritmo.\nfunction horner(c, x)\n    n = length(c)\n    y = c[n]\n\n    for k in n-1:-1:1\n        y = x*y + c[k]\n    end\n\n    return y\nend\nProbemos con\n\\[\np(x)=(x-1)^3=x^3-3x^2+3x-1.\n\\]\nLos coeficientes se introducen en orden ascendente:\nc = [-1, 3, -3, 1]\n\nhorner(c, 1.6)"
-  },
-  {
-    "objectID": "sesiones/sesion04.html#experimento-3-directo-contra-horner",
-    "href": "sesiones/sesion04.html#experimento-3-directo-contra-horner",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "6.2 Experimento 3: directo contra Horner",
-    "text": "6.2 Experimento 3: directo contra Horner\np_directo(x) = 5*x^3 + 4*x^2 + 3*x + 2\np_horner(x)  = 2 + x*(3 + x*(4 + 5*x))\n\nx = 1.23456789\n\np_directo(x), p_horner(x)\nDiscusión\nLos dos algoritmos representan el mismo polinomio.\nPero:\n\n¿realizan las mismas operaciones?\n¿cuál necesita menos?\n¿ser matemáticamente equivalentes garantiza que se comporten igual en punto flotante?\n\nLa última pregunta nos conduce a la estabilidad."
-  },
-  {
-    "objectID": "sesiones/sesion04.html#experimento-4-el-algoritmo-ingenuo",
-    "href": "sesiones/sesion04.html#experimento-4-el-algoritmo-ingenuo",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "8.1 Experimento 4: el algoritmo ingenuo",
-    "text": "8.1 Experimento 4: el algoritmo ingenuo\nAntes de ejecutar: ambas raíces son conocidas exactamente. ¿Esperas obtenerlas con precisión comparable?\na = 1.0\nb = -(1e6 + 1e-6)\nc = 1.0\n\nx1 = (-b + sqrt(b^2 - 4*a*c)) / (2*a)\nx2 = (-b - sqrt(b^2 - 4*a*c)) / (2*a)\n\nprintln(\"x1 = \", x1)\nprintln(\"x2 = \", x2)\n\nerror1 = abs(x1 - 1e6) / 1e6\nerror2 = abs(x2 - 1e-6) / 1e-6\n\nprintln(\"error relativo x1 = \", error1)\nprintln(\"error relativo x2 = \", error2)\nUna raíz se obtiene con gran precisión y la otra pierde varias cifras.\n¿Dónde está el culpable?\nEn la raíz pequeña aparece una resta entre números casi iguales:\n\\[\n-b-\\sqrt{b^2-4ac}.\n\\]\nOtra vez encontramos cancelación sustractiva."
-  },
-  {
-    "objectID": "sesiones/sesion04.html#experimento-5-evitar-la-cancelación",
-    "href": "sesiones/sesion04.html#experimento-5-evitar-la-cancelación",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "9.1 Experimento 5: evitar la cancelación",
-    "text": "9.1 Experimento 5: evitar la cancelación\na = 1.0\nb = -(1e6 + 1e-6)\nc = 1.0\n\nx1 = (-b + sqrt(b^2 - 4*a*c)) / (2*a)\nx2 = c / (a*x1)\n\nprintln(\"x1 = \", x1)\nprintln(\"x2 = \", x2)\n\nerror2 = abs(x2 - 1e-6) / 1e-6\nprintln(\"error relativo x2 = \", error2)\nAhora compara el error de la raíz pequeña con el obtenido mediante la fórmula directa.\nTenemos dos algoritmos algebraicamente equivalentes en aritmética exacta, pero no necesariamente equivalentes en aritmética de punto flotante.\n\nLección: en análisis numérico importa no sólo qué fórmula usamos, sino también cómo la evaluamos."
-  },
-  {
-    "objectID": "sesiones/sesion04.html#representación",
-    "href": "sesiones/sesion04.html#representación",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "12.1 Representación",
-    "text": "12.1 Representación\nLos números reales deben aproximarse mediante números de punto flotante."
-  },
-  {
-    "objectID": "sesiones/sesion04.html#problema",
-    "href": "sesiones/sesion04.html#problema",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "12.2 Problema",
-    "text": "12.2 Problema\n\\[\ny=f(x)\n\\]\nEl condicionamiento describe la sensibilidad inherente del problema frente a perturbaciones en los datos."
-  },
-  {
-    "objectID": "sesiones/sesion04.html#algoritmo",
-    "href": "sesiones/sesion04.html#algoritmo",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "12.3 Algoritmo",
-    "text": "12.3 Algoritmo\n\\[\n\\widetilde y=\\widetilde f(x)\n\\]\nEs la secuencia concreta de operaciones utilizada para aproximar la solución."
-  },
-  {
-    "objectID": "sesiones/sesion04.html#estabilidad-1",
-    "href": "sesiones/sesion04.html#estabilidad-1",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "12.4 Estabilidad",
-    "text": "12.4 Estabilidad\nDescribe si el algoritmo introduce una amplificación de errores mayor de la que el propio problema exige.\nEn forma esquemática:\n\\[\n\\boxed{\\text{datos}}\n\\longrightarrow\n\\boxed{\\text{problema}}\n\\longrightarrow\n\\boxed{\\text{condicionamiento}}\n\\]\n\\[\n\\boxed{\\text{datos en punto flotante}}\n\\longrightarrow\n\\boxed{\\text{algoritmo}}\n\\longrightarrow\n\\boxed{\\text{estabilidad}}\n\\longrightarrow\n\\boxed{\\text{resultado calculado}}\n\\]\nÉsta será una distinción recurrente durante todo el curso."
-  },
-  {
-    "objectID": "sesiones/sesion04.html#ejercicio-1.-número-de-condición",
-    "href": "sesiones/sesion04.html#ejercicio-1.-número-de-condición",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.1 Ejercicio 1. Número de condición",
-    "text": "13.1 Ejercicio 1. Número de condición\nUtilizando\n\\[\n\\kappa_f(x)\n=\n\\left|\n\\frac{x f'(x)}{f(x)}\n\\right|,\n\\]\ncalcula el número de condición relativo de:\n\\[\n\\text{a) } f(x)=x^p,\n\\qquad\n\\text{b) } f(x)=e^x,\n\\qquad\n\\text{c) } f(x)=\\cos x.\n\\]\nIdentifica valores de \\(x\\) para los cuales el problema pueda estar mal condicionado."
-  },
-  {
-    "objectID": "sesiones/sesion04.html#ejercicio-2.-condicionamiento-y-composición",
-    "href": "sesiones/sesion04.html#ejercicio-2.-condicionamiento-y-composición",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.2 Ejercicio 2. Condicionamiento y composición",
-    "text": "13.2 Ejercicio 2. Condicionamiento y composición\nSean\n\\[\nh(x)=f(g(x)).\n\\]\nDemuestra, utilizando la regla de la cadena, que\n\\[\n\\kappa_h(x)\n=\n\\kappa_f(g(x))\\,\\kappa_g(x).\n\\]\nComprueba después la fórmula para\n\\[\nh(x)=\\sqrt{x+5}.\n\\]"
-  },
-  {
-    "objectID": "sesiones/sesion04.html#ejercicio-3.-horner",
-    "href": "sesiones/sesion04.html#ejercicio-3.-horner",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.3 Ejercicio 3. Horner",
-    "text": "13.3 Ejercicio 3. Horner\nEscribe en Julia una función que evalúe mediante el algoritmo de Horner\n\\[\np(x)=2x^4-3x^3+5x^2-x+7.\n\\]\nEvalúa el polinomio en\n\\[\nx=1.5.\n\\]\nDespués evalúalo directamente mediante potencias y compara los resultados y el número de multiplicaciones requeridas por cada método."
-  },
-  {
-    "objectID": "sesiones/sesion04.html#ejercicio-4.-dos-fórmulas-equivalentes",
-    "href": "sesiones/sesion04.html#ejercicio-4.-dos-fórmulas-equivalentes",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.4 Ejercicio 4. Dos fórmulas equivalentes",
-    "text": "13.4 Ejercicio 4. Dos fórmulas equivalentes\nLas expresiones\n\\[\nf(x)=\\frac{1-\\cos x}{\\sin x},\n\\qquad\ng(x)=\\frac{2\\sin^2(x/2)}{\\sin x}\n\\]\nson matemáticamente equivalentes.\nEn Julia, evalúa ambas para\n\\[\nx=10^{-2},10^{-4},10^{-6},10^{-8}.\n\\]\nConstruye una tabla con los resultados.\nExplica por qué una de las fórmulas puede perder precisión más rápidamente que la otra."
-  },
-  {
-    "objectID": "sesiones/sesion04.html#ejercicio-5.-la-fórmula-cuadrática",
-    "href": "sesiones/sesion04.html#ejercicio-5.-la-fórmula-cuadrática",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.5 Ejercicio 5. La fórmula cuadrática",
-    "text": "13.5 Ejercicio 5. La fórmula cuadrática\nConsidera\n\\[\np(x)\n=\n(x-10^8)(x-10^{-8}).\n\\]\n\nExpande el polinomio e identifica \\(a,b,c\\).\nCalcula ambas raíces mediante la fórmula cuadrática usual.\nCalcula el error relativo de cada raíz.\nCalcula la raíz grande mediante la fórmula cuadrática y la pequeña usando\n\n\\[\nx_1x_2=\\frac ca.\n\\]\n\nCompara ambos procedimientos y explica el resultado utilizando los conceptos de cancelación sustractiva y estabilidad."
-  },
-  {
-    "objectID": "sesiones/sesion04_corregida.html",
-    "href": "sesiones/sesion04_corregida.html",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "",
-    "text": "En la sesión anterior vimos que los números de punto flotante representan sólo una parte finita de los números reales y que las operaciones realizadas por una computadora pueden introducir errores de redondeo.\nAhora aparecen dos preguntas fundamentales:\n\n¿El problema matemático es sensible a pequeñas perturbaciones en los datos?\n¿El algoritmo que elegimos amplifica innecesariamente los errores?\n\nEstas preguntas conducen a dos conceptos centrales del análisis numérico:\n\ncondicionamiento, que es una propiedad del problema;\nestabilidad, que es una propiedad del algoritmo.\n\n\nIdea guía. Un problema puede estar bien condicionado y, sin embargo, ser resuelto por un algoritmo inestable.\n\nDurante esta sesión seguiremos el esquema:\npredecir → ejecutar → observar → explicar."
-  },
-  {
-    "objectID": "sesiones/sesion04_corregida.html#cancelación-sustractiva",
-    "href": "sesiones/sesion04_corregida.html#cancelación-sustractiva",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "2.1 Cancelación sustractiva",
-    "text": "2.1 Cancelación sustractiva\nCuando se restan dos números cercanos, el resultado puede ser mucho menor que cualquiera de los operandos. En ese proceso pueden perderse cifras significativas.\nPor ejemplo,\n\\[\n1.0000-1.0012=-0.0012.\n\\]\nLos operandos tienen cinco cifras significativas, pero el resultado contiene mucha menos información útil.\nA este fenómeno se le llama cancelación sustractiva.\n\nLa cancelación sustractiva es una de las causas más frecuentes de pérdida importante de precisión en aritmética de punto flotante."
-  },
-  {
-    "objectID": "sesiones/sesion04_corregida.html#experimento-1-una-resta-aparentemente-inocente",
-    "href": "sesiones/sesion04_corregida.html#experimento-1-una-resta-aparentemente-inocente",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "2.2 Experimento 1: una resta aparentemente inocente",
-    "text": "2.2 Experimento 1: una resta aparentemente inocente\nAntes de ejecutar, predice qué debería ocurrir matemáticamente.\nx = 1.0\nfor k in 1:17\n    δ = 10.0^(-k)\n    y = (x + δ) - x\n    println(k, \"   \", δ, \"   \", y)\nend\nObserva cuándo el resultado deja de coincidir con \\(\\delta\\).\nPreguntas\n\n¿Por qué comienza a perderse información?\n¿Qué relación tiene esto con eps()?\n¿Es un error de Julia o una consecuencia de la representación finita?"
-  },
-  {
-    "objectID": "sesiones/sesion04_corregida.html#interpretación",
-    "href": "sesiones/sesion04_corregida.html#interpretación",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "3.1 Interpretación",
-    "text": "3.1 Interpretación\nAproximadamente,\n\\[\n\\frac{|\\Delta f|}{|f|}\n\\approx\n\\kappa_f(x)\n\\frac{|\\Delta x|}{|x|}.\n\\]\nPor tanto:\n\nsi \\(\\kappa_f(x)\\) es moderado, el problema está bien condicionado;\nsi \\(\\kappa_f(x)\\) es muy grande, el problema está mal condicionado.\n\nSi\n\\[\n\\kappa_f(x)\\approx 10^d,\n\\]\npodemos esperar perder aproximadamente \\(d\\) cifras decimales de precisión."
-  },
-  {
-    "objectID": "sesiones/sesion04_corregida.html#algunos-ejemplos",
-    "href": "sesiones/sesion04_corregida.html#algunos-ejemplos",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "3.2 Algunos ejemplos",
-    "text": "3.2 Algunos ejemplos\n\n3.2.1 Multiplicación por una constante\nSi\n\\[\nf(x)=cx,\n\\]\nentonces\n\\[\n\\kappa_f(x)\n=\n\\left|\\frac{x c}{cx}\\right|\n=1.\n\\]\nLa multiplicación por una constante no amplifica el error relativo.\n\n\n3.2.2 Suma o resta de una constante\nPara\n\\[\nf(x)=x-c,\n\\]\ntenemos\n\\[\n\\kappa_f(x)\n=\n\\left|\n\\frac{x}{x-c}\n\\right|.\n\\]\nCuando \\(x\\approx c\\), el denominador es pequeño y el número de condición puede ser enorme.\nEsto conecta directamente con la cancelación sustractiva."
-  },
-  {
-    "objectID": "sesiones/sesion04_corregida.html#experimento-2-observar-el-condicionamiento",
-    "href": "sesiones/sesion04_corregida.html#experimento-2-observar-el-condicionamiento",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "3.3 Experimento 2: observar el condicionamiento",
-    "text": "3.3 Experimento 2: observar el condicionamiento\nConsideremos\n\\[\nf(x)=x-1.\n\\]\nκ(x) = abs(x / (x - 1))\n\nfor k in 1:12\n    x = 1 + 10.0^(-k)\n    println(k, \"   x = \", x, \"   κ = \", κ(x))\nend\nAntes de ejecutarlo:\n¿qué esperas que ocurra con \\(\\kappa_f(x)\\) cuando \\(x\\to1\\)?"
-  },
-  {
-    "objectID": "sesiones/sesion04_corregida.html#implementación-en-julia",
-    "href": "sesiones/sesion04_corregida.html#implementación-en-julia",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "6.1 Implementación en Julia",
-    "text": "6.1 Implementación en Julia\nNo utilizaremos la biblioteca FNC. Escribiremos nuestro propio algoritmo.\nfunction horner(c, x)\n    n = length(c)\n    y = c[n]\n\n    for k in n-1:-1:1\n        y = x*y + c[k]\n    end\n\n    return y\nend\nProbemos con\n\\[\np(x)=(x-1)^3=x^3-3x^2+3x-1.\n\\]\nLos coeficientes se introducen en orden ascendente:\nc = [-1, 3, -3, 1]\n\nhorner(c, 1.6)"
-  },
-  {
-    "objectID": "sesiones/sesion04_corregida.html#experimento-3-directo-contra-horner",
-    "href": "sesiones/sesion04_corregida.html#experimento-3-directo-contra-horner",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "6.2 Experimento 3: directo contra Horner",
-    "text": "6.2 Experimento 3: directo contra Horner\np_directo(x) = 5*x^3 + 4*x^2 + 3*x + 2\np_horner(x)  = 2 + x*(3 + x*(4 + 5*x))\n\nx = 1.23456789\n\np_directo(x), p_horner(x)\nDiscusión\nLos dos algoritmos representan el mismo polinomio.\nPero:\n\n¿realizan las mismas operaciones?\n¿cuál necesita menos?\n¿ser matemáticamente equivalentes garantiza que se comporten igual en punto flotante?\n\nLa última pregunta nos conduce a la estabilidad."
-  },
-  {
-    "objectID": "sesiones/sesion04_corregida.html#experimento-4-el-algoritmo-ingenuo",
-    "href": "sesiones/sesion04_corregida.html#experimento-4-el-algoritmo-ingenuo",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "8.1 Experimento 4: el algoritmo ingenuo",
-    "text": "8.1 Experimento 4: el algoritmo ingenuo\nAntes de ejecutar: ambas raíces son conocidas exactamente. ¿Esperas obtenerlas con precisión comparable?\na = 1.0\nb = -(1e6 + 1e-6)\nc = 1.0\n\nx1 = (-b + sqrt(b^2 - 4*a*c)) / (2*a)\nx2 = (-b - sqrt(b^2 - 4*a*c)) / (2*a)\n\nprintln(\"x1 = \", x1)\nprintln(\"x2 = \", x2)\n\nerror1 = abs(x1 - 1e6) / 1e6\nerror2 = abs(x2 - 1e-6) / 1e-6\n\nprintln(\"error relativo x1 = \", error1)\nprintln(\"error relativo x2 = \", error2)\nUna raíz se obtiene con gran precisión y la otra pierde varias cifras.\n¿Dónde está el culpable?\nEn la raíz pequeña aparece una resta entre números casi iguales:\n\\[\n-b-\\sqrt{b^2-4ac}.\n\\]\nOtra vez encontramos cancelación sustractiva."
-  },
-  {
-    "objectID": "sesiones/sesion04_corregida.html#experimento-5-evitar-la-cancelación",
-    "href": "sesiones/sesion04_corregida.html#experimento-5-evitar-la-cancelación",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "9.1 Experimento 5: evitar la cancelación",
-    "text": "9.1 Experimento 5: evitar la cancelación\na = 1.0\nb = -(1e6 + 1e-6)\nc = 1.0\n\nx1 = (-b + sqrt(b^2 - 4*a*c)) / (2*a)\nx2 = c / (a*x1)\n\nprintln(\"x1 = \", x1)\nprintln(\"x2 = \", x2)\n\nerror2 = abs(x2 - 1e-6) / 1e-6\nprintln(\"error relativo x2 = \", error2)\nAhora compara el error de la raíz pequeña con el obtenido mediante la fórmula directa.\nTenemos dos algoritmos algebraicamente equivalentes en aritmética exacta, pero no necesariamente equivalentes en aritmética de punto flotante.\n\nLección: en análisis numérico importa no sólo qué fórmula usamos, sino también cómo la evaluamos."
-  },
-  {
-    "objectID": "sesiones/sesion04_corregida.html#representación",
-    "href": "sesiones/sesion04_corregida.html#representación",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "12.1 Representación",
-    "text": "12.1 Representación\nLos números reales deben aproximarse mediante números de punto flotante."
-  },
-  {
-    "objectID": "sesiones/sesion04_corregida.html#problema",
-    "href": "sesiones/sesion04_corregida.html#problema",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "12.2 Problema",
-    "text": "12.2 Problema\n\\[\ny=f(x)\n\\]\nEl condicionamiento describe la sensibilidad inherente del problema frente a perturbaciones en los datos."
-  },
-  {
-    "objectID": "sesiones/sesion04_corregida.html#algoritmo",
-    "href": "sesiones/sesion04_corregida.html#algoritmo",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "12.3 Algoritmo",
-    "text": "12.3 Algoritmo\n\\[\n\\widetilde y=\\widetilde f(x)\n\\]\nEs la secuencia concreta de operaciones utilizada para aproximar la solución."
-  },
-  {
-    "objectID": "sesiones/sesion04_corregida.html#estabilidad-1",
-    "href": "sesiones/sesion04_corregida.html#estabilidad-1",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "12.4 Estabilidad",
-    "text": "12.4 Estabilidad\nDescribe si el algoritmo introduce una amplificación de errores mayor de la que el propio problema exige.\nEn forma esquemática:\n\\[\n\\boxed{\\text{datos}}\n\\longrightarrow\n\\boxed{\\text{problema}}\n\\longrightarrow\n\\boxed{\\text{condicionamiento}}\n\\]\n\\[\n\\boxed{\\text{datos en punto flotante}}\n\\longrightarrow\n\\boxed{\\text{algoritmo}}\n\\longrightarrow\n\\boxed{\\text{estabilidad}}\n\\longrightarrow\n\\boxed{\\text{resultado calculado}}\n\\]\nÉsta será una distinción recurrente durante todo el curso."
-  },
-  {
-    "objectID": "sesiones/sesion04_corregida.html#ejercicio-1.-número-de-condición",
-    "href": "sesiones/sesion04_corregida.html#ejercicio-1.-número-de-condición",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.1 Ejercicio 1. Número de condición",
-    "text": "13.1 Ejercicio 1. Número de condición\nUtilizando\n\\[\n\\kappa_f(x)\n=\n\\left|\n\\frac{x f'(x)}{f(x)}\n\\right|,\n\\]\ncalcula el número de condición relativo de:\n\\[\n\\text{a) } f(x)=x^p,\n\\qquad\n\\text{b) } f(x)=e^x,\n\\qquad\n\\text{c) } f(x)=\\cos x.\n\\]\nIdentifica valores de \\(x\\) para los cuales el problema pueda estar mal condicionado."
-  },
-  {
-    "objectID": "sesiones/sesion04_corregida.html#ejercicio-2.-condicionamiento-y-composición",
-    "href": "sesiones/sesion04_corregida.html#ejercicio-2.-condicionamiento-y-composición",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.2 Ejercicio 2. Condicionamiento y composición",
-    "text": "13.2 Ejercicio 2. Condicionamiento y composición\nSean\n\\[\nh(x)=f(g(x)).\n\\]\nDemuestra, utilizando la regla de la cadena, que\n\\[\n\\kappa_h(x)\n=\n\\kappa_f(g(x))\\,\\kappa_g(x).\n\\]\nComprueba después la fórmula para\n\\[\nh(x)=\\sqrt{x+5}.\n\\]"
-  },
-  {
-    "objectID": "sesiones/sesion04_corregida.html#ejercicio-3.-horner",
-    "href": "sesiones/sesion04_corregida.html#ejercicio-3.-horner",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.3 Ejercicio 3. Horner",
-    "text": "13.3 Ejercicio 3. Horner\nEscribe en Julia una función que evalúe mediante el algoritmo de Horner\n\\[\np(x)=2x^4-3x^3+5x^2-x+7.\n\\]\nEvalúa el polinomio en\n\\[\nx=1.5.\n\\]\nDespués evalúalo directamente mediante potencias y compara los resultados y el número de multiplicaciones requeridas por cada método."
-  },
-  {
-    "objectID": "sesiones/sesion04_corregida.html#ejercicio-4.-dos-fórmulas-equivalentes",
-    "href": "sesiones/sesion04_corregida.html#ejercicio-4.-dos-fórmulas-equivalentes",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.4 Ejercicio 4. Dos fórmulas equivalentes",
-    "text": "13.4 Ejercicio 4. Dos fórmulas equivalentes\nLas expresiones\n\\[\nf(x)=\\frac{1-\\cos x}{\\sin x},\n\\qquad\ng(x)=\\frac{2\\sin^2(x/2)}{\\sin x}\n\\]\nson matemáticamente equivalentes.\nEn Julia, evalúa ambas para\n\\[\nx=10^{-2},10^{-4},10^{-6},10^{-8}.\n\\]\nConstruye una tabla con los resultados.\nExplica por qué una de las fórmulas puede perder precisión más rápidamente que la otra."
-  },
-  {
-    "objectID": "sesiones/sesion04_corregida.html#ejercicio-5.-la-fórmula-cuadrática",
-    "href": "sesiones/sesion04_corregida.html#ejercicio-5.-la-fórmula-cuadrática",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.5 Ejercicio 5. La fórmula cuadrática",
-    "text": "13.5 Ejercicio 5. La fórmula cuadrática\nConsidera\n\\[\np(x)\n=\n(x-10^8)(x-10^{-8}).\n\\]\n\nExpande el polinomio e identifica \\(a,b,c\\).\nCalcula ambas raíces mediante la fórmula cuadrática usual.\nCalcula el error relativo de cada raíz.\nCalcula la raíz grande mediante la fórmula cuadrática y la pequeña usando\n\n\\[\nx_1x_2=\\frac ca.\n\\]\n\nCompara ambos procedimientos y explica el resultado utilizando los conceptos de cancelación sustractiva y estabilidad."
-  },
-  {
-    "objectID": "sesiones/sesion04 (5).html",
-    "href": "sesiones/sesion04 (5).html",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "",
-    "text": "En la sesión anterior vimos que los números de punto flotante representan sólo una parte finita de los números reales y que las operaciones realizadas por una computadora pueden introducir errores de redondeo.\nAhora aparecen dos preguntas fundamentales:\n\n¿El problema matemático es sensible a pequeñas perturbaciones en los datos?\n¿El algoritmo que elegimos amplifica innecesariamente los errores?\n\nEstas preguntas conducen a dos conceptos centrales del análisis numérico:\n\ncondicionamiento, que es una propiedad del problema;\nestabilidad, que es una propiedad del algoritmo.\n\n\nIdea guía. Un problema puede estar bien condicionado y, sin embargo, ser resuelto por un algoritmo inestable.\n\nDurante esta sesión seguiremos el esquema:\npredecir → ejecutar → observar → explicar."
-  },
-  {
-    "objectID": "sesiones/sesion04 (5).html#cancelación-sustractiva",
-    "href": "sesiones/sesion04 (5).html#cancelación-sustractiva",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "2.1 Cancelación sustractiva",
-    "text": "2.1 Cancelación sustractiva\nCuando se restan dos números cercanos, el resultado puede ser mucho menor que cualquiera de los operandos. En ese proceso pueden perderse cifras significativas.\nPor ejemplo,\n[ 1.0000-1.0012=-0.0012. ]\nLos operandos tienen cinco cifras significativas, pero el resultado contiene mucha menos información útil.\nA este fenómeno se le llama cancelación sustractiva.\n\nLa cancelación sustractiva es una de las causas más frecuentes de pérdida importante de precisión en aritmética de punto flotante."
-  },
-  {
-    "objectID": "sesiones/sesion04 (5).html#experimento-1-una-resta-aparentemente-inocente",
-    "href": "sesiones/sesion04 (5).html#experimento-1-una-resta-aparentemente-inocente",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "2.2 Experimento 1: una resta aparentemente inocente",
-    "text": "2.2 Experimento 1: una resta aparentemente inocente\nAntes de ejecutar, predice qué debería ocurrir matemáticamente.\nx = 1.0\nfor k in 1:17\n    δ = 10.0^(-k)\n    y = (x + δ) - x\n    println(k, \"   \", δ, \"   \", y)\nend\nObserva cuándo el resultado deja de coincidir con ().\nPreguntas\n\n¿Por qué comienza a perderse información?\n¿Qué relación tiene esto con eps()?\n¿Es un error de Julia o una consecuencia de la representación finita?"
-  },
-  {
-    "objectID": "sesiones/sesion04 (5).html#interpretación",
-    "href": "sesiones/sesion04 (5).html#interpretación",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "3.1 Interpretación",
-    "text": "3.1 Interpretación\nAproximadamente,\n[ _f(x) . ]\nPor tanto:\n\nsi (_f(x)) es moderado, el problema está bien condicionado;\nsi (_f(x)) es muy grande, el problema está mal condicionado.\n\nSi\n[ _f(x)^d, ]\npodemos esperar perder aproximadamente (d) cifras decimales de precisión."
-  },
-  {
-    "objectID": "sesiones/sesion04 (5).html#algunos-ejemplos",
-    "href": "sesiones/sesion04 (5).html#algunos-ejemplos",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "3.2 Algunos ejemplos",
-    "text": "3.2 Algunos ejemplos\n\n3.2.1 Multiplicación por una constante\nSi\n[ f(x)=cx, ]\nentonces\n[ _f(x) = || =1. ]\nLa multiplicación por una constante no amplifica el error relativo.\n\n\n3.2.2 Suma o resta de una constante\nPara\n[ f(x)=x-c, ]\ntenemos\n[ _f(x) = | |. ]\nCuando (xc), el denominador es pequeño y el número de condición puede ser enorme.\nEsto conecta directamente con la cancelación sustractiva."
-  },
-  {
-    "objectID": "sesiones/sesion04 (5).html#experimento-2-observar-el-condicionamiento",
-    "href": "sesiones/sesion04 (5).html#experimento-2-observar-el-condicionamiento",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "3.3 Experimento 2: observar el condicionamiento",
-    "text": "3.3 Experimento 2: observar el condicionamiento\nConsideremos\n[ f(x)=x-1. ]\nκ(x) = abs(x / (x - 1))\n\nfor k in 1:12\n    x = 1 + 10.0^(-k)\n    println(k, \"   x = \", x, \"   κ = \", κ(x))\nend\nAntes de ejecutarlo:\n**¿qué esperas que ocurra con (_f(x)) cuando (x)?**"
-  },
-  {
-    "objectID": "sesiones/sesion04 (5).html#implementación-en-julia",
-    "href": "sesiones/sesion04 (5).html#implementación-en-julia",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "6.1 Implementación en Julia",
-    "text": "6.1 Implementación en Julia\nNo utilizaremos la biblioteca FNC. Escribiremos nuestro propio algoritmo.\nfunction horner(c, x)\n    n = length(c)\n    y = c[n]\n\n    for k in n-1:-1:1\n        y = x*y + c[k]\n    end\n\n    return y\nend\nProbemos con\n[ p(x)=(x-1)3=x3-3x^2+3x-1. ]\nLos coeficientes se introducen en orden ascendente:\nc = [-1, 3, -3, 1]\n\nhorner(c, 1.6)"
-  },
-  {
-    "objectID": "sesiones/sesion04 (5).html#experimento-3-directo-contra-horner",
-    "href": "sesiones/sesion04 (5).html#experimento-3-directo-contra-horner",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "6.2 Experimento 3: directo contra Horner",
-    "text": "6.2 Experimento 3: directo contra Horner\np_directo(x) = 5*x^3 + 4*x^2 + 3*x + 2\np_horner(x)  = 2 + x*(3 + x*(4 + 5*x))\n\nx = 1.23456789\n\np_directo(x), p_horner(x)\nDiscusión\nLos dos algoritmos representan el mismo polinomio.\nPero:\n\n¿realizan las mismas operaciones?\n¿cuál necesita menos?\n¿ser matemáticamente equivalentes garantiza que se comporten igual en punto flotante?\n\nLa última pregunta nos conduce a la estabilidad."
-  },
-  {
-    "objectID": "sesiones/sesion04 (5).html#experimento-4-el-algoritmo-ingenuo",
-    "href": "sesiones/sesion04 (5).html#experimento-4-el-algoritmo-ingenuo",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "8.1 Experimento 4: el algoritmo ingenuo",
-    "text": "8.1 Experimento 4: el algoritmo ingenuo\nAntes de ejecutar: ambas raíces son conocidas exactamente. ¿Esperas obtenerlas con precisión comparable?\na = 1.0\nb = -(1e6 + 1e-6)\nc = 1.0\n\nx1 = (-b + sqrt(b^2 - 4*a*c)) / (2*a)\nx2 = (-b - sqrt(b^2 - 4*a*c)) / (2*a)\n\nprintln(\"x1 = \", x1)\nprintln(\"x2 = \", x2)\n\nerror1 = abs(x1 - 1e6) / 1e6\nerror2 = abs(x2 - 1e-6) / 1e-6\n\nprintln(\"error relativo x1 = \", error1)\nprintln(\"error relativo x2 = \", error2)\nUna raíz se obtiene con gran precisión y la otra pierde varias cifras.\n¿Dónde está el culpable?\nEn la raíz pequeña aparece una resta entre números casi iguales:\n[ -b-. ]\nOtra vez encontramos cancelación sustractiva."
-  },
-  {
-    "objectID": "sesiones/sesion04 (5).html#experimento-5-evitar-la-cancelación",
-    "href": "sesiones/sesion04 (5).html#experimento-5-evitar-la-cancelación",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "9.1 Experimento 5: evitar la cancelación",
-    "text": "9.1 Experimento 5: evitar la cancelación\na = 1.0\nb = -(1e6 + 1e-6)\nc = 1.0\n\nx1 = (-b + sqrt(b^2 - 4*a*c)) / (2*a)\nx2 = c / (a*x1)\n\nprintln(\"x1 = \", x1)\nprintln(\"x2 = \", x2)\n\nerror2 = abs(x2 - 1e-6) / 1e-6\nprintln(\"error relativo x2 = \", error2)\nAhora compara el error de la raíz pequeña con el obtenido mediante la fórmula directa.\nTenemos dos algoritmos algebraicamente equivalentes en aritmética exacta, pero no necesariamente equivalentes en aritmética de punto flotante.\n\nLección: en análisis numérico importa no sólo qué fórmula usamos, sino también cómo la evaluamos."
-  },
-  {
-    "objectID": "sesiones/sesion04 (5).html#representación",
-    "href": "sesiones/sesion04 (5).html#representación",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "12.1 Representación",
-    "text": "12.1 Representación\nLos números reales deben aproximarse mediante números de punto flotante."
-  },
-  {
-    "objectID": "sesiones/sesion04 (5).html#problema",
-    "href": "sesiones/sesion04 (5).html#problema",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "12.2 Problema",
-    "text": "12.2 Problema\n[ y=f(x) ]\nEl condicionamiento describe la sensibilidad inherente del problema frente a perturbaciones en los datos."
-  },
-  {
-    "objectID": "sesiones/sesion04 (5).html#algoritmo",
-    "href": "sesiones/sesion04 (5).html#algoritmo",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "12.3 Algoritmo",
-    "text": "12.3 Algoritmo\n[ y=f(x) ]\nEs la secuencia concreta de operaciones utilizada para aproximar la solución."
-  },
-  {
-    "objectID": "sesiones/sesion04 (5).html#estabilidad-1",
-    "href": "sesiones/sesion04 (5).html#estabilidad-1",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "12.4 Estabilidad",
-    "text": "12.4 Estabilidad\nDescribe si el algoritmo introduce una amplificación de errores mayor de la que el propio problema exige.\nEn forma esquemática:\n[ ]\n[ ]\nÉsta será una distinción recurrente durante todo el curso."
-  },
-  {
-    "objectID": "sesiones/sesion04 (5).html#ejercicio-1.-número-de-condición",
-    "href": "sesiones/sesion04 (5).html#ejercicio-1.-número-de-condición",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.1 Ejercicio 1. Número de condición",
-    "text": "13.1 Ejercicio 1. Número de condición\nUtilizando\n[ _f(x) = | |, ]\ncalcula el número de condición relativo de:\n[ f(x)=x^p, f(x)=e^x, f(x)=x. ]\nIdentifica valores de (x) para los cuales el problema pueda estar mal condicionado."
-  },
-  {
-    "objectID": "sesiones/sesion04 (5).html#ejercicio-2.-condicionamiento-y-composición",
-    "href": "sesiones/sesion04 (5).html#ejercicio-2.-condicionamiento-y-composición",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.2 Ejercicio 2. Condicionamiento y composición",
-    "text": "13.2 Ejercicio 2. Condicionamiento y composición\nSean\n[ h(x)=f(g(x)). ]\nDemuestra, utilizando la regla de la cadena, que\n[ _h(x) = _f(g(x)),_g(x). ]\nComprueba después la fórmula para\n[ h(x)=. ]"
-  },
-  {
-    "objectID": "sesiones/sesion04 (5).html#ejercicio-3.-horner",
-    "href": "sesiones/sesion04 (5).html#ejercicio-3.-horner",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.3 Ejercicio 3. Horner",
-    "text": "13.3 Ejercicio 3. Horner\nEscribe en Julia una función que evalúe mediante el algoritmo de Horner\n[ p(x)=2x4-3x3+5x^2-x+7. ]\nEvalúa el polinomio en\n[ x=1.5. ]\nDespués evalúalo directamente mediante potencias y compara los resultados y el número de multiplicaciones requeridas por cada método."
-  },
-  {
-    "objectID": "sesiones/sesion04 (5).html#ejercicio-4.-dos-fórmulas-equivalentes",
-    "href": "sesiones/sesion04 (5).html#ejercicio-4.-dos-fórmulas-equivalentes",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.4 Ejercicio 4. Dos fórmulas equivalentes",
-    "text": "13.4 Ejercicio 4. Dos fórmulas equivalentes\nLas expresiones\n[ f(x)=, g(x)= ]\nson matemáticamente equivalentes.\nEn Julia, evalúa ambas para\n[ x=10{-2},10{-4},10{-6},10{-8}. ]\nConstruye una tabla con los resultados.\nExplica por qué una de las fórmulas puede perder precisión más rápidamente que la otra."
-  },
-  {
-    "objectID": "sesiones/sesion04 (5).html#ejercicio-5.-la-fórmula-cuadrática",
-    "href": "sesiones/sesion04 (5).html#ejercicio-5.-la-fórmula-cuadrática",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.5 Ejercicio 5. La fórmula cuadrática",
-    "text": "13.5 Ejercicio 5. La fórmula cuadrática\nConsidera\n[ p(x) = (x-108)(x-10{-8}). ]\n\nExpande el polinomio e identifica (a,b,c).\nCalcula ambas raíces mediante la fórmula cuadrática usual.\nCalcula el error relativo de cada raíz.\nCalcula la raíz grande mediante la fórmula cuadrática y la pequeña usando\n\n[ x_1x_2=ca. ]\n\nCompara ambos procedimientos y explica el resultado utilizando los conceptos de cancelación sustractiva y estabilidad."
-  },
-  {
-    "objectID": "sesiones/sesion04 (3).html",
-    "href": "sesiones/sesion04 (3).html",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "",
-    "text": "En la sesión anterior vimos que los números de punto flotante representan sólo una parte finita de los números reales y que las operaciones realizadas por una computadora pueden introducir errores de redondeo.\nAhora aparecen dos preguntas fundamentales:\n\n¿El problema matemático es sensible a pequeñas perturbaciones en los datos?\n¿El algoritmo que elegimos amplifica innecesariamente los errores?\n\nEstas preguntas conducen a dos conceptos centrales del análisis numérico:\n\ncondicionamiento, que es una propiedad del problema;\nestabilidad, que es una propiedad del algoritmo.\n\n\nIdea guía. Un problema puede estar bien condicionado y, sin embargo, ser resuelto por un algoritmo inestable.\n\nDurante esta sesión seguiremos el esquema:\npredecir → ejecutar → observar → explicar."
-  },
-  {
-    "objectID": "sesiones/sesion04 (3).html#cancelación-sustractiva",
-    "href": "sesiones/sesion04 (3).html#cancelación-sustractiva",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "2.1 Cancelación sustractiva",
-    "text": "2.1 Cancelación sustractiva\nCuando se restan dos números cercanos, el resultado puede ser mucho menor que cualquiera de los operandos. En ese proceso pueden perderse cifras significativas.\nPor ejemplo,\n[ 1.0000-1.0012=-0.0012. ]\nLos operandos tienen cinco cifras significativas, pero el resultado contiene mucha menos información útil.\nA este fenómeno se le llama cancelación sustractiva.\n\nLa cancelación sustractiva es una de las causas más frecuentes de pérdida importante de precisión en aritmética de punto flotante."
-  },
-  {
-    "objectID": "sesiones/sesion04 (3).html#experimento-1-una-resta-aparentemente-inocente",
-    "href": "sesiones/sesion04 (3).html#experimento-1-una-resta-aparentemente-inocente",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "2.2 Experimento 1: una resta aparentemente inocente",
-    "text": "2.2 Experimento 1: una resta aparentemente inocente\nAntes de ejecutar, predice qué debería ocurrir matemáticamente.\nx = 1.0\nfor k in 1:17\n    δ = 10.0^(-k)\n    y = (x + δ) - x\n    println(k, \"   \", δ, \"   \", y)\nend\nObserva cuándo el resultado deja de coincidir con ().\nPreguntas\n\n¿Por qué comienza a perderse información?\n¿Qué relación tiene esto con eps()?\n¿Es un error de Julia o una consecuencia de la representación finita?"
-  },
-  {
-    "objectID": "sesiones/sesion04 (3).html#interpretación",
-    "href": "sesiones/sesion04 (3).html#interpretación",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "3.1 Interpretación",
-    "text": "3.1 Interpretación\nAproximadamente,\n[ _f(x) . ]\nPor tanto:\n\nsi (_f(x)) es moderado, el problema está bien condicionado;\nsi (_f(x)) es muy grande, el problema está mal condicionado.\n\nSi\n[ _f(x)^d, ]\npodemos esperar perder aproximadamente (d) cifras decimales de precisión."
-  },
-  {
-    "objectID": "sesiones/sesion04 (3).html#algunos-ejemplos",
-    "href": "sesiones/sesion04 (3).html#algunos-ejemplos",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "3.2 Algunos ejemplos",
-    "text": "3.2 Algunos ejemplos\n\n3.2.1 Multiplicación por una constante\nSi\n[ f(x)=cx, ]\nentonces\n[ _f(x) = || =1. ]\nLa multiplicación por una constante no amplifica el error relativo.\n\n\n3.2.2 Suma o resta de una constante\nPara\n[ f(x)=x-c, ]\ntenemos\n[ _f(x) = | |. ]\nCuando (xc), el denominador es pequeño y el número de condición puede ser enorme.\nEsto conecta directamente con la cancelación sustractiva."
-  },
-  {
-    "objectID": "sesiones/sesion04 (3).html#experimento-2-observar-el-condicionamiento",
-    "href": "sesiones/sesion04 (3).html#experimento-2-observar-el-condicionamiento",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "3.3 Experimento 2: observar el condicionamiento",
-    "text": "3.3 Experimento 2: observar el condicionamiento\nConsideremos\n[ f(x)=x-1. ]\nκ(x) = abs(x / (x - 1))\n\nfor k in 1:12\n    x = 1 + 10.0^(-k)\n    println(k, \"   x = \", x, \"   κ = \", κ(x))\nend\nAntes de ejecutarlo:\n**¿qué esperas que ocurra con (_f(x)) cuando (x)?**"
-  },
-  {
-    "objectID": "sesiones/sesion04 (3).html#implementación-en-julia",
-    "href": "sesiones/sesion04 (3).html#implementación-en-julia",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "6.1 Implementación en Julia",
-    "text": "6.1 Implementación en Julia\nNo utilizaremos la biblioteca FNC. Escribiremos nuestro propio algoritmo.\nfunction horner(c, x)\n    n = length(c)\n    y = c[n]\n\n    for k in n-1:-1:1\n        y = x*y + c[k]\n    end\n\n    return y\nend\nProbemos con\n[ p(x)=(x-1)3=x3-3x^2+3x-1. ]\nLos coeficientes se introducen en orden ascendente:\nc = [-1, 3, -3, 1]\n\nhorner(c, 1.6)"
-  },
-  {
-    "objectID": "sesiones/sesion04 (3).html#experimento-3-directo-contra-horner",
-    "href": "sesiones/sesion04 (3).html#experimento-3-directo-contra-horner",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "6.2 Experimento 3: directo contra Horner",
-    "text": "6.2 Experimento 3: directo contra Horner\np_directo(x) = 5*x^3 + 4*x^2 + 3*x + 2\np_horner(x)  = 2 + x*(3 + x*(4 + 5*x))\n\nx = 1.23456789\n\np_directo(x), p_horner(x)\nDiscusión\nLos dos algoritmos representan el mismo polinomio.\nPero:\n\n¿realizan las mismas operaciones?\n¿cuál necesita menos?\n¿ser matemáticamente equivalentes garantiza que se comporten igual en punto flotante?\n\nLa última pregunta nos conduce a la estabilidad."
-  },
-  {
-    "objectID": "sesiones/sesion04 (3).html#experimento-4-el-algoritmo-ingenuo",
-    "href": "sesiones/sesion04 (3).html#experimento-4-el-algoritmo-ingenuo",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "8.1 Experimento 4: el algoritmo ingenuo",
-    "text": "8.1 Experimento 4: el algoritmo ingenuo\nAntes de ejecutar: ambas raíces son conocidas exactamente. ¿Esperas obtenerlas con precisión comparable?\na = 1.0\nb = -(1e6 + 1e-6)\nc = 1.0\n\nx1 = (-b + sqrt(b^2 - 4*a*c)) / (2*a)\nx2 = (-b - sqrt(b^2 - 4*a*c)) / (2*a)\n\nprintln(\"x1 = \", x1)\nprintln(\"x2 = \", x2)\n\nerror1 = abs(x1 - 1e6) / 1e6\nerror2 = abs(x2 - 1e-6) / 1e-6\n\nprintln(\"error relativo x1 = \", error1)\nprintln(\"error relativo x2 = \", error2)\nUna raíz se obtiene con gran precisión y la otra pierde varias cifras.\n¿Dónde está el culpable?\nEn la raíz pequeña aparece una resta entre números casi iguales:\n[ -b-. ]\nOtra vez encontramos cancelación sustractiva."
-  },
-  {
-    "objectID": "sesiones/sesion04 (3).html#experimento-5-evitar-la-cancelación",
-    "href": "sesiones/sesion04 (3).html#experimento-5-evitar-la-cancelación",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "9.1 Experimento 5: evitar la cancelación",
-    "text": "9.1 Experimento 5: evitar la cancelación\na = 1.0\nb = -(1e6 + 1e-6)\nc = 1.0\n\nx1 = (-b + sqrt(b^2 - 4*a*c)) / (2*a)\nx2 = c / (a*x1)\n\nprintln(\"x1 = \", x1)\nprintln(\"x2 = \", x2)\n\nerror2 = abs(x2 - 1e-6) / 1e-6\nprintln(\"error relativo x2 = \", error2)\nAhora compara el error de la raíz pequeña con el obtenido mediante la fórmula directa.\nTenemos dos algoritmos algebraicamente equivalentes en aritmética exacta, pero no necesariamente equivalentes en aritmética de punto flotante.\n\nLección: en análisis numérico importa no sólo qué fórmula usamos, sino también cómo la evaluamos."
-  },
-  {
-    "objectID": "sesiones/sesion04 (3).html#representación",
-    "href": "sesiones/sesion04 (3).html#representación",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "12.1 Representación",
-    "text": "12.1 Representación\nLos números reales deben aproximarse mediante números de punto flotante."
-  },
-  {
-    "objectID": "sesiones/sesion04 (3).html#problema",
-    "href": "sesiones/sesion04 (3).html#problema",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "12.2 Problema",
-    "text": "12.2 Problema\n[ y=f(x) ]\nEl condicionamiento describe la sensibilidad inherente del problema frente a perturbaciones en los datos."
-  },
-  {
-    "objectID": "sesiones/sesion04 (3).html#algoritmo",
-    "href": "sesiones/sesion04 (3).html#algoritmo",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "12.3 Algoritmo",
-    "text": "12.3 Algoritmo\n[ y=f(x) ]\nEs la secuencia concreta de operaciones utilizada para aproximar la solución."
-  },
-  {
-    "objectID": "sesiones/sesion04 (3).html#estabilidad-1",
-    "href": "sesiones/sesion04 (3).html#estabilidad-1",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "12.4 Estabilidad",
-    "text": "12.4 Estabilidad\nDescribe si el algoritmo introduce una amplificación de errores mayor de la que el propio problema exige.\nEn forma esquemática:\n[ ]\n[ ]\nÉsta será una distinción recurrente durante todo el curso."
-  },
-  {
-    "objectID": "sesiones/sesion04 (3).html#ejercicio-1.-número-de-condición",
-    "href": "sesiones/sesion04 (3).html#ejercicio-1.-número-de-condición",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.1 Ejercicio 1. Número de condición",
-    "text": "13.1 Ejercicio 1. Número de condición\nUtilizando\n[ _f(x) = | |, ]\ncalcula el número de condición relativo de:\n[ f(x)=x^p, f(x)=e^x, f(x)=x. ]\nIdentifica valores de (x) para los cuales el problema pueda estar mal condicionado."
-  },
-  {
-    "objectID": "sesiones/sesion04 (3).html#ejercicio-2.-condicionamiento-y-composición",
-    "href": "sesiones/sesion04 (3).html#ejercicio-2.-condicionamiento-y-composición",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.2 Ejercicio 2. Condicionamiento y composición",
-    "text": "13.2 Ejercicio 2. Condicionamiento y composición\nSean\n[ h(x)=f(g(x)). ]\nDemuestra, utilizando la regla de la cadena, que\n[ _h(x) = _f(g(x)),_g(x). ]\nComprueba después la fórmula para\n[ h(x)=. ]"
-  },
-  {
-    "objectID": "sesiones/sesion04 (3).html#ejercicio-3.-horner",
-    "href": "sesiones/sesion04 (3).html#ejercicio-3.-horner",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.3 Ejercicio 3. Horner",
-    "text": "13.3 Ejercicio 3. Horner\nEscribe en Julia una función que evalúe mediante el algoritmo de Horner\n[ p(x)=2x4-3x3+5x^2-x+7. ]\nEvalúa el polinomio en\n[ x=1.5. ]\nDespués evalúalo directamente mediante potencias y compara los resultados y el número de multiplicaciones requeridas por cada método."
-  },
-  {
-    "objectID": "sesiones/sesion04 (3).html#ejercicio-4.-dos-fórmulas-equivalentes",
-    "href": "sesiones/sesion04 (3).html#ejercicio-4.-dos-fórmulas-equivalentes",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.4 Ejercicio 4. Dos fórmulas equivalentes",
-    "text": "13.4 Ejercicio 4. Dos fórmulas equivalentes\nLas expresiones\n[ f(x)=, g(x)= ]\nson matemáticamente equivalentes.\nEn Julia, evalúa ambas para\n[ x=10{-2},10{-4},10{-6},10{-8}. ]\nConstruye una tabla con los resultados.\nExplica por qué una de las fórmulas puede perder precisión más rápidamente que la otra."
-  },
-  {
-    "objectID": "sesiones/sesion04 (3).html#ejercicio-5.-la-fórmula-cuadrática",
-    "href": "sesiones/sesion04 (3).html#ejercicio-5.-la-fórmula-cuadrática",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.5 Ejercicio 5. La fórmula cuadrática",
-    "text": "13.5 Ejercicio 5. La fórmula cuadrática\nConsidera\n[ p(x) = (x-108)(x-10{-8}). ]\n\nExpande el polinomio e identifica (a,b,c).\nCalcula ambas raíces mediante la fórmula cuadrática usual.\nCalcula el error relativo de cada raíz.\nCalcula la raíz grande mediante la fórmula cuadrática y la pequeña usando\n\n[ x_1x_2=ca. ]\n\nCompara ambos procedimientos y explica el resultado utilizando los conceptos de cancelación sustractiva y estabilidad."
-  },
-  {
-    "objectID": "sesiones/sesion04 (1).html",
-    "href": "sesiones/sesion04 (1).html",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "",
-    "text": "En la sesión anterior vimos que los números de punto flotante representan sólo una parte finita de los números reales y que las operaciones realizadas por una computadora pueden introducir errores de redondeo.\nAhora aparecen dos preguntas fundamentales:\n\n¿El problema matemático es sensible a pequeñas perturbaciones en los datos?\n¿El algoritmo que elegimos amplifica innecesariamente los errores?\n\nEstas preguntas conducen a dos conceptos centrales del análisis numérico:\n\ncondicionamiento, que es una propiedad del problema;\nestabilidad, que es una propiedad del algoritmo.\n\n\nIdea guía. Un problema puede estar bien condicionado y, sin embargo, ser resuelto por un algoritmo inestable.\n\nDurante esta sesión seguiremos el esquema:\npredecir → ejecutar → observar → explicar."
-  },
-  {
-    "objectID": "sesiones/sesion04 (1).html#cancelación-sustractiva",
-    "href": "sesiones/sesion04 (1).html#cancelación-sustractiva",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "2.1 Cancelación sustractiva",
-    "text": "2.1 Cancelación sustractiva\nCuando se restan dos números cercanos, el resultado puede ser mucho menor que cualquiera de los operandos. En ese proceso pueden perderse cifras significativas.\nPor ejemplo,\n[ 1.0000-1.0012=-0.0012. ]\nLos operandos tienen cinco cifras significativas, pero el resultado contiene mucha menos información útil.\nA este fenómeno se le llama cancelación sustractiva.\n\nLa cancelación sustractiva es una de las causas más frecuentes de pérdida importante de precisión en aritmética de punto flotante."
-  },
-  {
-    "objectID": "sesiones/sesion04 (1).html#experimento-1-una-resta-aparentemente-inocente",
-    "href": "sesiones/sesion04 (1).html#experimento-1-una-resta-aparentemente-inocente",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "2.2 Experimento 1: una resta aparentemente inocente",
-    "text": "2.2 Experimento 1: una resta aparentemente inocente\nAntes de ejecutar, predice qué debería ocurrir matemáticamente.\nx = 1.0\nfor k in 1:17\n    δ = 10.0^(-k)\n    y = (x + δ) - x\n    println(k, \"   \", δ, \"   \", y)\nend\nObserva cuándo el resultado deja de coincidir con ().\nPreguntas\n\n¿Por qué comienza a perderse información?\n¿Qué relación tiene esto con eps()?\n¿Es un error de Julia o una consecuencia de la representación finita?"
-  },
-  {
-    "objectID": "sesiones/sesion04 (1).html#interpretación",
-    "href": "sesiones/sesion04 (1).html#interpretación",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "3.1 Interpretación",
-    "text": "3.1 Interpretación\nAproximadamente,\n[ _f(x) . ]\nPor tanto:\n\nsi (_f(x)) es moderado, el problema está bien condicionado;\nsi (_f(x)) es muy grande, el problema está mal condicionado.\n\nSi\n[ _f(x)^d, ]\npodemos esperar perder aproximadamente (d) cifras decimales de precisión."
-  },
-  {
-    "objectID": "sesiones/sesion04 (1).html#algunos-ejemplos",
-    "href": "sesiones/sesion04 (1).html#algunos-ejemplos",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "3.2 Algunos ejemplos",
-    "text": "3.2 Algunos ejemplos\n\n3.2.1 Multiplicación por una constante\nSi\n[ f(x)=cx, ]\nentonces\n[ _f(x) = || =1. ]\nLa multiplicación por una constante no amplifica el error relativo.\n\n\n3.2.2 Suma o resta de una constante\nPara\n[ f(x)=x-c, ]\ntenemos\n[ _f(x) = | |. ]\nCuando (xc), el denominador es pequeño y el número de condición puede ser enorme.\nEsto conecta directamente con la cancelación sustractiva."
-  },
-  {
-    "objectID": "sesiones/sesion04 (1).html#experimento-2-observar-el-condicionamiento",
-    "href": "sesiones/sesion04 (1).html#experimento-2-observar-el-condicionamiento",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "3.3 Experimento 2: observar el condicionamiento",
-    "text": "3.3 Experimento 2: observar el condicionamiento\nConsideremos\n[ f(x)=x-1. ]\nκ(x) = abs(x / (x - 1))\n\nfor k in 1:12\n    x = 1 + 10.0^(-k)\n    println(k, \"   x = \", x, \"   κ = \", κ(x))\nend\nAntes de ejecutarlo:\n**¿qué esperas que ocurra con (_f(x)) cuando (x)?**"
-  },
-  {
-    "objectID": "sesiones/sesion04 (1).html#implementación-en-julia",
-    "href": "sesiones/sesion04 (1).html#implementación-en-julia",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "6.1 Implementación en Julia",
-    "text": "6.1 Implementación en Julia\nNo utilizaremos la biblioteca FNC. Escribiremos nuestro propio algoritmo.\nfunction horner(c, x)\n    n = length(c)\n    y = c[n]\n\n    for k in n-1:-1:1\n        y = x*y + c[k]\n    end\n\n    return y\nend\nProbemos con\n[ p(x)=(x-1)3=x3-3x^2+3x-1. ]\nLos coeficientes se introducen en orden ascendente:\nc = [-1, 3, -3, 1]\n\nhorner(c, 1.6)"
-  },
-  {
-    "objectID": "sesiones/sesion04 (1).html#experimento-3-directo-contra-horner",
-    "href": "sesiones/sesion04 (1).html#experimento-3-directo-contra-horner",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "6.2 Experimento 3: directo contra Horner",
-    "text": "6.2 Experimento 3: directo contra Horner\np_directo(x) = 5*x^3 + 4*x^2 + 3*x + 2\np_horner(x)  = 2 + x*(3 + x*(4 + 5*x))\n\nx = 1.23456789\n\np_directo(x), p_horner(x)\nDiscusión\nLos dos algoritmos representan el mismo polinomio.\nPero:\n\n¿realizan las mismas operaciones?\n¿cuál necesita menos?\n¿ser matemáticamente equivalentes garantiza que se comporten igual en punto flotante?\n\nLa última pregunta nos conduce a la estabilidad."
-  },
-  {
-    "objectID": "sesiones/sesion04 (1).html#experimento-4-el-algoritmo-ingenuo",
-    "href": "sesiones/sesion04 (1).html#experimento-4-el-algoritmo-ingenuo",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "8.1 Experimento 4: el algoritmo ingenuo",
-    "text": "8.1 Experimento 4: el algoritmo ingenuo\nAntes de ejecutar: ambas raíces son conocidas exactamente. ¿Esperas obtenerlas con precisión comparable?\na = 1.0\nb = -(1e6 + 1e-6)\nc = 1.0\n\nx1 = (-b + sqrt(b^2 - 4*a*c)) / (2*a)\nx2 = (-b - sqrt(b^2 - 4*a*c)) / (2*a)\n\nprintln(\"x1 = \", x1)\nprintln(\"x2 = \", x2)\n\nerror1 = abs(x1 - 1e6) / 1e6\nerror2 = abs(x2 - 1e-6) / 1e-6\n\nprintln(\"error relativo x1 = \", error1)\nprintln(\"error relativo x2 = \", error2)\nUna raíz se obtiene con gran precisión y la otra pierde varias cifras.\n¿Dónde está el culpable?\nEn la raíz pequeña aparece una resta entre números casi iguales:\n[ -b-. ]\nOtra vez encontramos cancelación sustractiva."
-  },
-  {
-    "objectID": "sesiones/sesion04 (1).html#experimento-5-evitar-la-cancelación",
-    "href": "sesiones/sesion04 (1).html#experimento-5-evitar-la-cancelación",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "9.1 Experimento 5: evitar la cancelación",
-    "text": "9.1 Experimento 5: evitar la cancelación\na = 1.0\nb = -(1e6 + 1e-6)\nc = 1.0\n\nx1 = (-b + sqrt(b^2 - 4*a*c)) / (2*a)\nx2 = c / (a*x1)\n\nprintln(\"x1 = \", x1)\nprintln(\"x2 = \", x2)\n\nerror2 = abs(x2 - 1e-6) / 1e-6\nprintln(\"error relativo x2 = \", error2)\nAhora compara el error de la raíz pequeña con el obtenido mediante la fórmula directa.\nTenemos dos algoritmos algebraicamente equivalentes en aritmética exacta, pero no necesariamente equivalentes en aritmética de punto flotante.\n\nLección: en análisis numérico importa no sólo qué fórmula usamos, sino también cómo la evaluamos."
-  },
-  {
-    "objectID": "sesiones/sesion04 (1).html#representación",
-    "href": "sesiones/sesion04 (1).html#representación",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "12.1 Representación",
-    "text": "12.1 Representación\nLos números reales deben aproximarse mediante números de punto flotante."
-  },
-  {
-    "objectID": "sesiones/sesion04 (1).html#problema",
-    "href": "sesiones/sesion04 (1).html#problema",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "12.2 Problema",
-    "text": "12.2 Problema\n[ y=f(x) ]\nEl condicionamiento describe la sensibilidad inherente del problema frente a perturbaciones en los datos."
-  },
-  {
-    "objectID": "sesiones/sesion04 (1).html#algoritmo",
-    "href": "sesiones/sesion04 (1).html#algoritmo",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "12.3 Algoritmo",
-    "text": "12.3 Algoritmo\n[ y=f(x) ]\nEs la secuencia concreta de operaciones utilizada para aproximar la solución."
-  },
-  {
-    "objectID": "sesiones/sesion04 (1).html#estabilidad-1",
-    "href": "sesiones/sesion04 (1).html#estabilidad-1",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "12.4 Estabilidad",
-    "text": "12.4 Estabilidad\nDescribe si el algoritmo introduce una amplificación de errores mayor de la que el propio problema exige.\nEn forma esquemática:\n[ ]\n[ ]\nÉsta será una distinción recurrente durante todo el curso."
-  },
-  {
-    "objectID": "sesiones/sesion04 (1).html#ejercicio-1.-número-de-condición",
-    "href": "sesiones/sesion04 (1).html#ejercicio-1.-número-de-condición",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.1 Ejercicio 1. Número de condición",
-    "text": "13.1 Ejercicio 1. Número de condición\nUtilizando\n[ _f(x) = | |, ]\ncalcula el número de condición relativo de:\n[ f(x)=x^p, f(x)=e^x, f(x)=x. ]\nIdentifica valores de (x) para los cuales el problema pueda estar mal condicionado."
-  },
-  {
-    "objectID": "sesiones/sesion04 (1).html#ejercicio-2.-condicionamiento-y-composición",
-    "href": "sesiones/sesion04 (1).html#ejercicio-2.-condicionamiento-y-composición",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.2 Ejercicio 2. Condicionamiento y composición",
-    "text": "13.2 Ejercicio 2. Condicionamiento y composición\nSean\n[ h(x)=f(g(x)). ]\nDemuestra, utilizando la regla de la cadena, que\n[ _h(x) = _f(g(x)),_g(x). ]\nComprueba después la fórmula para\n[ h(x)=. ]"
-  },
-  {
-    "objectID": "sesiones/sesion04 (1).html#ejercicio-3.-horner",
-    "href": "sesiones/sesion04 (1).html#ejercicio-3.-horner",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.3 Ejercicio 3. Horner",
-    "text": "13.3 Ejercicio 3. Horner\nEscribe en Julia una función que evalúe mediante el algoritmo de Horner\n[ p(x)=2x4-3x3+5x^2-x+7. ]\nEvalúa el polinomio en\n[ x=1.5. ]\nDespués evalúalo directamente mediante potencias y compara los resultados y el número de multiplicaciones requeridas por cada método."
-  },
-  {
-    "objectID": "sesiones/sesion04 (1).html#ejercicio-4.-dos-fórmulas-equivalentes",
-    "href": "sesiones/sesion04 (1).html#ejercicio-4.-dos-fórmulas-equivalentes",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.4 Ejercicio 4. Dos fórmulas equivalentes",
-    "text": "13.4 Ejercicio 4. Dos fórmulas equivalentes\nLas expresiones\n[ f(x)=, g(x)= ]\nson matemáticamente equivalentes.\nEn Julia, evalúa ambas para\n[ x=10{-2},10{-4},10{-6},10{-8}. ]\nConstruye una tabla con los resultados.\nExplica por qué una de las fórmulas puede perder precisión más rápidamente que la otra."
-  },
-  {
-    "objectID": "sesiones/sesion04 (1).html#ejercicio-5.-la-fórmula-cuadrática",
-    "href": "sesiones/sesion04 (1).html#ejercicio-5.-la-fórmula-cuadrática",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.5 Ejercicio 5. La fórmula cuadrática",
-    "text": "13.5 Ejercicio 5. La fórmula cuadrática\nConsidera\n[ p(x) = (x-108)(x-10{-8}). ]\n\nExpande el polinomio e identifica (a,b,c).\nCalcula ambas raíces mediante la fórmula cuadrática usual.\nCalcula el error relativo de cada raíz.\nCalcula la raíz grande mediante la fórmula cuadrática y la pequeña usando\n\n[ x_1x_2=ca. ]\n\nCompara ambos procedimientos y explica el resultado utilizando los conceptos de cancelación sustractiva y estabilidad."
-  },
-  {
-    "objectID": "sesiones/sesion04 (2).html",
-    "href": "sesiones/sesion04 (2).html",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "",
-    "text": "En la sesión anterior vimos que los números de punto flotante representan sólo una parte finita de los números reales y que las operaciones realizadas por una computadora pueden introducir errores de redondeo.\nAhora aparecen dos preguntas fundamentales:\n\n¿El problema matemático es sensible a pequeñas perturbaciones en los datos?\n¿El algoritmo que elegimos amplifica innecesariamente los errores?\n\nEstas preguntas conducen a dos conceptos centrales del análisis numérico:\n\ncondicionamiento, que es una propiedad del problema;\nestabilidad, que es una propiedad del algoritmo.\n\n\nIdea guía. Un problema puede estar bien condicionado y, sin embargo, ser resuelto por un algoritmo inestable.\n\nDurante esta sesión seguiremos el esquema:\npredecir → ejecutar → observar → explicar."
-  },
-  {
-    "objectID": "sesiones/sesion04 (2).html#cancelación-sustractiva",
-    "href": "sesiones/sesion04 (2).html#cancelación-sustractiva",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "2.1 Cancelación sustractiva",
-    "text": "2.1 Cancelación sustractiva\nCuando se restan dos números cercanos, el resultado puede ser mucho menor que cualquiera de los operandos. En ese proceso pueden perderse cifras significativas.\nPor ejemplo,\n[ 1.0000-1.0012=-0.0012. ]\nLos operandos tienen cinco cifras significativas, pero el resultado contiene mucha menos información útil.\nA este fenómeno se le llama cancelación sustractiva.\n\nLa cancelación sustractiva es una de las causas más frecuentes de pérdida importante de precisión en aritmética de punto flotante."
-  },
-  {
-    "objectID": "sesiones/sesion04 (2).html#experimento-1-una-resta-aparentemente-inocente",
-    "href": "sesiones/sesion04 (2).html#experimento-1-una-resta-aparentemente-inocente",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "2.2 Experimento 1: una resta aparentemente inocente",
-    "text": "2.2 Experimento 1: una resta aparentemente inocente\nAntes de ejecutar, predice qué debería ocurrir matemáticamente.\nx = 1.0\nfor k in 1:17\n    δ = 10.0^(-k)\n    y = (x + δ) - x\n    println(k, \"   \", δ, \"   \", y)\nend\nObserva cuándo el resultado deja de coincidir con ().\nPreguntas\n\n¿Por qué comienza a perderse información?\n¿Qué relación tiene esto con eps()?\n¿Es un error de Julia o una consecuencia de la representación finita?"
-  },
-  {
-    "objectID": "sesiones/sesion04 (2).html#interpretación",
-    "href": "sesiones/sesion04 (2).html#interpretación",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "3.1 Interpretación",
-    "text": "3.1 Interpretación\nAproximadamente,\n[ _f(x) . ]\nPor tanto:\n\nsi (_f(x)) es moderado, el problema está bien condicionado;\nsi (_f(x)) es muy grande, el problema está mal condicionado.\n\nSi\n[ _f(x)^d, ]\npodemos esperar perder aproximadamente (d) cifras decimales de precisión."
-  },
-  {
-    "objectID": "sesiones/sesion04 (2).html#algunos-ejemplos",
-    "href": "sesiones/sesion04 (2).html#algunos-ejemplos",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "3.2 Algunos ejemplos",
-    "text": "3.2 Algunos ejemplos\n\n3.2.1 Multiplicación por una constante\nSi\n[ f(x)=cx, ]\nentonces\n[ _f(x) = || =1. ]\nLa multiplicación por una constante no amplifica el error relativo.\n\n\n3.2.2 Suma o resta de una constante\nPara\n[ f(x)=x-c, ]\ntenemos\n[ _f(x) = | |. ]\nCuando (xc), el denominador es pequeño y el número de condición puede ser enorme.\nEsto conecta directamente con la cancelación sustractiva."
-  },
-  {
-    "objectID": "sesiones/sesion04 (2).html#experimento-2-observar-el-condicionamiento",
-    "href": "sesiones/sesion04 (2).html#experimento-2-observar-el-condicionamiento",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "3.3 Experimento 2: observar el condicionamiento",
-    "text": "3.3 Experimento 2: observar el condicionamiento\nConsideremos\n[ f(x)=x-1. ]\nκ(x) = abs(x / (x - 1))\n\nfor k in 1:12\n    x = 1 + 10.0^(-k)\n    println(k, \"   x = \", x, \"   κ = \", κ(x))\nend\nAntes de ejecutarlo:\n**¿qué esperas que ocurra con (_f(x)) cuando (x)?**"
-  },
-  {
-    "objectID": "sesiones/sesion04 (2).html#implementación-en-julia",
-    "href": "sesiones/sesion04 (2).html#implementación-en-julia",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "6.1 Implementación en Julia",
-    "text": "6.1 Implementación en Julia\nNo utilizaremos la biblioteca FNC. Escribiremos nuestro propio algoritmo.\nfunction horner(c, x)\n    n = length(c)\n    y = c[n]\n\n    for k in n-1:-1:1\n        y = x*y + c[k]\n    end\n\n    return y\nend\nProbemos con\n[ p(x)=(x-1)3=x3-3x^2+3x-1. ]\nLos coeficientes se introducen en orden ascendente:\nc = [-1, 3, -3, 1]\n\nhorner(c, 1.6)"
-  },
-  {
-    "objectID": "sesiones/sesion04 (2).html#experimento-3-directo-contra-horner",
-    "href": "sesiones/sesion04 (2).html#experimento-3-directo-contra-horner",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "6.2 Experimento 3: directo contra Horner",
-    "text": "6.2 Experimento 3: directo contra Horner\np_directo(x) = 5*x^3 + 4*x^2 + 3*x + 2\np_horner(x)  = 2 + x*(3 + x*(4 + 5*x))\n\nx = 1.23456789\n\np_directo(x), p_horner(x)\nDiscusión\nLos dos algoritmos representan el mismo polinomio.\nPero:\n\n¿realizan las mismas operaciones?\n¿cuál necesita menos?\n¿ser matemáticamente equivalentes garantiza que se comporten igual en punto flotante?\n\nLa última pregunta nos conduce a la estabilidad."
-  },
-  {
-    "objectID": "sesiones/sesion04 (2).html#experimento-4-el-algoritmo-ingenuo",
-    "href": "sesiones/sesion04 (2).html#experimento-4-el-algoritmo-ingenuo",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "8.1 Experimento 4: el algoritmo ingenuo",
-    "text": "8.1 Experimento 4: el algoritmo ingenuo\nAntes de ejecutar: ambas raíces son conocidas exactamente. ¿Esperas obtenerlas con precisión comparable?\na = 1.0\nb = -(1e6 + 1e-6)\nc = 1.0\n\nx1 = (-b + sqrt(b^2 - 4*a*c)) / (2*a)\nx2 = (-b - sqrt(b^2 - 4*a*c)) / (2*a)\n\nprintln(\"x1 = \", x1)\nprintln(\"x2 = \", x2)\n\nerror1 = abs(x1 - 1e6) / 1e6\nerror2 = abs(x2 - 1e-6) / 1e-6\n\nprintln(\"error relativo x1 = \", error1)\nprintln(\"error relativo x2 = \", error2)\nUna raíz se obtiene con gran precisión y la otra pierde varias cifras.\n¿Dónde está el culpable?\nEn la raíz pequeña aparece una resta entre números casi iguales:\n[ -b-. ]\nOtra vez encontramos cancelación sustractiva."
-  },
-  {
-    "objectID": "sesiones/sesion04 (2).html#experimento-5-evitar-la-cancelación",
-    "href": "sesiones/sesion04 (2).html#experimento-5-evitar-la-cancelación",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "9.1 Experimento 5: evitar la cancelación",
-    "text": "9.1 Experimento 5: evitar la cancelación\na = 1.0\nb = -(1e6 + 1e-6)\nc = 1.0\n\nx1 = (-b + sqrt(b^2 - 4*a*c)) / (2*a)\nx2 = c / (a*x1)\n\nprintln(\"x1 = \", x1)\nprintln(\"x2 = \", x2)\n\nerror2 = abs(x2 - 1e-6) / 1e-6\nprintln(\"error relativo x2 = \", error2)\nAhora compara el error de la raíz pequeña con el obtenido mediante la fórmula directa.\nTenemos dos algoritmos algebraicamente equivalentes en aritmética exacta, pero no necesariamente equivalentes en aritmética de punto flotante.\n\nLección: en análisis numérico importa no sólo qué fórmula usamos, sino también cómo la evaluamos."
-  },
-  {
-    "objectID": "sesiones/sesion04 (2).html#representación",
-    "href": "sesiones/sesion04 (2).html#representación",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "12.1 Representación",
-    "text": "12.1 Representación\nLos números reales deben aproximarse mediante números de punto flotante."
-  },
-  {
-    "objectID": "sesiones/sesion04 (2).html#problema",
-    "href": "sesiones/sesion04 (2).html#problema",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "12.2 Problema",
-    "text": "12.2 Problema\n[ y=f(x) ]\nEl condicionamiento describe la sensibilidad inherente del problema frente a perturbaciones en los datos."
-  },
-  {
-    "objectID": "sesiones/sesion04 (2).html#algoritmo",
-    "href": "sesiones/sesion04 (2).html#algoritmo",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "12.3 Algoritmo",
-    "text": "12.3 Algoritmo\n[ y=f(x) ]\nEs la secuencia concreta de operaciones utilizada para aproximar la solución."
-  },
-  {
-    "objectID": "sesiones/sesion04 (2).html#estabilidad-1",
-    "href": "sesiones/sesion04 (2).html#estabilidad-1",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "12.4 Estabilidad",
-    "text": "12.4 Estabilidad\nDescribe si el algoritmo introduce una amplificación de errores mayor de la que el propio problema exige.\nEn forma esquemática:\n[ ]\n[ ]\nÉsta será una distinción recurrente durante todo el curso."
-  },
-  {
-    "objectID": "sesiones/sesion04 (2).html#ejercicio-1.-número-de-condición",
-    "href": "sesiones/sesion04 (2).html#ejercicio-1.-número-de-condición",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.1 Ejercicio 1. Número de condición",
-    "text": "13.1 Ejercicio 1. Número de condición\nUtilizando\n[ _f(x) = | |, ]\ncalcula el número de condición relativo de:\n[ f(x)=x^p, f(x)=e^x, f(x)=x. ]\nIdentifica valores de (x) para los cuales el problema pueda estar mal condicionado."
-  },
-  {
-    "objectID": "sesiones/sesion04 (2).html#ejercicio-2.-condicionamiento-y-composición",
-    "href": "sesiones/sesion04 (2).html#ejercicio-2.-condicionamiento-y-composición",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.2 Ejercicio 2. Condicionamiento y composición",
-    "text": "13.2 Ejercicio 2. Condicionamiento y composición\nSean\n[ h(x)=f(g(x)). ]\nDemuestra, utilizando la regla de la cadena, que\n[ _h(x) = _f(g(x)),_g(x). ]\nComprueba después la fórmula para\n[ h(x)=. ]"
-  },
-  {
-    "objectID": "sesiones/sesion04 (2).html#ejercicio-3.-horner",
-    "href": "sesiones/sesion04 (2).html#ejercicio-3.-horner",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.3 Ejercicio 3. Horner",
-    "text": "13.3 Ejercicio 3. Horner\nEscribe en Julia una función que evalúe mediante el algoritmo de Horner\n[ p(x)=2x4-3x3+5x^2-x+7. ]\nEvalúa el polinomio en\n[ x=1.5. ]\nDespués evalúalo directamente mediante potencias y compara los resultados y el número de multiplicaciones requeridas por cada método."
-  },
-  {
-    "objectID": "sesiones/sesion04 (2).html#ejercicio-4.-dos-fórmulas-equivalentes",
-    "href": "sesiones/sesion04 (2).html#ejercicio-4.-dos-fórmulas-equivalentes",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.4 Ejercicio 4. Dos fórmulas equivalentes",
-    "text": "13.4 Ejercicio 4. Dos fórmulas equivalentes\nLas expresiones\n[ f(x)=, g(x)= ]\nson matemáticamente equivalentes.\nEn Julia, evalúa ambas para\n[ x=10{-2},10{-4},10{-6},10{-8}. ]\nConstruye una tabla con los resultados.\nExplica por qué una de las fórmulas puede perder precisión más rápidamente que la otra."
-  },
-  {
-    "objectID": "sesiones/sesion04 (2).html#ejercicio-5.-la-fórmula-cuadrática",
-    "href": "sesiones/sesion04 (2).html#ejercicio-5.-la-fórmula-cuadrática",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.5 Ejercicio 5. La fórmula cuadrática",
-    "text": "13.5 Ejercicio 5. La fórmula cuadrática\nConsidera\n[ p(x) = (x-108)(x-10{-8}). ]\n\nExpande el polinomio e identifica (a,b,c).\nCalcula ambas raíces mediante la fórmula cuadrática usual.\nCalcula el error relativo de cada raíz.\nCalcula la raíz grande mediante la fórmula cuadrática y la pequeña usando\n\n[ x_1x_2=ca. ]\n\nCompara ambos procedimientos y explica el resultado utilizando los conceptos de cancelación sustractiva y estabilidad."
-  },
-  {
-    "objectID": "sesiones/sesion04 (4).html",
-    "href": "sesiones/sesion04 (4).html",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "",
-    "text": "En la sesión anterior vimos que los números de punto flotante representan sólo una parte finita de los números reales y que las operaciones realizadas por una computadora pueden introducir errores de redondeo.\nAhora aparecen dos preguntas fundamentales:\n\n¿El problema matemático es sensible a pequeñas perturbaciones en los datos?\n¿El algoritmo que elegimos amplifica innecesariamente los errores?\n\nEstas preguntas conducen a dos conceptos centrales del análisis numérico:\n\ncondicionamiento, que es una propiedad del problema;\nestabilidad, que es una propiedad del algoritmo.\n\n\nIdea guía. Un problema puede estar bien condicionado y, sin embargo, ser resuelto por un algoritmo inestable.\n\nDurante esta sesión seguiremos el esquema:\npredecir → ejecutar → observar → explicar."
-  },
-  {
-    "objectID": "sesiones/sesion04 (4).html#cancelación-sustractiva",
-    "href": "sesiones/sesion04 (4).html#cancelación-sustractiva",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "2.1 Cancelación sustractiva",
-    "text": "2.1 Cancelación sustractiva\nCuando se restan dos números cercanos, el resultado puede ser mucho menor que cualquiera de los operandos. En ese proceso pueden perderse cifras significativas.\nPor ejemplo,\n[ 1.0000-1.0012=-0.0012. ]\nLos operandos tienen cinco cifras significativas, pero el resultado contiene mucha menos información útil.\nA este fenómeno se le llama cancelación sustractiva.\n\nLa cancelación sustractiva es una de las causas más frecuentes de pérdida importante de precisión en aritmética de punto flotante."
-  },
-  {
-    "objectID": "sesiones/sesion04 (4).html#experimento-1-una-resta-aparentemente-inocente",
-    "href": "sesiones/sesion04 (4).html#experimento-1-una-resta-aparentemente-inocente",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "2.2 Experimento 1: una resta aparentemente inocente",
-    "text": "2.2 Experimento 1: una resta aparentemente inocente\nAntes de ejecutar, predice qué debería ocurrir matemáticamente.\nx = 1.0\nfor k in 1:17\n    δ = 10.0^(-k)\n    y = (x + δ) - x\n    println(k, \"   \", δ, \"   \", y)\nend\nObserva cuándo el resultado deja de coincidir con ().\nPreguntas\n\n¿Por qué comienza a perderse información?\n¿Qué relación tiene esto con eps()?\n¿Es un error de Julia o una consecuencia de la representación finita?"
-  },
-  {
-    "objectID": "sesiones/sesion04 (4).html#interpretación",
-    "href": "sesiones/sesion04 (4).html#interpretación",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "3.1 Interpretación",
-    "text": "3.1 Interpretación\nAproximadamente,\n[ _f(x) . ]\nPor tanto:\n\nsi (_f(x)) es moderado, el problema está bien condicionado;\nsi (_f(x)) es muy grande, el problema está mal condicionado.\n\nSi\n[ _f(x)^d, ]\npodemos esperar perder aproximadamente (d) cifras decimales de precisión."
-  },
-  {
-    "objectID": "sesiones/sesion04 (4).html#algunos-ejemplos",
-    "href": "sesiones/sesion04 (4).html#algunos-ejemplos",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "3.2 Algunos ejemplos",
-    "text": "3.2 Algunos ejemplos\n\n3.2.1 Multiplicación por una constante\nSi\n[ f(x)=cx, ]\nentonces\n[ _f(x) = || =1. ]\nLa multiplicación por una constante no amplifica el error relativo.\n\n\n3.2.2 Suma o resta de una constante\nPara\n[ f(x)=x-c, ]\ntenemos\n[ _f(x) = | |. ]\nCuando (xc), el denominador es pequeño y el número de condición puede ser enorme.\nEsto conecta directamente con la cancelación sustractiva."
-  },
-  {
-    "objectID": "sesiones/sesion04 (4).html#experimento-2-observar-el-condicionamiento",
-    "href": "sesiones/sesion04 (4).html#experimento-2-observar-el-condicionamiento",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "3.3 Experimento 2: observar el condicionamiento",
-    "text": "3.3 Experimento 2: observar el condicionamiento\nConsideremos\n[ f(x)=x-1. ]\nκ(x) = abs(x / (x - 1))\n\nfor k in 1:12\n    x = 1 + 10.0^(-k)\n    println(k, \"   x = \", x, \"   κ = \", κ(x))\nend\nAntes de ejecutarlo:\n**¿qué esperas que ocurra con (_f(x)) cuando (x)?**"
-  },
-  {
-    "objectID": "sesiones/sesion04 (4).html#implementación-en-julia",
-    "href": "sesiones/sesion04 (4).html#implementación-en-julia",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "6.1 Implementación en Julia",
-    "text": "6.1 Implementación en Julia\nNo utilizaremos la biblioteca FNC. Escribiremos nuestro propio algoritmo.\nfunction horner(c, x)\n    n = length(c)\n    y = c[n]\n\n    for k in n-1:-1:1\n        y = x*y + c[k]\n    end\n\n    return y\nend\nProbemos con\n[ p(x)=(x-1)3=x3-3x^2+3x-1. ]\nLos coeficientes se introducen en orden ascendente:\nc = [-1, 3, -3, 1]\n\nhorner(c, 1.6)"
-  },
-  {
-    "objectID": "sesiones/sesion04 (4).html#experimento-3-directo-contra-horner",
-    "href": "sesiones/sesion04 (4).html#experimento-3-directo-contra-horner",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "6.2 Experimento 3: directo contra Horner",
-    "text": "6.2 Experimento 3: directo contra Horner\np_directo(x) = 5*x^3 + 4*x^2 + 3*x + 2\np_horner(x)  = 2 + x*(3 + x*(4 + 5*x))\n\nx = 1.23456789\n\np_directo(x), p_horner(x)\nDiscusión\nLos dos algoritmos representan el mismo polinomio.\nPero:\n\n¿realizan las mismas operaciones?\n¿cuál necesita menos?\n¿ser matemáticamente equivalentes garantiza que se comporten igual en punto flotante?\n\nLa última pregunta nos conduce a la estabilidad."
-  },
-  {
-    "objectID": "sesiones/sesion04 (4).html#experimento-4-el-algoritmo-ingenuo",
-    "href": "sesiones/sesion04 (4).html#experimento-4-el-algoritmo-ingenuo",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "8.1 Experimento 4: el algoritmo ingenuo",
-    "text": "8.1 Experimento 4: el algoritmo ingenuo\nAntes de ejecutar: ambas raíces son conocidas exactamente. ¿Esperas obtenerlas con precisión comparable?\na = 1.0\nb = -(1e6 + 1e-6)\nc = 1.0\n\nx1 = (-b + sqrt(b^2 - 4*a*c)) / (2*a)\nx2 = (-b - sqrt(b^2 - 4*a*c)) / (2*a)\n\nprintln(\"x1 = \", x1)\nprintln(\"x2 = \", x2)\n\nerror1 = abs(x1 - 1e6) / 1e6\nerror2 = abs(x2 - 1e-6) / 1e-6\n\nprintln(\"error relativo x1 = \", error1)\nprintln(\"error relativo x2 = \", error2)\nUna raíz se obtiene con gran precisión y la otra pierde varias cifras.\n¿Dónde está el culpable?\nEn la raíz pequeña aparece una resta entre números casi iguales:\n[ -b-. ]\nOtra vez encontramos cancelación sustractiva."
-  },
-  {
-    "objectID": "sesiones/sesion04 (4).html#experimento-5-evitar-la-cancelación",
-    "href": "sesiones/sesion04 (4).html#experimento-5-evitar-la-cancelación",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "9.1 Experimento 5: evitar la cancelación",
-    "text": "9.1 Experimento 5: evitar la cancelación\na = 1.0\nb = -(1e6 + 1e-6)\nc = 1.0\n\nx1 = (-b + sqrt(b^2 - 4*a*c)) / (2*a)\nx2 = c / (a*x1)\n\nprintln(\"x1 = \", x1)\nprintln(\"x2 = \", x2)\n\nerror2 = abs(x2 - 1e-6) / 1e-6\nprintln(\"error relativo x2 = \", error2)\nAhora compara el error de la raíz pequeña con el obtenido mediante la fórmula directa.\nTenemos dos algoritmos algebraicamente equivalentes en aritmética exacta, pero no necesariamente equivalentes en aritmética de punto flotante.\n\nLección: en análisis numérico importa no sólo qué fórmula usamos, sino también cómo la evaluamos."
-  },
-  {
-    "objectID": "sesiones/sesion04 (4).html#representación",
-    "href": "sesiones/sesion04 (4).html#representación",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "12.1 Representación",
-    "text": "12.1 Representación\nLos números reales deben aproximarse mediante números de punto flotante."
-  },
-  {
-    "objectID": "sesiones/sesion04 (4).html#problema",
-    "href": "sesiones/sesion04 (4).html#problema",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "12.2 Problema",
-    "text": "12.2 Problema\n[ y=f(x) ]\nEl condicionamiento describe la sensibilidad inherente del problema frente a perturbaciones en los datos."
-  },
-  {
-    "objectID": "sesiones/sesion04 (4).html#algoritmo",
-    "href": "sesiones/sesion04 (4).html#algoritmo",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "12.3 Algoritmo",
-    "text": "12.3 Algoritmo\n[ y=f(x) ]\nEs la secuencia concreta de operaciones utilizada para aproximar la solución."
-  },
-  {
-    "objectID": "sesiones/sesion04 (4).html#estabilidad-1",
-    "href": "sesiones/sesion04 (4).html#estabilidad-1",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "12.4 Estabilidad",
-    "text": "12.4 Estabilidad\nDescribe si el algoritmo introduce una amplificación de errores mayor de la que el propio problema exige.\nEn forma esquemática:\n[ ]\n[ ]\nÉsta será una distinción recurrente durante todo el curso."
-  },
-  {
-    "objectID": "sesiones/sesion04 (4).html#ejercicio-1.-número-de-condición",
-    "href": "sesiones/sesion04 (4).html#ejercicio-1.-número-de-condición",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.1 Ejercicio 1. Número de condición",
-    "text": "13.1 Ejercicio 1. Número de condición\nUtilizando\n[ _f(x) = | |, ]\ncalcula el número de condición relativo de:\n[ f(x)=x^p, f(x)=e^x, f(x)=x. ]\nIdentifica valores de (x) para los cuales el problema pueda estar mal condicionado."
-  },
-  {
-    "objectID": "sesiones/sesion04 (4).html#ejercicio-2.-condicionamiento-y-composición",
-    "href": "sesiones/sesion04 (4).html#ejercicio-2.-condicionamiento-y-composición",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.2 Ejercicio 2. Condicionamiento y composición",
-    "text": "13.2 Ejercicio 2. Condicionamiento y composición\nSean\n[ h(x)=f(g(x)). ]\nDemuestra, utilizando la regla de la cadena, que\n[ _h(x) = _f(g(x)),_g(x). ]\nComprueba después la fórmula para\n[ h(x)=. ]"
-  },
-  {
-    "objectID": "sesiones/sesion04 (4).html#ejercicio-3.-horner",
-    "href": "sesiones/sesion04 (4).html#ejercicio-3.-horner",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.3 Ejercicio 3. Horner",
-    "text": "13.3 Ejercicio 3. Horner\nEscribe en Julia una función que evalúe mediante el algoritmo de Horner\n[ p(x)=2x4-3x3+5x^2-x+7. ]\nEvalúa el polinomio en\n[ x=1.5. ]\nDespués evalúalo directamente mediante potencias y compara los resultados y el número de multiplicaciones requeridas por cada método."
-  },
-  {
-    "objectID": "sesiones/sesion04 (4).html#ejercicio-4.-dos-fórmulas-equivalentes",
-    "href": "sesiones/sesion04 (4).html#ejercicio-4.-dos-fórmulas-equivalentes",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.4 Ejercicio 4. Dos fórmulas equivalentes",
-    "text": "13.4 Ejercicio 4. Dos fórmulas equivalentes\nLas expresiones\n[ f(x)=, g(x)= ]\nson matemáticamente equivalentes.\nEn Julia, evalúa ambas para\n[ x=10{-2},10{-4},10{-6},10{-8}. ]\nConstruye una tabla con los resultados.\nExplica por qué una de las fórmulas puede perder precisión más rápidamente que la otra."
-  },
-  {
-    "objectID": "sesiones/sesion04 (4).html#ejercicio-5.-la-fórmula-cuadrática",
-    "href": "sesiones/sesion04 (4).html#ejercicio-5.-la-fórmula-cuadrática",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.5 Ejercicio 5. La fórmula cuadrática",
-    "text": "13.5 Ejercicio 5. La fórmula cuadrática\nConsidera\n[ p(x) = (x-108)(x-10{-8}). ]\n\nExpande el polinomio e identifica (a,b,c).\nCalcula ambas raíces mediante la fórmula cuadrática usual.\nCalcula el error relativo de cada raíz.\nCalcula la raíz grande mediante la fórmula cuadrática y la pequeña usando\n\n[ x_1x_2=ca. ]\n\nCompara ambos procedimientos y explica el resultado utilizando los conceptos de cancelación sustractiva y estabilidad."
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git (2).html",
-    "href": "sesiones/sesion04_lista_para_git (2).html",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "",
-    "text": "En la sesión anterior vimos que los números de punto flotante representan sólo una parte finita de los números reales y que las operaciones realizadas por una computadora pueden introducir errores de redondeo.\nAhora aparecen dos preguntas fundamentales:\n\n¿El problema matemático es sensible a pequeñas perturbaciones en los datos?\n¿El algoritmo que elegimos amplifica innecesariamente los errores?\n\nEstas preguntas conducen a dos conceptos centrales del análisis numérico:\n\ncondicionamiento, que es una propiedad del problema;\nestabilidad, que es una propiedad del algoritmo.\n\n\nIdea guía. Un problema puede estar bien condicionado y, sin embargo, ser resuelto por un algoritmo inestable.\n\nDurante esta sesión seguiremos el esquema:\npredecir → ejecutar → observar → explicar."
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git (2).html#cancelación-sustractiva",
-    "href": "sesiones/sesion04_lista_para_git (2).html#cancelación-sustractiva",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "2.1 Cancelación sustractiva",
-    "text": "2.1 Cancelación sustractiva\nCuando se restan dos números cercanos, el resultado puede ser mucho menor que cualquiera de los operandos. En ese proceso pueden perderse cifras significativas.\nPor ejemplo,\n\\[\n1.0000-1.0012=-0.0012.\n\\]\nLos operandos tienen cinco cifras significativas, pero el resultado contiene mucha menos información útil.\nA este fenómeno se le llama cancelación sustractiva.\n\nLa cancelación sustractiva es una de las causas más frecuentes de pérdida importante de precisión en aritmética de punto flotante."
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git (2).html#experimento-1-una-resta-aparentemente-inocente",
-    "href": "sesiones/sesion04_lista_para_git (2).html#experimento-1-una-resta-aparentemente-inocente",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "2.2 Experimento 1: una resta aparentemente inocente",
-    "text": "2.2 Experimento 1: una resta aparentemente inocente\nAntes de ejecutar, predice qué debería ocurrir matemáticamente.\nx = 1.0\nfor k in 1:17\n    δ = 10.0^(-k)\n    y = (x + δ) - x\n    println(k, \"   \", δ, \"   \", y)\nend\nObserva cuándo el resultado deja de coincidir con \\(\\delta\\).\nPreguntas\n\n¿Por qué comienza a perderse información?\n¿Qué relación tiene esto con eps()?\n¿Es un error de Julia o una consecuencia de la representación finita?"
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git (2).html#interpretación",
-    "href": "sesiones/sesion04_lista_para_git (2).html#interpretación",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "3.1 Interpretación",
-    "text": "3.1 Interpretación\nAproximadamente,\n\\[\n\\frac{|\\Delta f|}{|f|}\n\\approx\n\\kappa_f(x)\n\\frac{|\\Delta x|}{|x|}.\n\\]\nPor tanto:\n\nsi \\(\\kappa_f(x)\\) es moderado, el problema está bien condicionado;\nsi \\(\\kappa_f(x)\\) es muy grande, el problema está mal condicionado.\n\nSi\n\\[\n\\kappa_f(x)\\approx 10^d,\n\\]\npodemos esperar perder aproximadamente \\(d\\) cifras decimales de precisión."
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git (2).html#algunos-ejemplos",
-    "href": "sesiones/sesion04_lista_para_git (2).html#algunos-ejemplos",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "3.2 Algunos ejemplos",
-    "text": "3.2 Algunos ejemplos\n\n3.2.1 Multiplicación por una constante\nSi\n\\[\nf(x)=cx,\n\\]\nentonces\n\\[\n\\kappa_f(x)\n=\n\\left|\\frac{x c}{cx}\\right|\n=1.\n\\]\nLa multiplicación por una constante no amplifica el error relativo.\n\n\n3.2.2 Suma o resta de una constante\nPara\n\\[\nf(x)=x-c,\n\\]\ntenemos\n\\[\n\\kappa_f(x)\n=\n\\left|\n\\frac{x}{x-c}\n\\right|.\n\\]\nCuando \\(x\\approx c\\), el denominador es pequeño y el número de condición puede ser enorme.\nEsto conecta directamente con la cancelación sustractiva."
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git (2).html#experimento-2-observar-el-condicionamiento",
-    "href": "sesiones/sesion04_lista_para_git (2).html#experimento-2-observar-el-condicionamiento",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "3.3 Experimento 2: observar el condicionamiento",
-    "text": "3.3 Experimento 2: observar el condicionamiento\nConsideremos\n\\[\nf(x)=x-1.\n\\]\nκ(x) = abs(x / (x - 1))\n\nfor k in 1:12\n    x = 1 + 10.0^(-k)\n    println(k, \"   x = \", x, \"   κ = \", κ(x))\nend\nAntes de ejecutarlo:\n¿qué esperas que ocurra con \\(\\kappa_f(x)\\) cuando \\(x\\to1\\)?"
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git (2).html#implementación-en-julia",
-    "href": "sesiones/sesion04_lista_para_git (2).html#implementación-en-julia",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "6.1 Implementación en Julia",
-    "text": "6.1 Implementación en Julia\nNo utilizaremos la biblioteca FNC. Escribiremos nuestro propio algoritmo.\nfunction horner(c, x)\n    n = length(c)\n    y = c[n]\n\n    for k in n-1:-1:1\n        y = x*y + c[k]\n    end\n\n    return y\nend\nProbemos con\n\\[\np(x)=(x-1)^3=x^3-3x^2+3x-1.\n\\]\nLos coeficientes se introducen en orden ascendente:\nc = [-1, 3, -3, 1]\n\nhorner(c, 1.6)"
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git (2).html#experimento-3-directo-contra-horner",
-    "href": "sesiones/sesion04_lista_para_git (2).html#experimento-3-directo-contra-horner",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "6.2 Experimento 3: directo contra Horner",
-    "text": "6.2 Experimento 3: directo contra Horner\np_directo(x) = 5*x^3 + 4*x^2 + 3*x + 2\np_horner(x)  = 2 + x*(3 + x*(4 + 5*x))\n\nx = 1.23456789\n\np_directo(x), p_horner(x)\nDiscusión\nLos dos algoritmos representan el mismo polinomio.\nPero:\n\n¿realizan las mismas operaciones?\n¿cuál necesita menos?\n¿ser matemáticamente equivalentes garantiza que se comporten igual en punto flotante?\n\nLa última pregunta nos conduce a la estabilidad."
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git (2).html#experimento-4-el-algoritmo-ingenuo",
-    "href": "sesiones/sesion04_lista_para_git (2).html#experimento-4-el-algoritmo-ingenuo",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "8.1 Experimento 4: el algoritmo ingenuo",
-    "text": "8.1 Experimento 4: el algoritmo ingenuo\nAntes de ejecutar: ambas raíces son conocidas exactamente. ¿Esperas obtenerlas con precisión comparable?\na = 1.0\nb = -(1e6 + 1e-6)\nc = 1.0\n\nx1 = (-b + sqrt(b^2 - 4*a*c)) / (2*a)\nx2 = (-b - sqrt(b^2 - 4*a*c)) / (2*a)\n\nprintln(\"x1 = \", x1)\nprintln(\"x2 = \", x2)\n\nerror1 = abs(x1 - 1e6) / 1e6\nerror2 = abs(x2 - 1e-6) / 1e-6\n\nprintln(\"error relativo x1 = \", error1)\nprintln(\"error relativo x2 = \", error2)\nUna raíz se obtiene con gran precisión y la otra pierde varias cifras.\n¿Dónde está el culpable?\nEn la raíz pequeña aparece una resta entre números casi iguales:\n\\[\n-b-\\sqrt{b^2-4ac}.\n\\]\nOtra vez encontramos cancelación sustractiva."
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git (2).html#experimento-5-evitar-la-cancelación",
-    "href": "sesiones/sesion04_lista_para_git (2).html#experimento-5-evitar-la-cancelación",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "9.1 Experimento 5: evitar la cancelación",
-    "text": "9.1 Experimento 5: evitar la cancelación\na = 1.0\nb = -(1e6 + 1e-6)\nc = 1.0\n\nx1 = (-b + sqrt(b^2 - 4*a*c)) / (2*a)\nx2 = c / (a*x1)\n\nprintln(\"x1 = \", x1)\nprintln(\"x2 = \", x2)\n\nerror2 = abs(x2 - 1e-6) / 1e-6\nprintln(\"error relativo x2 = \", error2)\nAhora compara el error de la raíz pequeña con el obtenido mediante la fórmula directa.\nTenemos dos algoritmos algebraicamente equivalentes en aritmética exacta, pero no necesariamente equivalentes en aritmética de punto flotante.\n\nLección: en análisis numérico importa no sólo qué fórmula usamos, sino también cómo la evaluamos."
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git (2).html#representación",
-    "href": "sesiones/sesion04_lista_para_git (2).html#representación",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "12.1 Representación",
-    "text": "12.1 Representación\nLos números reales deben aproximarse mediante números de punto flotante."
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git (2).html#problema",
-    "href": "sesiones/sesion04_lista_para_git (2).html#problema",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "12.2 Problema",
-    "text": "12.2 Problema\n\\[\ny=f(x)\n\\]\nEl condicionamiento describe la sensibilidad inherente del problema frente a perturbaciones en los datos."
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git (2).html#algoritmo",
-    "href": "sesiones/sesion04_lista_para_git (2).html#algoritmo",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "12.3 Algoritmo",
-    "text": "12.3 Algoritmo\n\\[\n\\widetilde y=\\widetilde f(x)\n\\]\nEs la secuencia concreta de operaciones utilizada para aproximar la solución."
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git (2).html#estabilidad-1",
-    "href": "sesiones/sesion04_lista_para_git (2).html#estabilidad-1",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "12.4 Estabilidad",
-    "text": "12.4 Estabilidad\nDescribe si el algoritmo introduce una amplificación de errores mayor de la que el propio problema exige.\nEn forma esquemática:\n\\[\n\\boxed{\\text{datos}}\n\\longrightarrow\n\\boxed{\\text{problema}}\n\\longrightarrow\n\\boxed{\\text{condicionamiento}}\n\\]\n\\[\n\\boxed{\\text{datos en punto flotante}}\n\\longrightarrow\n\\boxed{\\text{algoritmo}}\n\\longrightarrow\n\\boxed{\\text{estabilidad}}\n\\longrightarrow\n\\boxed{\\text{resultado calculado}}\n\\]\nÉsta será una distinción recurrente durante todo el curso."
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git (2).html#ejercicio-1.-número-de-condición",
-    "href": "sesiones/sesion04_lista_para_git (2).html#ejercicio-1.-número-de-condición",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.1 Ejercicio 1. Número de condición",
-    "text": "13.1 Ejercicio 1. Número de condición\nUtilizando\n\\[\n\\kappa_f(x)\n=\n\\left|\n\\frac{x f'(x)}{f(x)}\n\\right|,\n\\]\ncalcula el número de condición relativo de:\n\\[\n\\text{a) } f(x)=x^p,\n\\qquad\n\\text{b) } f(x)=e^x,\n\\qquad\n\\text{c) } f(x)=\\cos x.\n\\]\nIdentifica valores de \\(x\\) para los cuales el problema pueda estar mal condicionado."
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git (2).html#ejercicio-2.-condicionamiento-y-composición",
-    "href": "sesiones/sesion04_lista_para_git (2).html#ejercicio-2.-condicionamiento-y-composición",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.2 Ejercicio 2. Condicionamiento y composición",
-    "text": "13.2 Ejercicio 2. Condicionamiento y composición\nSean\n\\[\nh(x)=f(g(x)).\n\\]\nDemuestra, utilizando la regla de la cadena, que\n\\[\n\\kappa_h(x)\n=\n\\kappa_f(g(x))\\,\\kappa_g(x).\n\\]\nComprueba después la fórmula para\n\\[\nh(x)=\\sqrt{x+5}.\n\\]"
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git (2).html#ejercicio-3.-horner",
-    "href": "sesiones/sesion04_lista_para_git (2).html#ejercicio-3.-horner",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.3 Ejercicio 3. Horner",
-    "text": "13.3 Ejercicio 3. Horner\nEscribe en Julia una función que evalúe mediante el algoritmo de Horner\n\\[\np(x)=2x^4-3x^3+5x^2-x+7.\n\\]\nEvalúa el polinomio en\n\\[\nx=1.5.\n\\]\nDespués evalúalo directamente mediante potencias y compara los resultados y el número de multiplicaciones requeridas por cada método."
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git (2).html#ejercicio-4.-dos-fórmulas-equivalentes",
-    "href": "sesiones/sesion04_lista_para_git (2).html#ejercicio-4.-dos-fórmulas-equivalentes",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.4 Ejercicio 4. Dos fórmulas equivalentes",
-    "text": "13.4 Ejercicio 4. Dos fórmulas equivalentes\nLas expresiones\n\\[\nf(x)=\\frac{1-\\cos x}{\\sin x},\n\\qquad\ng(x)=\\frac{2\\sin^2(x/2)}{\\sin x}\n\\]\nson matemáticamente equivalentes.\nEn Julia, evalúa ambas para\n\\[\nx=10^{-2},10^{-4},10^{-6},10^{-8}.\n\\]\nConstruye una tabla con los resultados.\nExplica por qué una de las fórmulas puede perder precisión más rápidamente que la otra."
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git (2).html#ejercicio-5.-la-fórmula-cuadrática",
-    "href": "sesiones/sesion04_lista_para_git (2).html#ejercicio-5.-la-fórmula-cuadrática",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.5 Ejercicio 5. La fórmula cuadrática",
-    "text": "13.5 Ejercicio 5. La fórmula cuadrática\nConsidera\n\\[\np(x)\n=\n(x-10^8)(x-10^{-8}).\n\\]\n\nExpande el polinomio e identifica \\(a,b,c\\).\nCalcula ambas raíces mediante la fórmula cuadrática usual.\nCalcula el error relativo de cada raíz.\nCalcula la raíz grande mediante la fórmula cuadrática y la pequeña usando\n\n\\[\nx_1x_2=\\frac ca.\n\\]\n\nCompara ambos procedimientos y explica el resultado utilizando los conceptos de cancelación sustractiva y estabilidad."
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git (2).html#fuente-principal",
-    "href": "sesiones/sesion04_lista_para_git (2).html#fuente-principal",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "15.1 Fuente principal",
-    "text": "15.1 Fuente principal\nEl material de esta sesión está basado principalmente en los apartados 1.2–1.5 de:\nTobin A. Driscoll y Richard J. Braun, Fundamentals of Numerical Computation, edición Julia.\nhttps://tobydriscoll.net/fnc-julia/home.html"
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git.html",
-    "href": "sesiones/sesion04_lista_para_git.html",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "",
-    "text": "En la sesión anterior vimos que los números de punto flotante representan sólo una parte finita de los números reales y que las operaciones realizadas por una computadora pueden introducir errores de redondeo.\nAhora aparecen dos preguntas fundamentales:\n\n¿El problema matemático es sensible a pequeñas perturbaciones en los datos?\n¿El algoritmo que elegimos amplifica innecesariamente los errores?\n\nEstas preguntas conducen a dos conceptos centrales del análisis numérico:\n\ncondicionamiento, que es una propiedad del problema;\nestabilidad, que es una propiedad del algoritmo.\n\n\nIdea guía. Un problema puede estar bien condicionado y, sin embargo, ser resuelto por un algoritmo inestable.\n\nDurante esta sesión seguiremos el esquema:\npredecir → ejecutar → observar → explicar."
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git.html#cancelación-sustractiva",
-    "href": "sesiones/sesion04_lista_para_git.html#cancelación-sustractiva",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "2.1 Cancelación sustractiva",
-    "text": "2.1 Cancelación sustractiva\nCuando se restan dos números cercanos, el resultado puede ser mucho menor que cualquiera de los operandos. En ese proceso pueden perderse cifras significativas.\nPor ejemplo,\n\\[\n1.0000-1.0012=-0.0012.\n\\]\nLos operandos tienen cinco cifras significativas, pero el resultado contiene mucha menos información útil.\nA este fenómeno se le llama cancelación sustractiva.\n\nLa cancelación sustractiva es una de las causas más frecuentes de pérdida importante de precisión en aritmética de punto flotante."
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git.html#experimento-1-una-resta-aparentemente-inocente",
-    "href": "sesiones/sesion04_lista_para_git.html#experimento-1-una-resta-aparentemente-inocente",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "2.2 Experimento 1: una resta aparentemente inocente",
-    "text": "2.2 Experimento 1: una resta aparentemente inocente\nAntes de ejecutar, predice qué debería ocurrir matemáticamente.\nx = 1.0\nfor k in 1:17\n    δ = 10.0^(-k)\n    y = (x + δ) - x\n    println(k, \"   \", δ, \"   \", y)\nend\nObserva cuándo el resultado deja de coincidir con \\(\\delta\\).\nPreguntas\n\n¿Por qué comienza a perderse información?\n¿Qué relación tiene esto con eps()?\n¿Es un error de Julia o una consecuencia de la representación finita?"
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git.html#interpretación",
-    "href": "sesiones/sesion04_lista_para_git.html#interpretación",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "3.1 Interpretación",
-    "text": "3.1 Interpretación\nAproximadamente,\n\\[\n\\frac{|\\Delta f|}{|f|}\n\\approx\n\\kappa_f(x)\n\\frac{|\\Delta x|}{|x|}.\n\\]\nPor tanto:\n\nsi \\(\\kappa_f(x)\\) es moderado, el problema está bien condicionado;\nsi \\(\\kappa_f(x)\\) es muy grande, el problema está mal condicionado.\n\nSi\n\\[\n\\kappa_f(x)\\approx 10^d,\n\\]\npodemos esperar perder aproximadamente \\(d\\) cifras decimales de precisión."
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git.html#algunos-ejemplos",
-    "href": "sesiones/sesion04_lista_para_git.html#algunos-ejemplos",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "3.2 Algunos ejemplos",
-    "text": "3.2 Algunos ejemplos\n\n3.2.1 Multiplicación por una constante\nSi\n\\[\nf(x)=cx,\n\\]\nentonces\n\\[\n\\kappa_f(x)\n=\n\\left|\\frac{x c}{cx}\\right|\n=1.\n\\]\nLa multiplicación por una constante no amplifica el error relativo.\n\n\n3.2.2 Suma o resta de una constante\nPara\n\\[\nf(x)=x-c,\n\\]\ntenemos\n\\[\n\\kappa_f(x)\n=\n\\left|\n\\frac{x}{x-c}\n\\right|.\n\\]\nCuando \\(x\\approx c\\), el denominador es pequeño y el número de condición puede ser enorme.\nEsto conecta directamente con la cancelación sustractiva."
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git.html#experimento-2-observar-el-condicionamiento",
-    "href": "sesiones/sesion04_lista_para_git.html#experimento-2-observar-el-condicionamiento",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "3.3 Experimento 2: observar el condicionamiento",
-    "text": "3.3 Experimento 2: observar el condicionamiento\nConsideremos\n\\[\nf(x)=x-1.\n\\]\nκ(x) = abs(x / (x - 1))\n\nfor k in 1:12\n    x = 1 + 10.0^(-k)\n    println(k, \"   x = \", x, \"   κ = \", κ(x))\nend\nAntes de ejecutarlo:\n¿qué esperas que ocurra con \\(\\kappa_f(x)\\) cuando \\(x\\to1\\)?"
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git.html#implementación-en-julia",
-    "href": "sesiones/sesion04_lista_para_git.html#implementación-en-julia",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "6.1 Implementación en Julia",
-    "text": "6.1 Implementación en Julia\nNo utilizaremos la biblioteca FNC. Escribiremos nuestro propio algoritmo.\nfunction horner(c, x)\n    n = length(c)\n    y = c[n]\n\n    for k in n-1:-1:1\n        y = x*y + c[k]\n    end\n\n    return y\nend\nProbemos con\n\\[\np(x)=(x-1)^3=x^3-3x^2+3x-1.\n\\]\nLos coeficientes se introducen en orden ascendente:\nc = [-1, 3, -3, 1]\n\nhorner(c, 1.6)"
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git.html#experimento-3-directo-contra-horner",
-    "href": "sesiones/sesion04_lista_para_git.html#experimento-3-directo-contra-horner",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "6.2 Experimento 3: directo contra Horner",
-    "text": "6.2 Experimento 3: directo contra Horner\np_directo(x) = 5*x^3 + 4*x^2 + 3*x + 2\np_horner(x)  = 2 + x*(3 + x*(4 + 5*x))\n\nx = 1.23456789\n\np_directo(x), p_horner(x)\nDiscusión\nLos dos algoritmos representan el mismo polinomio.\nPero:\n\n¿realizan las mismas operaciones?\n¿cuál necesita menos?\n¿ser matemáticamente equivalentes garantiza que se comporten igual en punto flotante?\n\nLa última pregunta nos conduce a la estabilidad."
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git.html#experimento-4-el-algoritmo-ingenuo",
-    "href": "sesiones/sesion04_lista_para_git.html#experimento-4-el-algoritmo-ingenuo",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "8.1 Experimento 4: el algoritmo ingenuo",
-    "text": "8.1 Experimento 4: el algoritmo ingenuo\nAntes de ejecutar: ambas raíces son conocidas exactamente. ¿Esperas obtenerlas con precisión comparable?\na = 1.0\nb = -(1e6 + 1e-6)\nc = 1.0\n\nx1 = (-b + sqrt(b^2 - 4*a*c)) / (2*a)\nx2 = (-b - sqrt(b^2 - 4*a*c)) / (2*a)\n\nprintln(\"x1 = \", x1)\nprintln(\"x2 = \", x2)\n\nerror1 = abs(x1 - 1e6) / 1e6\nerror2 = abs(x2 - 1e-6) / 1e-6\n\nprintln(\"error relativo x1 = \", error1)\nprintln(\"error relativo x2 = \", error2)\nUna raíz se obtiene con gran precisión y la otra pierde varias cifras.\n¿Dónde está el culpable?\nEn la raíz pequeña aparece una resta entre números casi iguales:\n\\[\n-b-\\sqrt{b^2-4ac}.\n\\]\nOtra vez encontramos cancelación sustractiva."
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git.html#experimento-5-evitar-la-cancelación",
-    "href": "sesiones/sesion04_lista_para_git.html#experimento-5-evitar-la-cancelación",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "9.1 Experimento 5: evitar la cancelación",
-    "text": "9.1 Experimento 5: evitar la cancelación\na = 1.0\nb = -(1e6 + 1e-6)\nc = 1.0\n\nx1 = (-b + sqrt(b^2 - 4*a*c)) / (2*a)\nx2 = c / (a*x1)\n\nprintln(\"x1 = \", x1)\nprintln(\"x2 = \", x2)\n\nerror2 = abs(x2 - 1e-6) / 1e-6\nprintln(\"error relativo x2 = \", error2)\nAhora compara el error de la raíz pequeña con el obtenido mediante la fórmula directa.\nTenemos dos algoritmos algebraicamente equivalentes en aritmética exacta, pero no necesariamente equivalentes en aritmética de punto flotante.\n\nLección: en análisis numérico importa no sólo qué fórmula usamos, sino también cómo la evaluamos."
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git.html#representación",
-    "href": "sesiones/sesion04_lista_para_git.html#representación",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "12.1 Representación",
-    "text": "12.1 Representación\nLos números reales deben aproximarse mediante números de punto flotante."
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git.html#problema",
-    "href": "sesiones/sesion04_lista_para_git.html#problema",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "12.2 Problema",
-    "text": "12.2 Problema\n\\[\ny=f(x)\n\\]\nEl condicionamiento describe la sensibilidad inherente del problema frente a perturbaciones en los datos."
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git.html#algoritmo",
-    "href": "sesiones/sesion04_lista_para_git.html#algoritmo",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "12.3 Algoritmo",
-    "text": "12.3 Algoritmo\n\\[\n\\widetilde y=\\widetilde f(x)\n\\]\nEs la secuencia concreta de operaciones utilizada para aproximar la solución."
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git.html#estabilidad-1",
-    "href": "sesiones/sesion04_lista_para_git.html#estabilidad-1",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "12.4 Estabilidad",
-    "text": "12.4 Estabilidad\nDescribe si el algoritmo introduce una amplificación de errores mayor de la que el propio problema exige.\nEn forma esquemática:\n\\[\n\\boxed{\\text{datos}}\n\\longrightarrow\n\\boxed{\\text{problema}}\n\\longrightarrow\n\\boxed{\\text{condicionamiento}}\n\\]\n\\[\n\\boxed{\\text{datos en punto flotante}}\n\\longrightarrow\n\\boxed{\\text{algoritmo}}\n\\longrightarrow\n\\boxed{\\text{estabilidad}}\n\\longrightarrow\n\\boxed{\\text{resultado calculado}}\n\\]\nÉsta será una distinción recurrente durante todo el curso."
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git.html#ejercicio-1.-número-de-condición",
-    "href": "sesiones/sesion04_lista_para_git.html#ejercicio-1.-número-de-condición",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.1 Ejercicio 1. Número de condición",
-    "text": "13.1 Ejercicio 1. Número de condición\nUtilizando\n\\[\n\\kappa_f(x)\n=\n\\left|\n\\frac{x f'(x)}{f(x)}\n\\right|,\n\\]\ncalcula el número de condición relativo de:\n\\[\n\\text{a) } f(x)=x^p,\n\\qquad\n\\text{b) } f(x)=e^x,\n\\qquad\n\\text{c) } f(x)=\\cos x.\n\\]\nIdentifica valores de \\(x\\) para los cuales el problema pueda estar mal condicionado."
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git.html#ejercicio-2.-condicionamiento-y-composición",
-    "href": "sesiones/sesion04_lista_para_git.html#ejercicio-2.-condicionamiento-y-composición",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.2 Ejercicio 2. Condicionamiento y composición",
-    "text": "13.2 Ejercicio 2. Condicionamiento y composición\nSean\n\\[\nh(x)=f(g(x)).\n\\]\nDemuestra, utilizando la regla de la cadena, que\n\\[\n\\kappa_h(x)\n=\n\\kappa_f(g(x))\\,\\kappa_g(x).\n\\]\nComprueba después la fórmula para\n\\[\nh(x)=\\sqrt{x+5}.\n\\]"
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git.html#ejercicio-3.-horner",
-    "href": "sesiones/sesion04_lista_para_git.html#ejercicio-3.-horner",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.3 Ejercicio 3. Horner",
-    "text": "13.3 Ejercicio 3. Horner\nEscribe en Julia una función que evalúe mediante el algoritmo de Horner\n\\[\np(x)=2x^4-3x^3+5x^2-x+7.\n\\]\nEvalúa el polinomio en\n\\[\nx=1.5.\n\\]\nDespués evalúalo directamente mediante potencias y compara los resultados y el número de multiplicaciones requeridas por cada método."
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git.html#ejercicio-4.-dos-fórmulas-equivalentes",
-    "href": "sesiones/sesion04_lista_para_git.html#ejercicio-4.-dos-fórmulas-equivalentes",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.4 Ejercicio 4. Dos fórmulas equivalentes",
-    "text": "13.4 Ejercicio 4. Dos fórmulas equivalentes\nLas expresiones\n\\[\nf(x)=\\frac{1-\\cos x}{\\sin x},\n\\qquad\ng(x)=\\frac{2\\sin^2(x/2)}{\\sin x}\n\\]\nson matemáticamente equivalentes.\nEn Julia, evalúa ambas para\n\\[\nx=10^{-2},10^{-4},10^{-6},10^{-8}.\n\\]\nConstruye una tabla con los resultados.\nExplica por qué una de las fórmulas puede perder precisión más rápidamente que la otra."
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git.html#ejercicio-5.-la-fórmula-cuadrática",
-    "href": "sesiones/sesion04_lista_para_git.html#ejercicio-5.-la-fórmula-cuadrática",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.5 Ejercicio 5. La fórmula cuadrática",
-    "text": "13.5 Ejercicio 5. La fórmula cuadrática\nConsidera\n\\[\np(x)\n=\n(x-10^8)(x-10^{-8}).\n\\]\n\nExpande el polinomio e identifica \\(a,b,c\\).\nCalcula ambas raíces mediante la fórmula cuadrática usual.\nCalcula el error relativo de cada raíz.\nCalcula la raíz grande mediante la fórmula cuadrática y la pequeña usando\n\n\\[\nx_1x_2=\\frac ca.\n\\]\n\nCompara ambos procedimientos y explica el resultado utilizando los conceptos de cancelación sustractiva y estabilidad."
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git.html#fuente-principal",
-    "href": "sesiones/sesion04_lista_para_git.html#fuente-principal",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "15.1 Fuente principal",
-    "text": "15.1 Fuente principal\nEl material de esta sesión está basado principalmente en los apartados 1.2–1.5 de:\nTobin A. Driscoll y Richard J. Braun, Fundamentals of Numerical Computation, edición Julia.\nhttps://tobydriscoll.net/fnc-julia/home.html"
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git (1).html",
-    "href": "sesiones/sesion04_lista_para_git (1).html",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "",
-    "text": "En la sesión anterior vimos que los números de punto flotante representan sólo una parte finita de los números reales y que las operaciones realizadas por una computadora pueden introducir errores de redondeo.\nAhora aparecen dos preguntas fundamentales:\n\n¿El problema matemático es sensible a pequeñas perturbaciones en los datos?\n¿El algoritmo que elegimos amplifica innecesariamente los errores?\n\nEstas preguntas conducen a dos conceptos centrales del análisis numérico:\n\ncondicionamiento, que es una propiedad del problema;\nestabilidad, que es una propiedad del algoritmo.\n\n\nIdea guía. Un problema puede estar bien condicionado y, sin embargo, ser resuelto por un algoritmo inestable.\n\nDurante esta sesión seguiremos el esquema:\npredecir → ejecutar → observar → explicar."
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git (1).html#cancelación-sustractiva",
-    "href": "sesiones/sesion04_lista_para_git (1).html#cancelación-sustractiva",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "2.1 Cancelación sustractiva",
-    "text": "2.1 Cancelación sustractiva\nCuando se restan dos números cercanos, el resultado puede ser mucho menor que cualquiera de los operandos. En ese proceso pueden perderse cifras significativas.\nPor ejemplo,\n\\[\n1.0000-1.0012=-0.0012.\n\\]\nLos operandos tienen cinco cifras significativas, pero el resultado contiene mucha menos información útil.\nA este fenómeno se le llama cancelación sustractiva.\n\nLa cancelación sustractiva es una de las causas más frecuentes de pérdida importante de precisión en aritmética de punto flotante."
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git (1).html#experimento-1-una-resta-aparentemente-inocente",
-    "href": "sesiones/sesion04_lista_para_git (1).html#experimento-1-una-resta-aparentemente-inocente",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "2.2 Experimento 1: una resta aparentemente inocente",
-    "text": "2.2 Experimento 1: una resta aparentemente inocente\nAntes de ejecutar, predice qué debería ocurrir matemáticamente.\nx = 1.0\nfor k in 1:17\n    δ = 10.0^(-k)\n    y = (x + δ) - x\n    println(k, \"   \", δ, \"   \", y)\nend\nObserva cuándo el resultado deja de coincidir con \\(\\delta\\).\nPreguntas\n\n¿Por qué comienza a perderse información?\n¿Qué relación tiene esto con eps()?\n¿Es un error de Julia o una consecuencia de la representación finita?"
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git (1).html#interpretación",
-    "href": "sesiones/sesion04_lista_para_git (1).html#interpretación",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "3.1 Interpretación",
-    "text": "3.1 Interpretación\nAproximadamente,\n\\[\n\\frac{|\\Delta f|}{|f|}\n\\approx\n\\kappa_f(x)\n\\frac{|\\Delta x|}{|x|}.\n\\]\nPor tanto:\n\nsi \\(\\kappa_f(x)\\) es moderado, el problema está bien condicionado;\nsi \\(\\kappa_f(x)\\) es muy grande, el problema está mal condicionado.\n\nSi\n\\[\n\\kappa_f(x)\\approx 10^d,\n\\]\npodemos esperar perder aproximadamente \\(d\\) cifras decimales de precisión."
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git (1).html#algunos-ejemplos",
-    "href": "sesiones/sesion04_lista_para_git (1).html#algunos-ejemplos",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "3.2 Algunos ejemplos",
-    "text": "3.2 Algunos ejemplos\n\n3.2.1 Multiplicación por una constante\nSi\n\\[\nf(x)=cx,\n\\]\nentonces\n\\[\n\\kappa_f(x)\n=\n\\left|\\frac{x c}{cx}\\right|\n=1.\n\\]\nLa multiplicación por una constante no amplifica el error relativo.\n\n\n3.2.2 Suma o resta de una constante\nPara\n\\[\nf(x)=x-c,\n\\]\ntenemos\n\\[\n\\kappa_f(x)\n=\n\\left|\n\\frac{x}{x-c}\n\\right|.\n\\]\nCuando \\(x\\approx c\\), el denominador es pequeño y el número de condición puede ser enorme.\nEsto conecta directamente con la cancelación sustractiva."
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git (1).html#experimento-2-observar-el-condicionamiento",
-    "href": "sesiones/sesion04_lista_para_git (1).html#experimento-2-observar-el-condicionamiento",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "3.3 Experimento 2: observar el condicionamiento",
-    "text": "3.3 Experimento 2: observar el condicionamiento\nConsideremos\n\\[\nf(x)=x-1.\n\\]\nκ(x) = abs(x / (x - 1))\n\nfor k in 1:12\n    x = 1 + 10.0^(-k)\n    println(k, \"   x = \", x, \"   κ = \", κ(x))\nend\nAntes de ejecutarlo:\n¿qué esperas que ocurra con \\(\\kappa_f(x)\\) cuando \\(x\\to1\\)?"
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git (1).html#implementación-en-julia",
-    "href": "sesiones/sesion04_lista_para_git (1).html#implementación-en-julia",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "6.1 Implementación en Julia",
-    "text": "6.1 Implementación en Julia\nNo utilizaremos la biblioteca FNC. Escribiremos nuestro propio algoritmo.\nfunction horner(c, x)\n    n = length(c)\n    y = c[n]\n\n    for k in n-1:-1:1\n        y = x*y + c[k]\n    end\n\n    return y\nend\nProbemos con\n\\[\np(x)=(x-1)^3=x^3-3x^2+3x-1.\n\\]\nLos coeficientes se introducen en orden ascendente:\nc = [-1, 3, -3, 1]\n\nhorner(c, 1.6)"
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git (1).html#experimento-3-directo-contra-horner",
-    "href": "sesiones/sesion04_lista_para_git (1).html#experimento-3-directo-contra-horner",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "6.2 Experimento 3: directo contra Horner",
-    "text": "6.2 Experimento 3: directo contra Horner\np_directo(x) = 5*x^3 + 4*x^2 + 3*x + 2\np_horner(x)  = 2 + x*(3 + x*(4 + 5*x))\n\nx = 1.23456789\n\np_directo(x), p_horner(x)\nDiscusión\nLos dos algoritmos representan el mismo polinomio.\nPero:\n\n¿realizan las mismas operaciones?\n¿cuál necesita menos?\n¿ser matemáticamente equivalentes garantiza que se comporten igual en punto flotante?\n\nLa última pregunta nos conduce a la estabilidad."
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git (1).html#experimento-4-el-algoritmo-ingenuo",
-    "href": "sesiones/sesion04_lista_para_git (1).html#experimento-4-el-algoritmo-ingenuo",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "8.1 Experimento 4: el algoritmo ingenuo",
-    "text": "8.1 Experimento 4: el algoritmo ingenuo\nAntes de ejecutar: ambas raíces son conocidas exactamente. ¿Esperas obtenerlas con precisión comparable?\na = 1.0\nb = -(1e6 + 1e-6)\nc = 1.0\n\nx1 = (-b + sqrt(b^2 - 4*a*c)) / (2*a)\nx2 = (-b - sqrt(b^2 - 4*a*c)) / (2*a)\n\nprintln(\"x1 = \", x1)\nprintln(\"x2 = \", x2)\n\nerror1 = abs(x1 - 1e6) / 1e6\nerror2 = abs(x2 - 1e-6) / 1e-6\n\nprintln(\"error relativo x1 = \", error1)\nprintln(\"error relativo x2 = \", error2)\nUna raíz se obtiene con gran precisión y la otra pierde varias cifras.\n¿Dónde está el culpable?\nEn la raíz pequeña aparece una resta entre números casi iguales:\n\\[\n-b-\\sqrt{b^2-4ac}.\n\\]\nOtra vez encontramos cancelación sustractiva."
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git (1).html#experimento-5-evitar-la-cancelación",
-    "href": "sesiones/sesion04_lista_para_git (1).html#experimento-5-evitar-la-cancelación",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "9.1 Experimento 5: evitar la cancelación",
-    "text": "9.1 Experimento 5: evitar la cancelación\na = 1.0\nb = -(1e6 + 1e-6)\nc = 1.0\n\nx1 = (-b + sqrt(b^2 - 4*a*c)) / (2*a)\nx2 = c / (a*x1)\n\nprintln(\"x1 = \", x1)\nprintln(\"x2 = \", x2)\n\nerror2 = abs(x2 - 1e-6) / 1e-6\nprintln(\"error relativo x2 = \", error2)\nAhora compara el error de la raíz pequeña con el obtenido mediante la fórmula directa.\nTenemos dos algoritmos algebraicamente equivalentes en aritmética exacta, pero no necesariamente equivalentes en aritmética de punto flotante.\n\nLección: en análisis numérico importa no sólo qué fórmula usamos, sino también cómo la evaluamos."
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git (1).html#representación",
-    "href": "sesiones/sesion04_lista_para_git (1).html#representación",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "12.1 Representación",
-    "text": "12.1 Representación\nLos números reales deben aproximarse mediante números de punto flotante."
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git (1).html#problema",
-    "href": "sesiones/sesion04_lista_para_git (1).html#problema",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "12.2 Problema",
-    "text": "12.2 Problema\n\\[\ny=f(x)\n\\]\nEl condicionamiento describe la sensibilidad inherente del problema frente a perturbaciones en los datos."
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git (1).html#algoritmo",
-    "href": "sesiones/sesion04_lista_para_git (1).html#algoritmo",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "12.3 Algoritmo",
-    "text": "12.3 Algoritmo\n\\[\n\\widetilde y=\\widetilde f(x)\n\\]\nEs la secuencia concreta de operaciones utilizada para aproximar la solución."
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git (1).html#estabilidad-1",
-    "href": "sesiones/sesion04_lista_para_git (1).html#estabilidad-1",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "12.4 Estabilidad",
-    "text": "12.4 Estabilidad\nDescribe si el algoritmo introduce una amplificación de errores mayor de la que el propio problema exige.\nEn forma esquemática:\n\\[\n\\boxed{\\text{datos}}\n\\longrightarrow\n\\boxed{\\text{problema}}\n\\longrightarrow\n\\boxed{\\text{condicionamiento}}\n\\]\n\\[\n\\boxed{\\text{datos en punto flotante}}\n\\longrightarrow\n\\boxed{\\text{algoritmo}}\n\\longrightarrow\n\\boxed{\\text{estabilidad}}\n\\longrightarrow\n\\boxed{\\text{resultado calculado}}\n\\]\nÉsta será una distinción recurrente durante todo el curso."
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git (1).html#ejercicio-1.-número-de-condición",
-    "href": "sesiones/sesion04_lista_para_git (1).html#ejercicio-1.-número-de-condición",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.1 Ejercicio 1. Número de condición",
-    "text": "13.1 Ejercicio 1. Número de condición\nUtilizando\n\\[\n\\kappa_f(x)\n=\n\\left|\n\\frac{x f'(x)}{f(x)}\n\\right|,\n\\]\ncalcula el número de condición relativo de:\n\\[\n\\text{a) } f(x)=x^p,\n\\qquad\n\\text{b) } f(x)=e^x,\n\\qquad\n\\text{c) } f(x)=\\cos x.\n\\]\nIdentifica valores de \\(x\\) para los cuales el problema pueda estar mal condicionado."
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git (1).html#ejercicio-2.-condicionamiento-y-composición",
-    "href": "sesiones/sesion04_lista_para_git (1).html#ejercicio-2.-condicionamiento-y-composición",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.2 Ejercicio 2. Condicionamiento y composición",
-    "text": "13.2 Ejercicio 2. Condicionamiento y composición\nSean\n\\[\nh(x)=f(g(x)).\n\\]\nDemuestra, utilizando la regla de la cadena, que\n\\[\n\\kappa_h(x)\n=\n\\kappa_f(g(x))\\,\\kappa_g(x).\n\\]\nComprueba después la fórmula para\n\\[\nh(x)=\\sqrt{x+5}.\n\\]"
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git (1).html#ejercicio-3.-horner",
-    "href": "sesiones/sesion04_lista_para_git (1).html#ejercicio-3.-horner",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.3 Ejercicio 3. Horner",
-    "text": "13.3 Ejercicio 3. Horner\nEscribe en Julia una función que evalúe mediante el algoritmo de Horner\n\\[\np(x)=2x^4-3x^3+5x^2-x+7.\n\\]\nEvalúa el polinomio en\n\\[\nx=1.5.\n\\]\nDespués evalúalo directamente mediante potencias y compara los resultados y el número de multiplicaciones requeridas por cada método."
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git (1).html#ejercicio-4.-dos-fórmulas-equivalentes",
-    "href": "sesiones/sesion04_lista_para_git (1).html#ejercicio-4.-dos-fórmulas-equivalentes",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.4 Ejercicio 4. Dos fórmulas equivalentes",
-    "text": "13.4 Ejercicio 4. Dos fórmulas equivalentes\nLas expresiones\n\\[\nf(x)=\\frac{1-\\cos x}{\\sin x},\n\\qquad\ng(x)=\\frac{2\\sin^2(x/2)}{\\sin x}\n\\]\nson matemáticamente equivalentes.\nEn Julia, evalúa ambas para\n\\[\nx=10^{-2},10^{-4},10^{-6},10^{-8}.\n\\]\nConstruye una tabla con los resultados.\nExplica por qué una de las fórmulas puede perder precisión más rápidamente que la otra."
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git (1).html#ejercicio-5.-la-fórmula-cuadrática",
-    "href": "sesiones/sesion04_lista_para_git (1).html#ejercicio-5.-la-fórmula-cuadrática",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.5 Ejercicio 5. La fórmula cuadrática",
-    "text": "13.5 Ejercicio 5. La fórmula cuadrática\nConsidera\n\\[\np(x)\n=\n(x-10^8)(x-10^{-8}).\n\\]\n\nExpande el polinomio e identifica \\(a,b,c\\).\nCalcula ambas raíces mediante la fórmula cuadrática usual.\nCalcula el error relativo de cada raíz.\nCalcula la raíz grande mediante la fórmula cuadrática y la pequeña usando\n\n\\[\nx_1x_2=\\frac ca.\n\\]\n\nCompara ambos procedimientos y explica el resultado utilizando los conceptos de cancelación sustractiva y estabilidad."
-  },
-  {
-    "objectID": "sesiones/sesion04_lista_para_git (1).html#fuente-principal",
-    "href": "sesiones/sesion04_lista_para_git (1).html#fuente-principal",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "15.1 Fuente principal",
-    "text": "15.1 Fuente principal\nEl material de esta sesión está basado principalmente en los apartados 1.2–1.5 de:\nTobin A. Driscoll y Richard J. Braun, Fundamentals of Numerical Computation, edición Julia.\nhttps://tobydriscoll.net/fnc-julia/home.html"
-  },
-  {
-    "objectID": "sesiones/sesion04.html#fuente-principal",
-    "href": "sesiones/sesion04.html#fuente-principal",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "15.1 Fuente principal",
-    "text": "15.1 Fuente principal\nEl material de esta sesión está basado principalmente en los apartados 1.2–1.5 de:\nTobin A. Driscoll y Richard J. Braun, Fundamentals of Numerical Computation, edición Julia.\nhttps://tobydriscoll.net/fnc-julia/home.html"
   }
 ]
