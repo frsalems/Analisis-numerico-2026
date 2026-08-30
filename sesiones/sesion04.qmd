@@ -1,0 +1,832 @@
+---
+title: "Sesión 04: Condicionamiento, algoritmos y estabilidad"
+subtitle: "Capítulo 1: del problema matemático al cálculo confiable"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    code-fold: false
+    number-sections: true
+---
+
+# Propósito de la sesión
+
+En la sesión anterior vimos que los números de punto flotante representan sólo una parte finita de los números reales y que las operaciones realizadas por una computadora pueden introducir errores de redondeo.
+
+Ahora aparecen dos preguntas fundamentales:
+
+1. **¿El problema matemático es sensible a pequeñas perturbaciones en los datos?**
+2. **¿El algoritmo que elegimos amplifica innecesariamente los errores?**
+
+Estas preguntas conducen a dos conceptos centrales del análisis numérico:
+
+- **condicionamiento**, que es una propiedad del problema;
+- **estabilidad**, que es una propiedad del algoritmo.
+
+> **Idea guía.** Un problema puede estar bien condicionado y, sin embargo, ser resuelto por un algoritmo inestable.
+
+Durante esta sesión seguiremos el esquema:
+
+**predecir → ejecutar → observar → explicar.**
+
+---
+
+# 1. Problemas y condicionamiento
+
+Consideremos primero un problema extremadamente sencillo:
+
+$$
+f(x)=x+1.
+$$
+
+En una computadora, el número $x$ se representa aproximadamente mediante un número de punto flotante. Podemos pensar en
+
+$$
+\widetilde{x}=x(1+\varepsilon),
+$$
+
+donde $\varepsilon$ es pequeño.
+
+Si la suma se realizara sin ningún error adicional, obtendríamos
+
+$$
+\widetilde{y}=x(1+\varepsilon)+1.
+$$
+
+El error relativo respecto al resultado exacto $f(x)=x+1$ sería
+
+$$
+\frac{|\widetilde{y}-f(x)|}{|f(x)|}
+=
+\frac{|\varepsilon x|}{|x+1|}.
+$$
+
+¿Qué ocurre cuando $x$ está muy cerca de $-1$?
+
+El denominador se hace pequeño y una perturbación diminuta en los datos puede producir un error relativo grande en el resultado.
+
+## Cancelación sustractiva
+
+Cuando se restan dos números cercanos, el resultado puede ser mucho menor que cualquiera de los operandos. En ese proceso pueden perderse cifras significativas.
+
+Por ejemplo,
+
+$$
+1.0000-1.0012=-0.0012.
+$$
+
+Los operandos tienen cinco cifras significativas, pero el resultado contiene mucha menos información útil.
+
+A este fenómeno se le llama **cancelación sustractiva**.
+
+> La cancelación sustractiva es una de las causas más frecuentes de pérdida importante de precisión en aritmética de punto flotante.
+
+## Experimento 1: una resta aparentemente inocente
+
+Antes de ejecutar, **predice** qué debería ocurrir matemáticamente.
+
+```julia
+x = 1.0
+for k in 1:17
+    δ = 10.0^(-k)
+    y = (x + δ) - x
+    println(k, "   ", δ, "   ", y)
+end
+```
+
+Observa cuándo el resultado deja de coincidir con $\delta$.
+
+**Preguntas**
+
+- ¿Por qué comienza a perderse información?
+- ¿Qué relación tiene esto con `eps()`?
+- ¿Es un error de Julia o una consecuencia de la representación finita?
+
+---
+
+# 2. Número de condición
+
+Sea un problema escalar
+
+$$
+f:\mathbb{R}\to\mathbb{R}.
+$$
+
+Queremos medir cuánto cambia relativamente el resultado cuando perturbamos relativamente el dato.
+
+El **número de condición relativo** se define mediante
+
+$$
+\kappa_f(x)
+=
+\lim_{\varepsilon\to0}
+\frac{|f(x)-f(x(1+\varepsilon))|}
+     {|\varepsilon f(x)|}.
+$$
+
+Si $f$ es diferenciable,
+
+$$
+\boxed{
+\kappa_f(x)
+=
+\left|
+\frac{x f'(x)}{f(x)}
+\right|
+}
+$$
+
+Esta fórmula será nuestra herramienta principal.
+
+## Interpretación
+
+Aproximadamente,
+
+$$
+\frac{|\Delta f|}{|f|}
+\approx
+\kappa_f(x)
+\frac{|\Delta x|}{|x|}.
+$$
+
+Por tanto:
+
+- si $\kappa_f(x)$ es moderado, el problema está **bien condicionado**;
+- si $\kappa_f(x)$ es muy grande, el problema está **mal condicionado**.
+
+Si
+
+$$
+\kappa_f(x)\approx 10^d,
+$$
+
+podemos esperar perder aproximadamente $d$ cifras decimales de precisión.
+
+## Algunos ejemplos
+
+### Multiplicación por una constante
+
+Si
+
+$$
+f(x)=cx,
+$$
+
+entonces
+
+$$
+\kappa_f(x)
+=
+\left|\frac{x c}{cx}\right|
+=1.
+$$
+
+La multiplicación por una constante no amplifica el error relativo.
+
+### Suma o resta de una constante
+
+Para
+
+$$
+f(x)=x-c,
+$$
+
+tenemos
+
+$$
+\kappa_f(x)
+=
+\left|
+\frac{x}{x-c}
+\right|.
+$$
+
+Cuando $x\approx c$, el denominador es pequeño y el número de condición puede ser enorme.
+
+Esto conecta directamente con la cancelación sustractiva.
+
+## Experimento 2: observar el condicionamiento
+
+Consideremos
+
+$$
+f(x)=x-1.
+$$
+
+```julia
+κ(x) = abs(x / (x - 1))
+
+for k in 1:12
+    x = 1 + 10.0^(-k)
+    println(k, "   x = ", x, "   κ = ", κ(x))
+end
+```
+
+Antes de ejecutarlo:
+
+**¿qué esperas que ocurra con $\kappa_f(x)$ cuando $x\to1$?**
+
+---
+
+# 3. Raíces de polinomios y sensibilidad
+
+El cálculo de raíces de polinomios permite ver que el condicionamiento no es una curiosidad académica.
+
+Para
+
+$$
+p(t)=at^2+bt+c,
+$$
+
+supongamos que $r_1$ y $r_2$ son sus raíces.
+
+Al estudiar la sensibilidad de $r_1$ respecto al coeficiente $a$, se obtiene
+
+$$
+\kappa
+=
+\left|
+\frac{r_1}{r_1-r_2}
+\right|.
+$$
+
+Por tanto, cuando las raíces están muy próximas entre sí, el problema puede estar muy mal condicionado.
+
+> Las raíces múltiples representan el caso extremo: el número de condición puede hacerse infinito.
+
+---
+
+# 4. Problema matemático y algoritmo
+
+Un problema matemático idealizado puede representarse por una función
+
+$$
+y=f(x).
+$$
+
+En una computadora necesitamos una secuencia finita de instrucciones para aproximarlo. Esa secuencia es un **algoritmo**.
+
+Dos algoritmos pueden resolver exactamente el mismo problema matemático y, sin embargo:
+
+- requerir diferente número de operaciones;
+- acumular errores de manera distinta;
+- tener estabilidad numérica diferente.
+
+---
+
+# 5. Algoritmo de Horner
+
+Consideremos
+
+$$
+p(x)=5x^3+4x^2+3x+2.
+$$
+
+Una evaluación directa requiere formar potencias, multiplicar por los coeficientes y sumar.
+
+Pero podemos escribir
+
+$$
+p(x)=2+x\bigl(3+x(4+5x)\bigr).
+$$
+
+Ésta es la idea del **algoritmo de Horner**.
+
+Para
+
+$$
+p(x)=c_1+c_2x+\cdots+c_nx^{n-1},
+$$
+
+podemos evaluarlo mediante
+
+$$
+p(x)
+=
+\Bigl(
+\cdots((c_nx+c_{n-1})x+c_{n-2})x+\cdots+c_2
+\Bigr)x+c_1.
+$$
+
+## Implementación en Julia
+
+No utilizaremos la biblioteca `FNC`. Escribiremos nuestro propio algoritmo.
+
+```julia
+function horner(c, x)
+    n = length(c)
+    y = c[n]
+
+    for k in n-1:-1:1
+        y = x*y + c[k]
+    end
+
+    return y
+end
+```
+
+Probemos con
+
+$$
+p(x)=(x-1)^3=x^3-3x^2+3x-1.
+$$
+
+Los coeficientes se introducen en orden ascendente:
+
+```julia
+c = [-1, 3, -3, 1]
+
+horner(c, 1.6)
+```
+
+## Experimento 3: directo contra Horner
+
+```julia
+p_directo(x) = 5*x^3 + 4*x^2 + 3*x + 2
+p_horner(x)  = 2 + x*(3 + x*(4 + 5*x))
+
+x = 1.23456789
+
+p_directo(x), p_horner(x)
+```
+
+**Discusión**
+
+Los dos algoritmos representan el mismo polinomio.
+
+Pero:
+
+- ¿realizan las mismas operaciones?
+- ¿cuál necesita menos?
+- ¿ser matemáticamente equivalentes garantiza que se comporten igual en punto flotante?
+
+La última pregunta nos conduce a la estabilidad.
+
+---
+
+# 6. Estabilidad
+
+Supongamos que el problema matemático es $f$ y que un algoritmo produce una aproximación $\widetilde f$.
+
+Si el error observado es mucho mayor que el que puede explicar el condicionamiento del problema, decimos que el algoritmo es **inestable**.
+
+La distinción fundamental es:
+
+$$
+\boxed{
+\text{condicionamiento} \longrightarrow \text{problema}
+}
+$$
+
+$$
+\boxed{
+\text{estabilidad} \longrightarrow \text{algoritmo}
+}
+$$
+
+---
+
+# 7. Un caso sorprendente: la fórmula cuadrática
+
+Consideremos
+
+$$
+p(x)
+=
+(x-10^6)(x-10^{-6})
+=
+x^2-(10^6+10^{-6})x+1.
+$$
+
+Sus raíces exactas son
+
+$$
+10^6
+\qquad\text{y}\qquad
+10^{-6}.
+$$
+
+Estas raíces están muy separadas, por lo que el problema no presenta el mal condicionamiento asociado a raíces cercanas.
+
+Utilicemos la fórmula cuadrática habitual:
+
+$$
+x_{1,2}
+=
+\frac{-b\pm\sqrt{b^2-4ac}}{2a}.
+$$
+
+## Experimento 4: el algoritmo ingenuo
+
+**Antes de ejecutar:** ambas raíces son conocidas exactamente. ¿Esperas obtenerlas con precisión comparable?
+
+```julia
+a = 1.0
+b = -(1e6 + 1e-6)
+c = 1.0
+
+x1 = (-b + sqrt(b^2 - 4*a*c)) / (2*a)
+x2 = (-b - sqrt(b^2 - 4*a*c)) / (2*a)
+
+println("x1 = ", x1)
+println("x2 = ", x2)
+
+error1 = abs(x1 - 1e6) / 1e6
+error2 = abs(x2 - 1e-6) / 1e-6
+
+println("error relativo x1 = ", error1)
+println("error relativo x2 = ", error2)
+```
+
+Una raíz se obtiene con gran precisión y la otra pierde varias cifras.
+
+**¿Dónde está el culpable?**
+
+En la raíz pequeña aparece una resta entre números casi iguales:
+
+$$
+-b-\sqrt{b^2-4ac}.
+$$
+
+Otra vez encontramos cancelación sustractiva.
+
+---
+
+# 8. El mismo problema, otro algoritmo
+
+Para una ecuación cuadrática,
+
+$$
+ax^2+bx+c=0,
+$$
+
+el producto de las raíces satisface
+
+$$
+x_1x_2=\frac ca.
+$$
+
+Podemos calcular primero la raíz que no sufre cancelación y después obtener la otra mediante
+
+$$
+x_2=\frac{c}{ax_1}.
+$$
+
+## Experimento 5: evitar la cancelación
+
+```julia
+a = 1.0
+b = -(1e6 + 1e-6)
+c = 1.0
+
+x1 = (-b + sqrt(b^2 - 4*a*c)) / (2*a)
+x2 = c / (a*x1)
+
+println("x1 = ", x1)
+println("x2 = ", x2)
+
+error2 = abs(x2 - 1e-6) / 1e-6
+println("error relativo x2 = ", error2)
+```
+
+Ahora compara el error de la raíz pequeña con el obtenido mediante la fórmula directa.
+
+Tenemos dos algoritmos algebraicamente equivalentes en aritmética exacta, pero no necesariamente equivalentes en aritmética de punto flotante.
+
+> **Lección:** en análisis numérico importa no sólo qué fórmula usamos, sino también cómo la evaluamos.
+
+---
+
+# 9. Error hacia atrás
+
+Existe otra manera muy poderosa de juzgar un resultado numérico.
+
+En lugar de preguntar:
+
+> ¿obtuve aproximadamente la respuesta correcta?
+
+podemos preguntar:
+
+> **¿mi resultado calculado es la respuesta exacta de un problema cuyos datos están muy cerca de los originales?**
+
+Sea
+
+$$
+y=f(x)
+$$
+
+el resultado exacto y sea
+
+$$
+\widetilde y=\widetilde f(x)
+$$
+
+el resultado producido por el algoritmo.
+
+Si existe un dato $\widetilde x$ tal que
+
+$$
+f(\widetilde x)=\widetilde y,
+$$
+
+entonces el error relativo hacia atrás es
+
+$$
+\boxed{
+\frac{|\widetilde x-x|}{|x|}
+}
+$$
+
+Un algoritmo con error hacia atrás pequeño suele ser numéricamente muy confiable.
+
+La idea puede resumirse así:
+
+$$
+\text{resultado aproximado del problema original}
+$$
+
+se interpreta como
+
+$$
+\text{resultado exacto de un problema ligeramente perturbado}.
+$$
+
+---
+
+# 10. Experimento con `Polynomials`
+
+Para este experimento sí utilizaremos el paquete:
+
+```julia
+using Polynomials
+```
+
+Si todavía no está instalado, se hace **una sola vez**:
+
+```julia
+import Pkg
+Pkg.add("Polynomials")
+```
+
+Después, en sesiones futuras, basta con:
+
+```julia
+using Polynomials
+```
+
+Construimos un polinomio a partir de raíces conocidas:
+
+```julia
+r = [-2.0, -1.0, 1.0, 1.0, 3.0, 6.0]
+
+p = fromroots(r)
+p
+```
+
+Ahora pedimos a Julia que calcule sus raíces:
+
+```julia
+r_aprox = sort(roots(p))
+r_aprox
+```
+
+Compara:
+
+```julia
+r
+r_aprox
+```
+
+Hay una raíz doble en $x=1$.
+
+**Pregunta:** ¿por qué justamente ésa debe ser especialmente sensible?
+
+Este experimento conecta tres ideas de la sesión:
+
+$$
+\boxed{
+\text{raíces múltiples}
+\rightarrow
+\text{mal condicionamiento}
+\rightarrow
+\text{pérdida de precisión}
+}
+$$
+
+---
+
+# 11. El mapa conceptual del capítulo 1
+
+Al terminar este capítulo debemos distinguir claramente cuatro objetos.
+
+## Representación
+
+Los números reales deben aproximarse mediante números de punto flotante.
+
+## Problema
+
+$$
+y=f(x)
+$$
+
+El **condicionamiento** describe la sensibilidad inherente del problema frente a perturbaciones en los datos.
+
+## Algoritmo
+
+$$
+\widetilde y=\widetilde f(x)
+$$
+
+Es la secuencia concreta de operaciones utilizada para aproximar la solución.
+
+## Estabilidad
+
+Describe si el algoritmo introduce una amplificación de errores mayor de la que el propio problema exige.
+
+En forma esquemática:
+
+$$
+\boxed{\text{datos}}
+\longrightarrow
+\boxed{\text{problema}}
+\longrightarrow
+\boxed{\text{condicionamiento}}
+$$
+
+$$
+\boxed{\text{datos en punto flotante}}
+\longrightarrow
+\boxed{\text{algoritmo}}
+\longrightarrow
+\boxed{\text{estabilidad}}
+\longrightarrow
+\boxed{\text{resultado calculado}}
+$$
+
+Ésta será una distinción recurrente durante todo el curso.
+
+---
+
+# 12. Cinco ejercicios para el miércoles
+
+Los siguientes ejercicios combinan razonamiento matemático y experimentación en Julia.
+
+## Ejercicio 1. Número de condición
+
+Utilizando
+
+$$
+\kappa_f(x)
+=
+\left|
+\frac{x f'(x)}{f(x)}
+\right|,
+$$
+
+calcula el número de condición relativo de:
+
+$$
+\text{a) } f(x)=x^p,
+\qquad
+\text{b) } f(x)=e^x,
+\qquad
+\text{c) } f(x)=\cos x.
+$$
+
+Identifica valores de $x$ para los cuales el problema pueda estar mal condicionado.
+
+---
+
+## Ejercicio 2. Condicionamiento y composición
+
+Sean
+
+$$
+h(x)=f(g(x)).
+$$
+
+Demuestra, utilizando la regla de la cadena, que
+
+$$
+\kappa_h(x)
+=
+\kappa_f(g(x))\,\kappa_g(x).
+$$
+
+Comprueba después la fórmula para
+
+$$
+h(x)=\sqrt{x+5}.
+$$
+
+---
+
+## Ejercicio 3. Horner
+
+Escribe en Julia una función que evalúe mediante el algoritmo de Horner
+
+$$
+p(x)=2x^4-3x^3+5x^2-x+7.
+$$
+
+Evalúa el polinomio en
+
+$$
+x=1.5.
+$$
+
+Después evalúalo directamente mediante potencias y compara los resultados y el número de multiplicaciones requeridas por cada método.
+
+---
+
+## Ejercicio 4. Dos fórmulas equivalentes
+
+Las expresiones
+
+$$
+f(x)=\frac{1-\cos x}{\sin x},
+\qquad
+g(x)=\frac{2\sin^2(x/2)}{\sin x}
+$$
+
+son matemáticamente equivalentes.
+
+En Julia, evalúa ambas para
+
+$$
+x=10^{-2},10^{-4},10^{-6},10^{-8}.
+$$
+
+Construye una tabla con los resultados.
+
+Explica por qué una de las fórmulas puede perder precisión más rápidamente que la otra.
+
+---
+
+## Ejercicio 5. La fórmula cuadrática
+
+Considera
+
+$$
+p(x)
+=
+(x-10^8)(x-10^{-8}).
+$$
+
+1. Expande el polinomio e identifica $a,b,c$.
+2. Calcula ambas raíces mediante la fórmula cuadrática usual.
+3. Calcula el error relativo de cada raíz.
+4. Calcula la raíz grande mediante la fórmula cuadrática y la pequeña usando
+
+$$
+x_1x_2=\frac ca.
+$$
+
+5. Compara ambos procedimientos y explica el resultado utilizando los conceptos de **cancelación sustractiva** y **estabilidad**.
+
+---
+
+# 13. Para profundizar
+
+Con esta sesión termina el capítulo introductorio.
+
+Para una discusión más avanzada de aritmética de máquina, error de redondeo y estabilidad numérica puede consultarse el trabajo de Nicholas Higham.
+
+El comportamiento numérico de las raíces de polinomios conduce además a una discusión clásica iniciada por James H. Wilkinson sobre la extraordinaria sensibilidad que pueden presentar algunos problemas polinomiales.
+
+No necesitamos todavía desarrollar esos resultados. Lo importante es conservar la pregunta que nos acompañará durante el curso:
+
+> **Cuando una computadora produce un resultado, ¿qué parte del error pertenece al problema y qué parte pertenece al algoritmo?**
+
+---
+
+# Cierre
+
+Al finalizar esta sesión deberías poder explicar, con tus propias palabras, la diferencia entre:
+
+- error de redondeo;
+- cancelación sustractiva;
+- condicionamiento;
+- algoritmo;
+- estabilidad;
+- error hacia atrás.
+
+Y, sobre todo, deberías desconfiar sanamente de una frase muy peligrosa:
+
+> **“Las dos fórmulas son matemáticamente equivalentes, así que da lo mismo cuál usemos.”**
+
+En aritmética exacta, quizá.
+
+En una computadora, **hay que comprobarlo**.
+
+---
+
+
+## Fuente principal
+
+El material de esta sesión está basado principalmente en los apartados 1.2--1.5 de:
+
+**Tobin A. Driscoll y Richard J. Braun, _Fundamentals of Numerical Computation_, edición Julia.**
+
+<https://tobydriscoll.net/fnc-julia/home.html>
+

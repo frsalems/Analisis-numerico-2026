@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Sesión 04: Condicionamiento, algoritmos y estabilidad – Análisis Numérico</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-24e7809d17eaf8fe359cf2819d66b8cb.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar docked nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Análisis Numérico</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="../index.html" aria-current="page"> 
+<span class="menu-text">Inicio</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../sesiones/sesion01.html"> 
+<span class="menu-text">Sesión 1</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../sesiones/sesion02.html"> 
+<span class="menu-text">Sesión 2</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../sesiones/sesion03.html"> 
+<span class="menu-text">Sesión 3</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Sesión 04: Condicionamiento, algoritmos y estabilidad</li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Análisis Numérico</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Sesiones</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../sesiones/sesion01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Sesión 1: ¿Qué significa calcular numéricamente?</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../sesiones/sesion02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Sesión 2: La computadora también aproxima</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../sesiones/sesion03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Sesión 03: Números de punto flotante</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#propósito-de-la-sesión" id="toc-propósito-de-la-sesión" class="nav-link active" data-scroll-target="#propósito-de-la-sesión"><span class="header-section-number">1</span> Propósito de la sesión</a></li>
+  <li><a href="#problemas-y-condicionamiento" id="toc-problemas-y-condicionamiento" class="nav-link" data-scroll-target="#problemas-y-condicionamiento"><span class="header-section-number">2</span> 1. Problemas y condicionamiento</a>
+  <ul class="collapse">
+  <li><a href="#cancelación-sustractiva" id="toc-cancelación-sustractiva" class="nav-link" data-scroll-target="#cancelación-sustractiva"><span class="header-section-number">2.1</span> Cancelación sustractiva</a></li>
+  <li><a href="#experimento-1-una-resta-aparentemente-inocente" id="toc-experimento-1-una-resta-aparentemente-inocente" class="nav-link" data-scroll-target="#experimento-1-una-resta-aparentemente-inocente"><span class="header-section-number">2.2</span> Experimento 1: una resta aparentemente inocente</a></li>
+  </ul></li>
+  <li><a href="#número-de-condición" id="toc-número-de-condición" class="nav-link" data-scroll-target="#número-de-condición"><span class="header-section-number">3</span> 2. Número de condición</a>
+  <ul class="collapse">
+  <li><a href="#interpretación" id="toc-interpretación" class="nav-link" data-scroll-target="#interpretación"><span class="header-section-number">3.1</span> Interpretación</a></li>
+  <li><a href="#algunos-ejemplos" id="toc-algunos-ejemplos" class="nav-link" data-scroll-target="#algunos-ejemplos"><span class="header-section-number">3.2</span> Algunos ejemplos</a>
+  <ul class="collapse">
+  <li><a href="#multiplicación-por-una-constante" id="toc-multiplicación-por-una-constante" class="nav-link" data-scroll-target="#multiplicación-por-una-constante"><span class="header-section-number">3.2.1</span> Multiplicación por una constante</a></li>
+  <li><a href="#suma-o-resta-de-una-constante" id="toc-suma-o-resta-de-una-constante" class="nav-link" data-scroll-target="#suma-o-resta-de-una-constante"><span class="header-section-number">3.2.2</span> Suma o resta de una constante</a></li>
+  </ul></li>
+  <li><a href="#experimento-2-observar-el-condicionamiento" id="toc-experimento-2-observar-el-condicionamiento" class="nav-link" data-scroll-target="#experimento-2-observar-el-condicionamiento"><span class="header-section-number">3.3</span> Experimento 2: observar el condicionamiento</a></li>
+  </ul></li>
+  <li><a href="#raíces-de-polinomios-y-sensibilidad" id="toc-raíces-de-polinomios-y-sensibilidad" class="nav-link" data-scroll-target="#raíces-de-polinomios-y-sensibilidad"><span class="header-section-number">4</span> 3. Raíces de polinomios y sensibilidad</a></li>
+  <li><a href="#problema-matemático-y-algoritmo" id="toc-problema-matemático-y-algoritmo" class="nav-link" data-scroll-target="#problema-matemático-y-algoritmo"><span class="header-section-number">5</span> 4. Problema matemático y algoritmo</a></li>
+  <li><a href="#algoritmo-de-horner" id="toc-algoritmo-de-horner" class="nav-link" data-scroll-target="#algoritmo-de-horner"><span class="header-section-number">6</span> 5. Algoritmo de Horner</a>
+  <ul class="collapse">
+  <li><a href="#implementación-en-julia" id="toc-implementación-en-julia" class="nav-link" data-scroll-target="#implementación-en-julia"><span class="header-section-number">6.1</span> Implementación en Julia</a></li>
+  <li><a href="#experimento-3-directo-contra-horner" id="toc-experimento-3-directo-contra-horner" class="nav-link" data-scroll-target="#experimento-3-directo-contra-horner"><span class="header-section-number">6.2</span> Experimento 3: directo contra Horner</a></li>
+  </ul></li>
+  <li><a href="#estabilidad" id="toc-estabilidad" class="nav-link" data-scroll-target="#estabilidad"><span class="header-section-number">7</span> 6. Estabilidad</a></li>
+  <li><a href="#un-caso-sorprendente-la-fórmula-cuadrática" id="toc-un-caso-sorprendente-la-fórmula-cuadrática" class="nav-link" data-scroll-target="#un-caso-sorprendente-la-fórmula-cuadrática"><span class="header-section-number">8</span> 7. Un caso sorprendente: la fórmula cuadrática</a>
+  <ul class="collapse">
+  <li><a href="#experimento-4-el-algoritmo-ingenuo" id="toc-experimento-4-el-algoritmo-ingenuo" class="nav-link" data-scroll-target="#experimento-4-el-algoritmo-ingenuo"><span class="header-section-number">8.1</span> Experimento 4: el algoritmo ingenuo</a></li>
+  </ul></li>
+  <li><a href="#el-mismo-problema-otro-algoritmo" id="toc-el-mismo-problema-otro-algoritmo" class="nav-link" data-scroll-target="#el-mismo-problema-otro-algoritmo"><span class="header-section-number">9</span> 8. El mismo problema, otro algoritmo</a>
+  <ul class="collapse">
+  <li><a href="#experimento-5-evitar-la-cancelación" id="toc-experimento-5-evitar-la-cancelación" class="nav-link" data-scroll-target="#experimento-5-evitar-la-cancelación"><span class="header-section-number">9.1</span> Experimento 5: evitar la cancelación</a></li>
+  </ul></li>
+  <li><a href="#error-hacia-atrás" id="toc-error-hacia-atrás" class="nav-link" data-scroll-target="#error-hacia-atrás"><span class="header-section-number">10</span> 9. Error hacia atrás</a></li>
+  <li><a href="#experimento-con-polynomials" id="toc-experimento-con-polynomials" class="nav-link" data-scroll-target="#experimento-con-polynomials"><span class="header-section-number">11</span> 10. Experimento con <code>Polynomials</code></a></li>
+  <li><a href="#el-mapa-conceptual-del-capítulo-1" id="toc-el-mapa-conceptual-del-capítulo-1" class="nav-link" data-scroll-target="#el-mapa-conceptual-del-capítulo-1"><span class="header-section-number">12</span> 11. El mapa conceptual del capítulo 1</a>
+  <ul class="collapse">
+  <li><a href="#representación" id="toc-representación" class="nav-link" data-scroll-target="#representación"><span class="header-section-number">12.1</span> Representación</a></li>
+  <li><a href="#problema" id="toc-problema" class="nav-link" data-scroll-target="#problema"><span class="header-section-number">12.2</span> Problema</a></li>
+  <li><a href="#algoritmo" id="toc-algoritmo" class="nav-link" data-scroll-target="#algoritmo"><span class="header-section-number">12.3</span> Algoritmo</a></li>
+  <li><a href="#estabilidad-1" id="toc-estabilidad-1" class="nav-link" data-scroll-target="#estabilidad-1"><span class="header-section-number">12.4</span> Estabilidad</a></li>
+  </ul></li>
+  <li><a href="#cinco-ejercicios-para-el-miércoles" id="toc-cinco-ejercicios-para-el-miércoles" class="nav-link" data-scroll-target="#cinco-ejercicios-para-el-miércoles"><span class="header-section-number">13</span> 12. Cinco ejercicios para el miércoles</a>
+  <ul class="collapse">
+  <li><a href="#ejercicio-1.-número-de-condición" id="toc-ejercicio-1.-número-de-condición" class="nav-link" data-scroll-target="#ejercicio-1.-número-de-condición"><span class="header-section-number">13.1</span> Ejercicio 1. Número de condición</a></li>
+  <li><a href="#ejercicio-2.-condicionamiento-y-composición" id="toc-ejercicio-2.-condicionamiento-y-composición" class="nav-link" data-scroll-target="#ejercicio-2.-condicionamiento-y-composición"><span class="header-section-number">13.2</span> Ejercicio 2. Condicionamiento y composición</a></li>
+  <li><a href="#ejercicio-3.-horner" id="toc-ejercicio-3.-horner" class="nav-link" data-scroll-target="#ejercicio-3.-horner"><span class="header-section-number">13.3</span> Ejercicio 3. Horner</a></li>
+  <li><a href="#ejercicio-4.-dos-fórmulas-equivalentes" id="toc-ejercicio-4.-dos-fórmulas-equivalentes" class="nav-link" data-scroll-target="#ejercicio-4.-dos-fórmulas-equivalentes"><span class="header-section-number">13.4</span> Ejercicio 4. Dos fórmulas equivalentes</a></li>
+  <li><a href="#ejercicio-5.-la-fórmula-cuadrática" id="toc-ejercicio-5.-la-fórmula-cuadrática" class="nav-link" data-scroll-target="#ejercicio-5.-la-fórmula-cuadrática"><span class="header-section-number">13.5</span> Ejercicio 5. La fórmula cuadrática</a></li>
+  </ul></li>
+  <li><a href="#para-profundizar" id="toc-para-profundizar" class="nav-link" data-scroll-target="#para-profundizar"><span class="header-section-number">14</span> 13. Para profundizar</a></li>
+  <li><a href="#cierre" id="toc-cierre" class="nav-link" data-scroll-target="#cierre"><span class="header-section-number">15</span> Cierre</a>
+  <ul class="collapse">
+  <li><a href="#fuente-principal" id="toc-fuente-principal" class="nav-link" data-scroll-target="#fuente-principal"><span class="header-section-number">15.1</span> Fuente principal</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Sesión 04: Condicionamiento, algoritmos y estabilidad</h1>
+<p class="subtitle lead">Capítulo 1: del problema matemático al cálculo confiable</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="propósito-de-la-sesión" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Propósito de la sesión</h1>
+<p>En la sesión anterior vimos que los números de punto flotante representan sólo una parte finita de los números reales y que las operaciones realizadas por una computadora pueden introducir errores de redondeo.</p>
+<p>Ahora aparecen dos preguntas fundamentales:</p>
+<ol type="1">
+<li><strong>¿El problema matemático es sensible a pequeñas perturbaciones en los datos?</strong></li>
+<li><strong>¿El algoritmo que elegimos amplifica innecesariamente los errores?</strong></li>
+</ol>
+<p>Estas preguntas conducen a dos conceptos centrales del análisis numérico:</p>
+<ul>
+<li><strong>condicionamiento</strong>, que es una propiedad del problema;</li>
+<li><strong>estabilidad</strong>, que es una propiedad del algoritmo.</li>
+</ul>
+<blockquote class="blockquote">
+<p><strong>Idea guía.</strong> Un problema puede estar bien condicionado y, sin embargo, ser resuelto por un algoritmo inestable.</p>
+</blockquote>
+<p>Durante esta sesión seguiremos el esquema:</p>
+<p><strong>predecir → ejecutar → observar → explicar.</strong></p>
+<hr>
+</section>
+<section id="problemas-y-condicionamiento" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> 1. Problemas y condicionamiento</h1>
+<p>Consideremos primero un problema extremadamente sencillo:</p>
+<p><span class="math display">\[
+f(x)=x+1.
+\]</span></p>
+<p>En una computadora, el número <span class="math inline">\(x\)</span> se representa aproximadamente mediante un número de punto flotante. Podemos pensar en</p>
+<p><span class="math display">\[
+\widetilde{x}=x(1+\varepsilon),
+\]</span></p>
+<p>donde <span class="math inline">\(\varepsilon\)</span> es pequeño.</p>
+<p>Si la suma se realizara sin ningún error adicional, obtendríamos</p>
+<p><span class="math display">\[
+\widetilde{y}=x(1+\varepsilon)+1.
+\]</span></p>
+<p>El error relativo respecto al resultado exacto <span class="math inline">\(f(x)=x+1\)</span> sería</p>
+<p><span class="math display">\[
+\frac{|\widetilde{y}-f(x)|}{|f(x)|}
+=
+\frac{|\varepsilon x|}{|x+1|}.
+\]</span></p>
+<p>¿Qué ocurre cuando <span class="math inline">\(x\)</span> está muy cerca de <span class="math inline">\(-1\)</span>?</p>
+<p>El denominador se hace pequeño y una perturbación diminuta en los datos puede producir un error relativo grande en el resultado.</p>
+<section id="cancelación-sustractiva" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="cancelación-sustractiva"><span class="header-section-number">2.1</span> Cancelación sustractiva</h2>
+<p>Cuando se restan dos números cercanos, el resultado puede ser mucho menor que cualquiera de los operandos. En ese proceso pueden perderse cifras significativas.</p>
+<p>Por ejemplo,</p>
+<p><span class="math display">\[
+1.0000-1.0012=-0.0012.
+\]</span></p>
+<p>Los operandos tienen cinco cifras significativas, pero el resultado contiene mucha menos información útil.</p>
+<p>A este fenómeno se le llama <strong>cancelación sustractiva</strong>.</p>
+<blockquote class="blockquote">
+<p>La cancelación sustractiva es una de las causas más frecuentes de pérdida importante de precisión en aritmética de punto flotante.</p>
+</blockquote>
+</section>
+<section id="experimento-1-una-resta-aparentemente-inocente" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="experimento-1-una-resta-aparentemente-inocente"><span class="header-section-number">2.2</span> Experimento 1: una resta aparentemente inocente</h2>
+<p>Antes de ejecutar, <strong>predice</strong> qué debería ocurrir matemáticamente.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> <span class="fl">1.0</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">17</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    δ <span class="op">=</span> <span class="fl">10.0</span><span class="op">^</span>(<span class="op">-</span>k)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> (x <span class="op">+</span> δ) <span class="op">-</span> x</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">println</span>(k, <span class="st">"   "</span>, δ, <span class="st">"   "</span>, y)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Observa cuándo el resultado deja de coincidir con <span class="math inline">\(\delta\)</span>.</p>
+<p><strong>Preguntas</strong></p>
+<ul>
+<li>¿Por qué comienza a perderse información?</li>
+<li>¿Qué relación tiene esto con <code>eps()</code>?</li>
+<li>¿Es un error de Julia o una consecuencia de la representación finita?</li>
+</ul>
+<hr>
+</section>
+</section>
+<section id="número-de-condición" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> 2. Número de condición</h1>
+<p>Sea un problema escalar</p>
+<p><span class="math display">\[
+f:\mathbb{R}\to\mathbb{R}.
+\]</span></p>
+<p>Queremos medir cuánto cambia relativamente el resultado cuando perturbamos relativamente el dato.</p>
+<p>El <strong>número de condición relativo</strong> se define mediante</p>
+<p><span class="math display">\[
+\kappa_f(x)
+=
+\lim_{\varepsilon\to0}
+\frac{|f(x)-f(x(1+\varepsilon))|}
+     {|\varepsilon f(x)|}.
+\]</span></p>
+<p>Si <span class="math inline">\(f\)</span> es diferenciable,</p>
+<p><span class="math display">\[
+\boxed{
+\kappa_f(x)
+=
+\left|
+\frac{x f'(x)}{f(x)}
+\right|
+}
+\]</span></p>
+<p>Esta fórmula será nuestra herramienta principal.</p>
+<section id="interpretación" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="interpretación"><span class="header-section-number">3.1</span> Interpretación</h2>
+<p>Aproximadamente,</p>
+<p><span class="math display">\[
+\frac{|\Delta f|}{|f|}
+\approx
+\kappa_f(x)
+\frac{|\Delta x|}{|x|}.
+\]</span></p>
+<p>Por tanto:</p>
+<ul>
+<li>si <span class="math inline">\(\kappa_f(x)\)</span> es moderado, el problema está <strong>bien condicionado</strong>;</li>
+<li>si <span class="math inline">\(\kappa_f(x)\)</span> es muy grande, el problema está <strong>mal condicionado</strong>.</li>
+</ul>
+<p>Si</p>
+<p><span class="math display">\[
+\kappa_f(x)\approx 10^d,
+\]</span></p>
+<p>podemos esperar perder aproximadamente <span class="math inline">\(d\)</span> cifras decimales de precisión.</p>
+</section>
+<section id="algunos-ejemplos" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="algunos-ejemplos"><span class="header-section-number">3.2</span> Algunos ejemplos</h2>
+<section id="multiplicación-por-una-constante" class="level3" data-number="3.2.1">
+<h3 data-number="3.2.1" class="anchored" data-anchor-id="multiplicación-por-una-constante"><span class="header-section-number">3.2.1</span> Multiplicación por una constante</h3>
+<p>Si</p>
+<p><span class="math display">\[
+f(x)=cx,
+\]</span></p>
+<p>entonces</p>
+<p><span class="math display">\[
+\kappa_f(x)
+=
+\left|\frac{x c}{cx}\right|
+=1.
+\]</span></p>
+<p>La multiplicación por una constante no amplifica el error relativo.</p>
+</section>
+<section id="suma-o-resta-de-una-constante" class="level3" data-number="3.2.2">
+<h3 data-number="3.2.2" class="anchored" data-anchor-id="suma-o-resta-de-una-constante"><span class="header-section-number">3.2.2</span> Suma o resta de una constante</h3>
+<p>Para</p>
+<p><span class="math display">\[
+f(x)=x-c,
+\]</span></p>
+<p>tenemos</p>
+<p><span class="math display">\[
+\kappa_f(x)
+=
+\left|
+\frac{x}{x-c}
+\right|.
+\]</span></p>
+<p>Cuando <span class="math inline">\(x\approx c\)</span>, el denominador es pequeño y el número de condición puede ser enorme.</p>
+<p>Esto conecta directamente con la cancelación sustractiva.</p>
+</section>
+</section>
+<section id="experimento-2-observar-el-condicionamiento" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="experimento-2-observar-el-condicionamiento"><span class="header-section-number">3.3</span> Experimento 2: observar el condicionamiento</h2>
+<p>Consideremos</p>
+<p><span class="math display">\[
+f(x)=x-1.
+\]</span></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">κ</span>(x) <span class="op">=</span> <span class="fu">abs</span>(x <span class="op">/</span> (x <span class="op">-</span> <span class="fl">1</span>))</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">12</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> <span class="fl">1</span> <span class="op">+</span> <span class="fl">10.0</span><span class="op">^</span>(<span class="op">-</span>k)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">println</span>(k, <span class="st">"   x = "</span>, x, <span class="st">"   κ = "</span>, <span class="fu">κ</span>(x))</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Antes de ejecutarlo:</p>
+<p><strong>¿qué esperas que ocurra con <span class="math inline">\(\kappa_f(x)\)</span> cuando <span class="math inline">\(x\to1\)</span>?</strong></p>
+<hr>
+</section>
+</section>
+<section id="raíces-de-polinomios-y-sensibilidad" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> 3. Raíces de polinomios y sensibilidad</h1>
+<p>El cálculo de raíces de polinomios permite ver que el condicionamiento no es una curiosidad académica.</p>
+<p>Para</p>
+<p><span class="math display">\[
+p(t)=at^2+bt+c,
+\]</span></p>
+<p>supongamos que <span class="math inline">\(r_1\)</span> y <span class="math inline">\(r_2\)</span> son sus raíces.</p>
+<p>Al estudiar la sensibilidad de <span class="math inline">\(r_1\)</span> respecto al coeficiente <span class="math inline">\(a\)</span>, se obtiene</p>
+<p><span class="math display">\[
+\kappa
+=
+\left|
+\frac{r_1}{r_1-r_2}
+\right|.
+\]</span></p>
+<p>Por tanto, cuando las raíces están muy próximas entre sí, el problema puede estar muy mal condicionado.</p>
+<blockquote class="blockquote">
+<p>Las raíces múltiples representan el caso extremo: el número de condición puede hacerse infinito.</p>
+</blockquote>
+<hr>
+</section>
+<section id="problema-matemático-y-algoritmo" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> 4. Problema matemático y algoritmo</h1>
+<p>Un problema matemático idealizado puede representarse por una función</p>
+<p><span class="math display">\[
+y=f(x).
+\]</span></p>
+<p>En una computadora necesitamos una secuencia finita de instrucciones para aproximarlo. Esa secuencia es un <strong>algoritmo</strong>.</p>
+<p>Dos algoritmos pueden resolver exactamente el mismo problema matemático y, sin embargo:</p>
+<ul>
+<li>requerir diferente número de operaciones;</li>
+<li>acumular errores de manera distinta;</li>
+<li>tener estabilidad numérica diferente.</li>
+</ul>
+<hr>
+</section>
+<section id="algoritmo-de-horner" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> 5. Algoritmo de Horner</h1>
+<p>Consideremos</p>
+<p><span class="math display">\[
+p(x)=5x^3+4x^2+3x+2.
+\]</span></p>
+<p>Una evaluación directa requiere formar potencias, multiplicar por los coeficientes y sumar.</p>
+<p>Pero podemos escribir</p>
+<p><span class="math display">\[
+p(x)=2+x\bigl(3+x(4+5x)\bigr).
+\]</span></p>
+<p>Ésta es la idea del <strong>algoritmo de Horner</strong>.</p>
+<p>Para</p>
+<p><span class="math display">\[
+p(x)=c_1+c_2x+\cdots+c_nx^{n-1},
+\]</span></p>
+<p>podemos evaluarlo mediante</p>
+<p><span class="math display">\[
+p(x)
+=
+\Bigl(
+\cdots((c_nx+c_{n-1})x+c_{n-2})x+\cdots+c_2
+\Bigr)x+c_1.
+\]</span></p>
+<section id="implementación-en-julia" class="level2" data-number="6.1">
+<h2 data-number="6.1" class="anchored" data-anchor-id="implementación-en-julia"><span class="header-section-number">6.1</span> Implementación en Julia</h2>
+<p>No utilizaremos la biblioteca <code>FNC</code>. Escribiremos nuestro propio algoritmo.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">horner</span>(c, x)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    n <span class="op">=</span> <span class="fu">length</span>(c)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> c[n]</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> k <span class="kw">in</span> n<span class="op">-</span><span class="fl">1</span><span class="op">:-</span><span class="fl">1</span><span class="op">:</span><span class="fl">1</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>        y <span class="op">=</span> x<span class="op">*</span>y <span class="op">+</span> c[k]</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> y</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Probemos con</p>
+<p><span class="math display">\[
+p(x)=(x-1)^3=x^3-3x^2+3x-1.
+\]</span></p>
+<p>Los coeficientes se introducen en orden ascendente:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>c <span class="op">=</span> [<span class="op">-</span><span class="fl">1</span>, <span class="fl">3</span>, <span class="op">-</span><span class="fl">3</span>, <span class="fl">1</span>]</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">horner</span>(c, <span class="fl">1.6</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="experimento-3-directo-contra-horner" class="level2" data-number="6.2">
+<h2 data-number="6.2" class="anchored" data-anchor-id="experimento-3-directo-contra-horner"><span class="header-section-number">6.2</span> Experimento 3: directo contra Horner</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">p_directo</span>(x) <span class="op">=</span> <span class="fl">5</span><span class="op">*</span>x<span class="op">^</span><span class="fl">3</span> <span class="op">+</span> <span class="fl">4</span><span class="op">*</span>x<span class="op">^</span><span class="fl">2</span> <span class="op">+</span> <span class="fl">3</span><span class="op">*</span>x <span class="op">+</span> <span class="fl">2</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">p_horner</span>(x)  <span class="op">=</span> <span class="fl">2</span> <span class="op">+</span> <span class="fu">x*</span>(<span class="fl">3</span> <span class="op">+</span> <span class="fu">x*</span>(<span class="fl">4</span> <span class="op">+</span> <span class="fl">5</span><span class="op">*</span>x))</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> <span class="fl">1.23456789</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="fu">p_directo</span>(x), <span class="fu">p_horner</span>(x)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Discusión</strong></p>
+<p>Los dos algoritmos representan el mismo polinomio.</p>
+<p>Pero:</p>
+<ul>
+<li>¿realizan las mismas operaciones?</li>
+<li>¿cuál necesita menos?</li>
+<li>¿ser matemáticamente equivalentes garantiza que se comporten igual en punto flotante?</li>
+</ul>
+<p>La última pregunta nos conduce a la estabilidad.</p>
+<hr>
+</section>
+</section>
+<section id="estabilidad" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> 6. Estabilidad</h1>
+<p>Supongamos que el problema matemático es <span class="math inline">\(f\)</span> y que un algoritmo produce una aproximación <span class="math inline">\(\widetilde f\)</span>.</p>
+<p>Si el error observado es mucho mayor que el que puede explicar el condicionamiento del problema, decimos que el algoritmo es <strong>inestable</strong>.</p>
+<p>La distinción fundamental es:</p>
+<p><span class="math display">\[
+\boxed{
+\text{condicionamiento} \longrightarrow \text{problema}
+}
+\]</span></p>
+<p><span class="math display">\[
+\boxed{
+\text{estabilidad} \longrightarrow \text{algoritmo}
+}
+\]</span></p>
+<hr>
+</section>
+<section id="un-caso-sorprendente-la-fórmula-cuadrática" class="level1" data-number="8">
+<h1 data-number="8"><span class="header-section-number">8</span> 7. Un caso sorprendente: la fórmula cuadrática</h1>
+<p>Consideremos</p>
+<p><span class="math display">\[
+p(x)
+=
+(x-10^6)(x-10^{-6})
+=
+x^2-(10^6+10^{-6})x+1.
+\]</span></p>
+<p>Sus raíces exactas son</p>
+<p><span class="math display">\[
+10^6
+\qquad\text{y}\qquad
+10^{-6}.
+\]</span></p>
+<p>Estas raíces están muy separadas, por lo que el problema no presenta el mal condicionamiento asociado a raíces cercanas.</p>
+<p>Utilicemos la fórmula cuadrática habitual:</p>
+<p><span class="math display">\[
+x_{1,2}
+=
+\frac{-b\pm\sqrt{b^2-4ac}}{2a}.
+\]</span></p>
+<section id="experimento-4-el-algoritmo-ingenuo" class="level2" data-number="8.1">
+<h2 data-number="8.1" class="anchored" data-anchor-id="experimento-4-el-algoritmo-ingenuo"><span class="header-section-number">8.1</span> Experimento 4: el algoritmo ingenuo</h2>
+<p><strong>Antes de ejecutar:</strong> ambas raíces son conocidas exactamente. ¿Esperas obtenerlas con precisión comparable?</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> <span class="fl">1.0</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> <span class="fu">-</span>(<span class="fl">1e6</span> <span class="op">+</span> <span class="fl">1e-6</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>c <span class="op">=</span> <span class="fl">1.0</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>x1 <span class="op">=</span> (<span class="op">-</span>b <span class="op">+</span> <span class="fu">sqrt</span>(b<span class="op">^</span><span class="fl">2</span> <span class="op">-</span> <span class="fl">4</span><span class="op">*</span>a<span class="op">*</span>c)) <span class="op">/</span> (<span class="fl">2</span><span class="op">*</span>a)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>x2 <span class="op">=</span> (<span class="op">-</span>b <span class="op">-</span> <span class="fu">sqrt</span>(b<span class="op">^</span><span class="fl">2</span> <span class="op">-</span> <span class="fl">4</span><span class="op">*</span>a<span class="op">*</span>c)) <span class="op">/</span> (<span class="fl">2</span><span class="op">*</span>a)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="fu">println</span>(<span class="st">"x1 = "</span>, x1)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="fu">println</span>(<span class="st">"x2 = "</span>, x2)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>error1 <span class="op">=</span> <span class="fu">abs</span>(x1 <span class="op">-</span> <span class="fl">1e6</span>) <span class="op">/</span> <span class="fl">1e6</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>error2 <span class="op">=</span> <span class="fu">abs</span>(x2 <span class="op">-</span> <span class="fl">1e-6</span>) <span class="op">/</span> <span class="fl">1e-6</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="fu">println</span>(<span class="st">"error relativo x1 = "</span>, error1)</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="fu">println</span>(<span class="st">"error relativo x2 = "</span>, error2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Una raíz se obtiene con gran precisión y la otra pierde varias cifras.</p>
+<p><strong>¿Dónde está el culpable?</strong></p>
+<p>En la raíz pequeña aparece una resta entre números casi iguales:</p>
+<p><span class="math display">\[
+-b-\sqrt{b^2-4ac}.
+\]</span></p>
+<p>Otra vez encontramos cancelación sustractiva.</p>
+<hr>
+</section>
+</section>
+<section id="el-mismo-problema-otro-algoritmo" class="level1" data-number="9">
+<h1 data-number="9"><span class="header-section-number">9</span> 8. El mismo problema, otro algoritmo</h1>
+<p>Para una ecuación cuadrática,</p>
+<p><span class="math display">\[
+ax^2+bx+c=0,
+\]</span></p>
+<p>el producto de las raíces satisface</p>
+<p><span class="math display">\[
+x_1x_2=\frac ca.
+\]</span></p>
+<p>Podemos calcular primero la raíz que no sufre cancelación y después obtener la otra mediante</p>
+<p><span class="math display">\[
+x_2=\frac{c}{ax_1}.
+\]</span></p>
+<section id="experimento-5-evitar-la-cancelación" class="level2" data-number="9.1">
+<h2 data-number="9.1" class="anchored" data-anchor-id="experimento-5-evitar-la-cancelación"><span class="header-section-number">9.1</span> Experimento 5: evitar la cancelación</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> <span class="fl">1.0</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> <span class="fu">-</span>(<span class="fl">1e6</span> <span class="op">+</span> <span class="fl">1e-6</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>c <span class="op">=</span> <span class="fl">1.0</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>x1 <span class="op">=</span> (<span class="op">-</span>b <span class="op">+</span> <span class="fu">sqrt</span>(b<span class="op">^</span><span class="fl">2</span> <span class="op">-</span> <span class="fl">4</span><span class="op">*</span>a<span class="op">*</span>c)) <span class="op">/</span> (<span class="fl">2</span><span class="op">*</span>a)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>x2 <span class="op">=</span> c <span class="op">/</span> (a<span class="op">*</span>x1)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="fu">println</span>(<span class="st">"x1 = "</span>, x1)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="fu">println</span>(<span class="st">"x2 = "</span>, x2)</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>error2 <span class="op">=</span> <span class="fu">abs</span>(x2 <span class="op">-</span> <span class="fl">1e-6</span>) <span class="op">/</span> <span class="fl">1e-6</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="fu">println</span>(<span class="st">"error relativo x2 = "</span>, error2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Ahora compara el error de la raíz pequeña con el obtenido mediante la fórmula directa.</p>
+<p>Tenemos dos algoritmos algebraicamente equivalentes en aritmética exacta, pero no necesariamente equivalentes en aritmética de punto flotante.</p>
+<blockquote class="blockquote">
+<p><strong>Lección:</strong> en análisis numérico importa no sólo qué fórmula usamos, sino también cómo la evaluamos.</p>
+</blockquote>
+<hr>
+</section>
+</section>
+<section id="error-hacia-atrás" class="level1" data-number="10">
+<h1 data-number="10"><span class="header-section-number">10</span> 9. Error hacia atrás</h1>
+<p>Existe otra manera muy poderosa de juzgar un resultado numérico.</p>
+<p>En lugar de preguntar:</p>
+<blockquote class="blockquote">
+<p>¿obtuve aproximadamente la respuesta correcta?</p>
+</blockquote>
+<p>podemos preguntar:</p>
+<blockquote class="blockquote">
+<p><strong>¿mi resultado calculado es la respuesta exacta de un problema cuyos datos están muy cerca de los originales?</strong></p>
+</blockquote>
+<p>Sea</p>
+<p><span class="math display">\[
+y=f(x)
+\]</span></p>
+<p>el resultado exacto y sea</p>
+<p><span class="math display">\[
+\widetilde y=\widetilde f(x)
+\]</span></p>
+<p>el resultado producido por el algoritmo.</p>
+<p>Si existe un dato <span class="math inline">\(\widetilde x\)</span> tal que</p>
+<p><span class="math display">\[
+f(\widetilde x)=\widetilde y,
+\]</span></p>
+<p>entonces el error relativo hacia atrás es</p>
+<p><span class="math display">\[
+\boxed{
+\frac{|\widetilde x-x|}{|x|}
+}
+\]</span></p>
+<p>Un algoritmo con error hacia atrás pequeño suele ser numéricamente muy confiable.</p>
+<p>La idea puede resumirse así:</p>
+<p><span class="math display">\[
+\text{resultado aproximado del problema original}
+\]</span></p>
+<p>se interpreta como</p>
+<p><span class="math display">\[
+\text{resultado exacto de un problema ligeramente perturbado}.
+\]</span></p>
+<hr>
+</section>
+<section id="experimento-con-polynomials" class="level1" data-number="11">
+<h1 data-number="11"><span class="header-section-number">11</span> 10. Experimento con <code>Polynomials</code></h1>
+<p>Para este experimento sí utilizaremos el paquete:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">Polynomials</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Si todavía no está instalado, se hace <strong>una sola vez</strong>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> <span class="bu">Pkg</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="bu">Pkg</span>.<span class="fu">add</span>(<span class="st">"Polynomials"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Después, en sesiones futuras, basta con:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">Polynomials</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Construimos un polinomio a partir de raíces conocidas:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> [<span class="op">-</span><span class="fl">2.0</span>, <span class="op">-</span><span class="fl">1.0</span>, <span class="fl">1.0</span>, <span class="fl">1.0</span>, <span class="fl">3.0</span>, <span class="fl">6.0</span>]</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> <span class="fu">fromroots</span>(r)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>p</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Ahora pedimos a Julia que calcule sus raíces:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>r_aprox <span class="op">=</span> <span class="fu">sort</span>(<span class="fu">roots</span>(p))</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>r_aprox</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Compara:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>r</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>r_aprox</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Hay una raíz doble en <span class="math inline">\(x=1\)</span>.</p>
+<p><strong>Pregunta:</strong> ¿por qué justamente ésa debe ser especialmente sensible?</p>
+<p>Este experimento conecta tres ideas de la sesión:</p>
+<p><span class="math display">\[
+\boxed{
+\text{raíces múltiples}
+\rightarrow
+\text{mal condicionamiento}
+\rightarrow
+\text{pérdida de precisión}
+}
+\]</span></p>
+<hr>
+</section>
+<section id="el-mapa-conceptual-del-capítulo-1" class="level1" data-number="12">
+<h1 data-number="12"><span class="header-section-number">12</span> 11. El mapa conceptual del capítulo 1</h1>
+<p>Al terminar este capítulo debemos distinguir claramente cuatro objetos.</p>
+<section id="representación" class="level2" data-number="12.1">
+<h2 data-number="12.1" class="anchored" data-anchor-id="representación"><span class="header-section-number">12.1</span> Representación</h2>
+<p>Los números reales deben aproximarse mediante números de punto flotante.</p>
+</section>
+<section id="problema" class="level2" data-number="12.2">
+<h2 data-number="12.2" class="anchored" data-anchor-id="problema"><span class="header-section-number">12.2</span> Problema</h2>
+<p><span class="math display">\[
+y=f(x)
+\]</span></p>
+<p>El <strong>condicionamiento</strong> describe la sensibilidad inherente del problema frente a perturbaciones en los datos.</p>
+</section>
+<section id="algoritmo" class="level2" data-number="12.3">
+<h2 data-number="12.3" class="anchored" data-anchor-id="algoritmo"><span class="header-section-number">12.3</span> Algoritmo</h2>
+<p><span class="math display">\[
+\widetilde y=\widetilde f(x)
+\]</span></p>
+<p>Es la secuencia concreta de operaciones utilizada para aproximar la solución.</p>
+</section>
+<section id="estabilidad-1" class="level2" data-number="12.4">
+<h2 data-number="12.4" class="anchored" data-anchor-id="estabilidad-1"><span class="header-section-number">12.4</span> Estabilidad</h2>
+<p>Describe si el algoritmo introduce una amplificación de errores mayor de la que el propio problema exige.</p>
+<p>En forma esquemática:</p>
+<p><span class="math display">\[
+\boxed{\text{datos}}
+\longrightarrow
+\boxed{\text{problema}}
+\longrightarrow
+\boxed{\text{condicionamiento}}
+\]</span></p>
+<p><span class="math display">\[
+\boxed{\text{datos en punto flotante}}
+\longrightarrow
+\boxed{\text{algoritmo}}
+\longrightarrow
+\boxed{\text{estabilidad}}
+\longrightarrow
+\boxed{\text{resultado calculado}}
+\]</span></p>
+<p>Ésta será una distinción recurrente durante todo el curso.</p>
+<hr>
+</section>
+</section>
+<section id="cinco-ejercicios-para-el-miércoles" class="level1" data-number="13">
+<h1 data-number="13"><span class="header-section-number">13</span> 12. Cinco ejercicios para el miércoles</h1>
+<p>Los siguientes ejercicios combinan razonamiento matemático y experimentación en Julia.</p>
+<section id="ejercicio-1.-número-de-condición" class="level2" data-number="13.1">
+<h2 data-number="13.1" class="anchored" data-anchor-id="ejercicio-1.-número-de-condición"><span class="header-section-number">13.1</span> Ejercicio 1. Número de condición</h2>
+<p>Utilizando</p>
+<p><span class="math display">\[
+\kappa_f(x)
+=
+\left|
+\frac{x f'(x)}{f(x)}
+\right|,
+\]</span></p>
+<p>calcula el número de condición relativo de:</p>
+<p><span class="math display">\[
+\text{a) } f(x)=x^p,
+\qquad
+\text{b) } f(x)=e^x,
+\qquad
+\text{c) } f(x)=\cos x.
+\]</span></p>
+<p>Identifica valores de <span class="math inline">\(x\)</span> para los cuales el problema pueda estar mal condicionado.</p>
+<hr>
+</section>
+<section id="ejercicio-2.-condicionamiento-y-composición" class="level2" data-number="13.2">
+<h2 data-number="13.2" class="anchored" data-anchor-id="ejercicio-2.-condicionamiento-y-composición"><span class="header-section-number">13.2</span> Ejercicio 2. Condicionamiento y composición</h2>
+<p>Sean</p>
+<p><span class="math display">\[
+h(x)=f(g(x)).
+\]</span></p>
+<p>Demuestra, utilizando la regla de la cadena, que</p>
+<p><span class="math display">\[
+\kappa_h(x)
+=
+\kappa_f(g(x))\,\kappa_g(x).
+\]</span></p>
+<p>Comprueba después la fórmula para</p>
+<p><span class="math display">\[
+h(x)=\sqrt{x+5}.
+\]</span></p>
+<hr>
+</section>
+<section id="ejercicio-3.-horner" class="level2" data-number="13.3">
+<h2 data-number="13.3" class="anchored" data-anchor-id="ejercicio-3.-horner"><span class="header-section-number">13.3</span> Ejercicio 3. Horner</h2>
+<p>Escribe en Julia una función que evalúe mediante el algoritmo de Horner</p>
+<p><span class="math display">\[
+p(x)=2x^4-3x^3+5x^2-x+7.
+\]</span></p>
+<p>Evalúa el polinomio en</p>
+<p><span class="math display">\[
+x=1.5.
+\]</span></p>
+<p>Después evalúalo directamente mediante potencias y compara los resultados y el número de multiplicaciones requeridas por cada método.</p>
+<hr>
+</section>
+<section id="ejercicio-4.-dos-fórmulas-equivalentes" class="level2" data-number="13.4">
+<h2 data-number="13.4" class="anchored" data-anchor-id="ejercicio-4.-dos-fórmulas-equivalentes"><span class="header-section-number">13.4</span> Ejercicio 4. Dos fórmulas equivalentes</h2>
+<p>Las expresiones</p>
+<p><span class="math display">\[
+f(x)=\frac{1-\cos x}{\sin x},
+\qquad
+g(x)=\frac{2\sin^2(x/2)}{\sin x}
+\]</span></p>
+<p>son matemáticamente equivalentes.</p>
+<p>En Julia, evalúa ambas para</p>
+<p><span class="math display">\[
+x=10^{-2},10^{-4},10^{-6},10^{-8}.
+\]</span></p>
+<p>Construye una tabla con los resultados.</p>
+<p>Explica por qué una de las fórmulas puede perder precisión más rápidamente que la otra.</p>
+<hr>
+</section>
+<section id="ejercicio-5.-la-fórmula-cuadrática" class="level2" data-number="13.5">
+<h2 data-number="13.5" class="anchored" data-anchor-id="ejercicio-5.-la-fórmula-cuadrática"><span class="header-section-number">13.5</span> Ejercicio 5. La fórmula cuadrática</h2>
+<p>Considera</p>
+<p><span class="math display">\[
+p(x)
+=
+(x-10^8)(x-10^{-8}).
+\]</span></p>
+<ol type="1">
+<li>Expande el polinomio e identifica <span class="math inline">\(a,b,c\)</span>.</li>
+<li>Calcula ambas raíces mediante la fórmula cuadrática usual.</li>
+<li>Calcula el error relativo de cada raíz.</li>
+<li>Calcula la raíz grande mediante la fórmula cuadrática y la pequeña usando</li>
+</ol>
+<p><span class="math display">\[
+x_1x_2=\frac ca.
+\]</span></p>
+<ol start="5" type="1">
+<li>Compara ambos procedimientos y explica el resultado utilizando los conceptos de <strong>cancelación sustractiva</strong> y <strong>estabilidad</strong>.</li>
+</ol>
+<hr>
+</section>
+</section>
+<section id="para-profundizar" class="level1" data-number="14">
+<h1 data-number="14"><span class="header-section-number">14</span> 13. Para profundizar</h1>
+<p>Con esta sesión termina el capítulo introductorio.</p>
+<p>Para una discusión más avanzada de aritmética de máquina, error de redondeo y estabilidad numérica puede consultarse el trabajo de Nicholas Higham.</p>
+<p>El comportamiento numérico de las raíces de polinomios conduce además a una discusión clásica iniciada por James H. Wilkinson sobre la extraordinaria sensibilidad que pueden presentar algunos problemas polinomiales.</p>
+<p>No necesitamos todavía desarrollar esos resultados. Lo importante es conservar la pregunta que nos acompañará durante el curso:</p>
+<blockquote class="blockquote">
+<p><strong>Cuando una computadora produce un resultado, ¿qué parte del error pertenece al problema y qué parte pertenece al algoritmo?</strong></p>
+</blockquote>
+<hr>
+</section>
+<section id="cierre" class="level1" data-number="15">
+<h1 data-number="15"><span class="header-section-number">15</span> Cierre</h1>
+<p>Al finalizar esta sesión deberías poder explicar, con tus propias palabras, la diferencia entre:</p>
+<ul>
+<li>error de redondeo;</li>
+<li>cancelación sustractiva;</li>
+<li>condicionamiento;</li>
+<li>algoritmo;</li>
+<li>estabilidad;</li>
+<li>error hacia atrás.</li>
+</ul>
+<p>Y, sobre todo, deberías desconfiar sanamente de una frase muy peligrosa:</p>
+<blockquote class="blockquote">
+<p><strong>“Las dos fórmulas son matemáticamente equivalentes, así que da lo mismo cuál usemos.”</strong></p>
+</blockquote>
+<p>En aritmética exacta, quizá.</p>
+<p>En una computadora, <strong>hay que comprobarlo</strong>.</p>
+<hr>
+<section id="fuente-principal" class="level2" data-number="15.1">
+<h2 data-number="15.1" class="anchored" data-anchor-id="fuente-principal"><span class="header-section-number">15.1</span> Fuente principal</h2>
+<p>El material de esta sesión está basado principalmente en los apartados 1.2–1.5 de:</p>
+<p><strong>Tobin A. Driscoll y Richard J. Braun, <em>Fundamentals of Numerical Computation</em>, edición Julia.</strong></p>
+<p><a href="https://tobydriscoll.net/fnc-julia/home.html" class="uri">https://tobydriscoll.net/fnc-julia/home.html</a></p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
