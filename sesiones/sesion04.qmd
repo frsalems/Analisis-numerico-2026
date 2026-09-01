@@ -784,8 +784,14 @@ $$
 
 5. Compara ambos procedimientos y explica el resultado utilizando los conceptos de **cancelación sustractiva** y **estabilidad**.
 
----
 
+# Un caso real: cuando un pequeño error deja de ser pequeño
+
+En 1991, un pequeño error asociado con la representación numérica
+del tiempo contribuyó al fallo de un sistema de defensa Patriot
+en Dhahran, Arabia Saudita.
+
+👉 [**El fallo del Patriot: cuando un pequeño error deja de ser pequeño**](patriot_error_redondeo_sesion04_color.pdf)
 # 13. Para profundizar
 
 Con esta sesión termina el capítulo introductorio.
