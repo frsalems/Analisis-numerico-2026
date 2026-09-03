@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Francisco Salem">
+
+<title>Sesión 05 — Sistemas lineales: del problema al algoritmo – Análisis Numérico</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-24e7809d17eaf8fe359cf2819d66b8cb.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar docked nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Análisis Numérico</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="../index.html" aria-current="page"> 
+<span class="menu-text">Inicio</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../sesiones/sesion01.html"> 
+<span class="menu-text">Sesión 1</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../sesiones/sesion02.html"> 
+<span class="menu-text">Sesión 2</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../sesiones/sesion03.html"> 
+<span class="menu-text">Sesión 3</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../sesiones/sesion04.html"> 
+<span class="menu-text">Sesión 4</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">Sesión 05 — Sistemas lineales: del problema al algoritmo</li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Análisis Numérico</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">Sesiones</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../sesiones/sesion01.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Sesión 1: ¿Qué significa calcular numéricamente?</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../sesiones/sesion02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Sesión 2: La computadora también aproxima</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../sesiones/sesion03.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Sesión 03: Números de punto flotante</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../sesiones/sesion04.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Sesión 04: Condicionamiento, algoritmos y estabilidad</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#propósito" id="toc-propósito" class="nav-link active" data-scroll-target="#propósito"><span class="header-section-number">1</span> Propósito</a></li>
+  <li><a href="#clase-1-de-un-problema-a-un-algoritmo" id="toc-clase-1-de-un-problema-a-un-algoritmo" class="nav-link" data-scroll-target="#clase-1-de-un-problema-a-un-algoritmo"><span class="header-section-number">2</span> Clase 1 — De un problema a un algoritmo</a>
+  <ul class="collapse">
+  <li><a href="#interpolación-polinomial" id="toc-interpolación-polinomial" class="nav-link" data-scroll-target="#interpolación-polinomial"><span class="header-section-number">2.1</span> 1. Interpolación polinomial</a>
+  <ul class="collapse">
+  <li><a href="#experimento-pluto" id="toc-experimento-pluto" class="nav-link" data-scroll-target="#experimento-pluto"><span class="header-section-number">2.1.1</span> Experimento Pluto</a></li>
+  </ul></li>
+  <li><a href="#matrices-en-julia" id="toc-matrices-en-julia" class="nav-link" data-scroll-target="#matrices-en-julia"><span class="header-section-number">2.2</span> 2. Matrices en Julia</a></li>
+  <li><a href="#el-problema-central-axb" id="toc-el-problema-central-axb" class="nav-link" data-scroll-target="#el-problema-central-axb"><span class="header-section-number">2.3</span> 3. El problema central: <span class="math inline">\(Ax=b\)</span></a></li>
+  <li><a href="#el-residuo" id="toc-el-residuo" class="nav-link" data-scroll-target="#el-residuo"><span class="header-section-number">2.4</span> 4. El residuo</a></li>
+  <li><a href="#sistemas-triangulares" id="toc-sistemas-triangulares" class="nav-link" data-scroll-target="#sistemas-triangulares"><span class="header-section-number">2.5</span> 5. Sistemas triangulares</a></li>
+  <li><a href="#factorización-lu" id="toc-factorización-lu" class="nav-link" data-scroll-target="#factorización-lu"><span class="header-section-number">2.6</span> 6. Factorización LU</a></li>
+  <li><a href="#cierre-de-la-primera-clase" id="toc-cierre-de-la-primera-clase" class="nav-link" data-scroll-target="#cierre-de-la-primera-clase"><span class="header-section-number">2.7</span> 7. Cierre de la primera clase</a></li>
+  </ul></li>
+  <li><a href="#clase-2-rápido-significa-bueno" id="toc-clase-2-rápido-significa-bueno" class="nav-link" data-scroll-target="#clase-2-rápido-significa-bueno"><span class="header-section-number">3</span> Clase 2 — ¿Rápido significa bueno?</a>
+  <ul class="collapse">
+  <li><a href="#eficiencia-y-notación-asintótica" id="toc-eficiencia-y-notación-asintótica" class="nav-link" data-scroll-target="#eficiencia-y-notación-asintótica"><span class="header-section-number">3.1</span> 8. Eficiencia y notación asintótica</a>
+  <ul class="collapse">
+  <li><a href="#experimento-pluto-ver-aparecer-n2" id="toc-experimento-pluto-ver-aparecer-n2" class="nav-link" data-scroll-target="#experimento-pluto-ver-aparecer-n2"><span class="header-section-number">3.1.1</span> Experimento Pluto: ver aparecer <span class="math inline">\(n^2\)</span></a></li>
+  </ul></li>
+  <li><a href="#el-problema-del-pivote" id="toc-el-problema-del-pivote" class="nav-link" data-scroll-target="#el-problema-del-pivote"><span class="header-section-number">3.2</span> 9. El problema del pivote</a></li>
+  <li><a href="#pivoteo-parcial-y-estabilidad" id="toc-pivoteo-parcial-y-estabilidad" class="nav-link" data-scroll-target="#pivoteo-parcial-y-estabilidad"><span class="header-section-number">3.3</span> 10. Pivoteo parcial y estabilidad</a></li>
+  <li><a href="#normas" id="toc-normas" class="nav-link" data-scroll-target="#normas"><span class="header-section-number">3.4</span> 11. Normas</a></li>
+  <li><a href="#condicionamiento-de-axb" id="toc-condicionamiento-de-axb" class="nav-link" data-scroll-target="#condicionamiento-de-axb"><span class="header-section-number">3.5</span> 12. Condicionamiento de <span class="math inline">\(Ax=b\)</span></a></li>
+  <li><a href="#el-gran-experimento-pluto-hilbert" id="toc-el-gran-experimento-pluto-hilbert" class="nav-link" data-scroll-target="#el-gran-experimento-pluto-hilbert"><span class="header-section-number">3.6</span> 13. El gran experimento Pluto: Hilbert</a></li>
+  <li><a href="#error-hacia-adelante-y-hacia-atrás" id="toc-error-hacia-adelante-y-hacia-atrás" class="nav-link" data-scroll-target="#error-hacia-adelante-y-hacia-atrás"><span class="header-section-number">3.7</span> 14. Error hacia adelante y hacia atrás</a></li>
+  <li><a href="#la-estructura-también-es-información" id="toc-la-estructura-también-es-información" class="nav-link" data-scroll-target="#la-estructura-también-es-información"><span class="header-section-number">3.8</span> 15. La estructura también es información</a>
+  <ul class="collapse">
+  <li><a href="#tridiagonal" id="toc-tridiagonal" class="nav-link" data-scroll-target="#tridiagonal"><span class="header-section-number">3.8.1</span> Tridiagonal</a></li>
+  <li><a href="#simétrica-definida-positiva" id="toc-simétrica-definida-positiva" class="nav-link" data-scroll-target="#simétrica-definida-positiva"><span class="header-section-number">3.8.2</span> Simétrica definida positiva</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#clase-3-laboratorio-predice-ejecuta-observa-explica" id="toc-clase-3-laboratorio-predice-ejecuta-observa-explica" class="nav-link" data-scroll-target="#clase-3-laboratorio-predice-ejecuta-observa-explica"><span class="header-section-number">4</span> Clase 3 — Laboratorio: predice, ejecuta, observa, explica</a>
+  <ul class="collapse">
+  <li><a href="#regla-del-laboratorio" id="toc-regla-del-laboratorio" class="nav-link" data-scroll-target="#regla-del-laboratorio"><span class="header-section-number">4.1</span> 16. Regla del laboratorio</a></li>
+  <li><a href="#problema-1-inversa-o-sistema" id="toc-problema-1-inversa-o-sistema" class="nav-link" data-scroll-target="#problema-1-inversa-o-sistema"><span class="header-section-number">4.2</span> 17. Problema 1 — ¿Inversa o sistema?</a></li>
+  <li><a href="#problema-2-el-residuo-puede-engañar" id="toc-problema-2-el-residuo-puede-engañar" class="nav-link" data-scroll-target="#problema-2-el-residuo-puede-engañar"><span class="header-section-number">4.3</span> 18. Problema 2 — El residuo puede engañar</a></li>
+  <li><a href="#problema-3-perturbar-los-datos" id="toc-problema-3-perturbar-los-datos" class="nav-link" data-scroll-target="#problema-3-perturbar-los-datos"><span class="header-section-number">4.4</span> 19. Problema 3 — Perturbar los datos</a></li>
+  <li><a href="#problema-4-el-pivote-rebelde" id="toc-problema-4-el-pivote-rebelde" class="nav-link" data-scroll-target="#problema-4-el-pivote-rebelde"><span class="header-section-number">4.5</span> 20. Problema 4 — El pivote rebelde</a></li>
+  <li><a href="#problema-5-el-costo-tiene-pendiente" id="toc-problema-5-el-costo-tiene-pendiente" class="nav-link" data-scroll-target="#problema-5-el-costo-tiene-pendiente"><span class="header-section-number">4.6</span> 21. Problema 5 — El costo tiene pendiente</a></li>
+  <li><a href="#problema-6-la-estructura-vale-dinero" id="toc-problema-6-la-estructura-vale-dinero" class="nav-link" data-scroll-target="#problema-6-la-estructura-vale-dinero"><span class="header-section-number">4.7</span> 22. Problema 6 — La estructura vale dinero</a></li>
+  <li><a href="#problema-7-vandermonde-regresa-por-la-puerta-trasera" id="toc-problema-7-vandermonde-regresa-por-la-puerta-trasera" class="nav-link" data-scroll-target="#problema-7-vandermonde-regresa-por-la-puerta-trasera"><span class="header-section-number">4.8</span> 23. Problema 7 — Vandermonde regresa por la puerta trasera</a></li>
+  <li><a href="#problema-final-diagnóstico-numérico" id="toc-problema-final-diagnóstico-numérico" class="nav-link" data-scroll-target="#problema-final-diagnóstico-numérico"><span class="header-section-number">4.9</span> 24. Problema final — Diagnóstico numérico</a></li>
+  </ul></li>
+  <li><a href="#una-pequeña-historia-para-cerrar" id="toc-una-pequeña-historia-para-cerrar" class="nav-link" data-scroll-target="#una-pequeña-historia-para-cerrar"><span class="header-section-number">5</span> 25. Una pequeña historia para cerrar</a></li>
+  <li><a href="#lo-que-debe-quedar-del-capítulo" id="toc-lo-que-debe-quedar-del-capítulo" class="nav-link" data-scroll-target="#lo-que-debe-quedar-del-capítulo"><span class="header-section-number">6</span> 26. Lo que debe quedar del capítulo</a></li>
+  <li><a href="#fuentes-y-lecturas-recomendadas" id="toc-fuentes-y-lecturas-recomendadas" class="nav-link" data-scroll-target="#fuentes-y-lecturas-recomendadas"><span class="header-section-number">7</span> Fuentes y lecturas recomendadas</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Sesión 05 — Sistemas lineales: del problema al algoritmo</h1>
+<p class="subtitle lead">Capítulo 2 de Driscoll y Braun</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Francisco Salem </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="propósito" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Propósito</h1>
+<p>En el capítulo anterior aprendimos que trabajar con números de punto flotante obliga a distinguir entre el <strong>problema matemático</strong> y el <strong>algoritmo</strong> que usamos para resolverlo.</p>
+<p>Ahora veremos esa distinción en uno de los problemas centrales del cálculo científico:</p>
+<p><span class="math display">\[
+Ax=b.
+\]</span></p>
+<p>Este documento está pensado para <strong>tres clases de dos horas</strong>:</p>
+<ol type="1">
+<li><strong>Clase 1:</strong> de la interpolación a la factorización LU.</li>
+<li><strong>Clase 2:</strong> eficiencia, pivoteo, normas y condicionamiento.</li>
+<li><strong>Clase 3:</strong> laboratorio de problemas y experimentos en Pluto.</li>
+</ol>
+<p>La pregunta que atravesará las tres clases será:</p>
+<blockquote class="blockquote">
+<p><strong>Julia produjo una respuesta. ¿Debemos confiar en ella?</strong></p>
+</blockquote>
+<hr>
+</section>
+<section id="clase-1-de-un-problema-a-un-algoritmo" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Clase 1 — De un problema a un algoritmo</h1>
+<section id="interpolación-polinomial" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="interpolación-polinomial"><span class="header-section-number">2.1</span> 1. Interpolación polinomial</h2>
+<p>Dados <span class="math inline">\(n\)</span> puntos <span class="math inline">\((t_i,y_i)\)</span> buscamos un polinomio de grado menor que <span class="math inline">\(n\)</span>,</p>
+<p><span class="math display">\[
+p(t)=c_1+c_2t+\cdots+c_nt^{n-1},
+\]</span></p>
+<p>tal que <span class="math inline">\(p(t_i)=y_i\)</span>. Estas condiciones producen</p>
+<p><span class="math display">\[
+\begin{bmatrix}
+1&amp;t_1&amp;\cdots&amp;t_1^{n-1}\\
+1&amp;t_2&amp;\cdots&amp;t_2^{n-1}\\
+\vdots&amp;\vdots&amp;&amp;\vdots\\
+1&amp;t_n&amp;\cdots&amp;t_n^{n-1}
+\end{bmatrix}c=y.
+\]</span></p>
+<p>La matriz es una <strong>matriz de Vandermonde</strong>. Así, un problema de interpolación nos conduce naturalmente a</p>
+<p><span class="math display">\[
+Vc=y.
+\]</span></p>
+<blockquote class="blockquote">
+<p>Muchos problemas que aparentemente no tienen nada que ver con álgebra lineal terminan convertidos en un sistema lineal.</p>
+</blockquote>
+<section id="experimento-pluto" class="level3" data-number="2.1.1">
+<h3 data-number="2.1.1" class="anchored" data-anchor-id="experimento-pluto"><span class="header-section-number">2.1.1</span> Experimento Pluto</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> [<span class="fl">0.0</span>,<span class="fl">1.0</span>,<span class="fl">2.0</span>,<span class="fl">3.0</span>]</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> [<span class="fl">1.0</span>,<span class="fl">2.0</span>,<span class="fl">0.0</span>,<span class="fl">5.0</span>]</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>V <span class="op">=</span> [t[i]<span class="op">^</span>j for i <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu">length</span>(t), j <span class="kw">in</span> <span class="fl">0</span><span class="op">:</span><span class="fu">length</span>(t)<span class="op">-</span><span class="fl">1</span>]</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>c <span class="op">=</span> V <span class="op">\</span> y</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>V<span class="op">*</span>c <span class="op">-</span> y</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Predice antes de ejecutar:</strong> ¿qué representa <code>c</code>? ¿Por qué el residuo no tiene que ser exactamente cero?</p>
+</section>
+</section>
+<section id="matrices-en-julia" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="matrices-en-julia"><span class="header-section-number">2.2</span> 2. Matrices en Julia</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">LinearAlgebra</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> [<span class="fl">1.0</span> <span class="fl">2.0</span> <span class="fl">3.0</span>;</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>     <span class="fl">4.0</span> <span class="fl">5.0</span> <span class="fl">6.0</span>;</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>     <span class="fl">7.0</span> <span class="fl">8.0</span> <span class="fl">10.0</span>]</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> [<span class="fl">1.0</span>,<span class="fl">2.0</span>,<span class="fl">3.0</span>]</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="fu">size</span>(A)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>A<span class="op">'</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>A<span class="op">*</span>b</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Una matriz no es solamente una tabla de números. Numéricamente conviene pensarla como una transformación lineal.</p>
+</section>
+<section id="el-problema-central-axb" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="el-problema-central-axb"><span class="header-section-number">2.3</span> 3. El problema central: <span class="math inline">\(Ax=b\)</span></h2>
+<p>Si <span class="math inline">\(A\)</span> es invertible, matemáticamente</p>
+<p><span class="math display">\[
+x=A^{-1}b.
+\]</span></p>
+<p>Pero eso <strong>no</strong> significa que debamos calcular la inversa.</p>
+<p>En Julia usamos</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> A <span class="op">\</span> b</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>y no</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> <span class="fu">inv</span>(A)<span class="op">*</span>b</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<blockquote class="blockquote">
+<p><strong>Regla práctica:</strong> no calcule la inversa de una matriz para resolver un sistema lineal.</p>
+</blockquote>
+<p>La expresión matemática y el algoritmo numérico no son la misma cosa.</p>
+</section>
+<section id="el-residuo" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="el-residuo"><span class="header-section-number">2.4</span> 4. El residuo</h2>
+<p>Si Julia produce <span class="math inline">\(\tilde{x}\)</span>, podemos calcular</p>
+<p><span class="math display">\[
+r=b-A\tilde{x}.
+\]</span></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> A <span class="op">\</span> b</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>r <span class="op">=</span> b <span class="op">-</span> A<span class="op">*</span>x</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">norm</span>(r)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Guardemos una pregunta para más adelante:</p>
+<blockquote class="blockquote">
+<p>¿Un residuo pequeño garantiza que <span class="math inline">\(\tilde{x}\)</span> está cerca de la solución verdadera?</p>
+</blockquote>
+</section>
+<section id="sistemas-triangulares" class="level2" data-number="2.5">
+<h2 data-number="2.5" class="anchored" data-anchor-id="sistemas-triangulares"><span class="header-section-number">2.5</span> 5. Sistemas triangulares</h2>
+<p>Si <span class="math inline">\(L\)</span> es triangular inferior, <span class="math inline">\(Lx=b\)</span> se resuelve desde la primera ecuación hacia la última: <strong>sustitución hacia adelante</strong>.</p>
+<p>Si <span class="math inline">\(U\)</span> es triangular superior, usamos <strong>sustitución hacia atrás</strong>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">forwardsub</span>(L,b)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    n <span class="op">=</span> <span class="fu">length</span>(b)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> <span class="fu">zeros</span>(<span class="dt">Float64</span>,n)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    x[<span class="fl">1</span>] <span class="op">=</span> b[<span class="fl">1</span>]<span class="op">/</span>L[<span class="fl">1</span>,<span class="fl">1</span>]</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="fl">2</span><span class="op">:</span>n</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>        s <span class="op">=</span> <span class="fu">sum</span>(L[i,j]<span class="op">*</span>x[j] <span class="cf">for</span> j <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span>i<span class="op">-</span><span class="fl">1</span>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>        x[i] <span class="op">=</span> (b[i]<span class="op">-</span>s)<span class="op">/</span>L[i,i]</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">end</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> x</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Aquí no queremos que un paquete esconda el algoritmo. Queremos verlo respirar.</p>
+</section>
+<section id="factorización-lu" class="level2" data-number="2.6">
+<h2 data-number="2.6" class="anchored" data-anchor-id="factorización-lu"><span class="header-section-number">2.6</span> 6. Factorización LU</h2>
+<p>Buscamos</p>
+<p><span class="math display">\[
+A=LU.
+\]</span></p>
+<p>Entonces</p>
+<p><span class="math display">\[
+Ax=b
+\quad\Longrightarrow\quad
+LUx=b.
+\]</span></p>
+<p>Definiendo <span class="math inline">\(z=Ux\)</span>, resolvemos</p>
+<p>$$ Lz=b,Ux=z.</p>
+<p>👉 <a href="factorizacion_LU_4x4.pdf"><strong>Factorización LU de una matriz 4×4: ejemplo paso a paso y ejercicio</strong></a></p>
+<p>$$</p>
+<p>Por tanto:</p>
+<ol type="1">
+<li>Factorizar <span class="math inline">\(A=LU\)</span>.</li>
+<li>Resolver <span class="math inline">\(Lz=b\)</span>.</li>
+<li>Resolver <span class="math inline">\(Ux=z\)</span>.</li>
+</ol>
+<p>Si tenemos muchos lados derechos <span class="math inline">\(b_1,b_2,\ldots\)</span>, la factorización de <span class="math inline">\(A\)</span> se hace una sola vez.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>F <span class="op">=</span> <span class="fu">lu</span>(A)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>x1 <span class="op">=</span> F <span class="op">\</span> b1</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>x2 <span class="op">=</span> F <span class="op">\</span> b2</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="cierre-de-la-primera-clase" class="level2" data-number="2.7">
+<h2 data-number="2.7" class="anchored" data-anchor-id="cierre-de-la-primera-clase"><span class="header-section-number">2.7</span> 7. Cierre de la primera clase</h2>
+<p><span class="math display">\[
+\text{interpolación}\to Ax=b\to\text{sistemas triangulares}\to A=LU.
+\]</span></p>
+<p>Quedan dos preguntas:</p>
+<blockquote class="blockquote">
+<p>¿Cuánto cuesta el algoritmo?</p>
+</blockquote>
+<blockquote class="blockquote">
+<p>¿Siempre funciona bien?</p>
+</blockquote>
+<hr>
+</section>
+</section>
+<section id="clase-2-rápido-significa-bueno" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Clase 2 — ¿Rápido significa bueno?</h1>
+<section id="eficiencia-y-notación-asintótica" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="eficiencia-y-notación-asintótica"><span class="header-section-number">3.1</span> 8. Eficiencia y notación asintótica</h2>
+<p>Nos interesa cómo crece el trabajo con el tamaño <span class="math inline">\(n\)</span>.</p>
+<p><span class="math display">\[
+n^2+3n+7=O(n^2),\qquad
+4n^3+2n^2=O(n^3).
+\]</span></p>
+<p>Un <strong>flop</strong> es una operación aritmética de punto flotante.</p>
+<p>El producto matriz-vector requiere aproximadamente</p>
+<p><span class="math display">\[
+2n^2
+\]</span></p>
+<p>flops, mientras que LU requiere aproximadamente</p>
+<p><span class="math display">\[
+\frac{2}{3}n^3.
+\]</span></p>
+<p>La factorización es la parte cara.</p>
+<section id="experimento-pluto-ver-aparecer-n2" class="level3" data-number="3.1.1">
+<h3 data-number="3.1.1" class="anchored" data-anchor-id="experimento-pluto-ver-aparecer-n2"><span class="header-section-number">3.1.1</span> Experimento Pluto: ver aparecer <span class="math inline">\(n^2\)</span></h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span> <span class="fu">tiempo_mv</span>(n)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    A <span class="op">=</span> <span class="fu">randn</span>(n,n)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> <span class="fu">randn</span>(n)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    A<span class="op">*</span>x</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="pp">@elapsed</span> A<span class="op">*</span>x</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>t1 <span class="op">=</span> <span class="fu">tiempo_mv</span>(<span class="fl">1000</span>)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>t2 <span class="op">=</span> <span class="fu">tiempo_mv</span>(<span class="fl">2000</span>)</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>t2<span class="op">/</span>t1</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Predice:</strong> si el trabajo es <span class="math inline">\(O(n^2)\)</span>, ¿qué razón esperamos aproximadamente al duplicar <span class="math inline">\(n\)</span>?</p>
+</section>
+</section>
+<section id="el-problema-del-pivote" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="el-problema-del-pivote"><span class="header-section-number">3.2</span> 9. El problema del pivote</h2>
+<p>LU sin intercambiar filas puede fallar aunque <span class="math inline">\(A\)</span> sea invertible:</p>
+<p><span class="math display">\[
+A=
+\begin{bmatrix}
+0&amp;1\\
+1&amp;1
+\end{bmatrix}.
+\]</span></p>
+<p>El primer pivote es cero, pero <span class="math inline">\(\det(A)=-1\)</span>.</p>
+<p>La eliminación necesita intercambiar filas.</p>
+</section>
+<section id="pivoteo-parcial-y-estabilidad" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="pivoteo-parcial-y-estabilidad"><span class="header-section-number">3.3</span> 10. Pivoteo parcial y estabilidad</h2>
+<p>Al trabajar en una columna elegimos como pivote el elemento disponible de mayor valor absoluto.</p>
+<p>No se hace sólo para evitar dividir entre cero. También importa la estabilidad.</p>
+<p>Considere</p>
+<p><span class="math display">\[
+A(\varepsilon)=
+\begin{bmatrix}
+-\varepsilon&amp;1\\
+1&amp;-1
+\end{bmatrix}.
+\]</span></p>
+<p>Si <span class="math inline">\(\varepsilon\)</span> es diminuto, usarlo como pivote produce números enormes durante la eliminación.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>ϵ <span class="op">=</span> <span class="fl">1e-12</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> [<span class="op">-</span>ϵ <span class="fl">1.0</span>; <span class="fl">1.0</span> <span class="op">-</span><span class="fl">1.0</span>]</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> A<span class="op">*</span>[<span class="fl">1.0</span>,<span class="fl">1.0</span>]</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> A <span class="op">\</span> b</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>A, b, x</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<blockquote class="blockquote">
+<p>Un problema bien condicionado puede producir una mala respuesta si usamos un algoritmo inestable.</p>
+</blockquote>
+</section>
+<section id="normas" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="normas"><span class="header-section-number">3.4</span> 11. Normas</h2>
+<p>Necesitamos medir tamaños y perturbaciones:</p>
+<p><span class="math display">\[
+\|x\|_1=\sum_i|x_i|,
+\qquad
+\|x\|_2=\left(\sum_i|x_i|^2\right)^{1/2},
+\qquad
+\|x\|_\infty=\max_i|x_i|.
+\]</span></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> [<span class="fl">2.0</span>,<span class="op">-</span><span class="fl">3.0</span>,<span class="fl">1.0</span>,<span class="op">-</span><span class="fl">1.0</span>]</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">norm</span>(x,<span class="fl">1</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">norm</span>(x,<span class="fl">2</span>)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="fu">norm</span>(x,<span class="cn">Inf</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Para una norma matricial inducida,</p>
+<p><span class="math display">\[
+\|A\|=\max_{x\ne0}\frac{\|Ax\|}{\|x\|},
+\]</span></p>
+<p>y por tanto</p>
+<p><span class="math display">\[
+\|Ax\|\leq\|A\|\|x\|.
+\]</span></p>
+</section>
+<section id="condicionamiento-de-axb" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="condicionamiento-de-axb"><span class="header-section-number">3.5</span> 12. Condicionamiento de <span class="math inline">\(Ax=b\)</span></h2>
+<p>Si</p>
+<p><span class="math display">\[
+Ax=b
+\]</span></p>
+<p>y perturbamos <span class="math inline">\(b\)</span>,</p>
+<p><span class="math display">\[
+A(x+\Delta x)=b+\Delta b,
+\]</span></p>
+<p>entonces</p>
+<p><span class="math display">\[
+\Delta x=A^{-1}\Delta b.
+\]</span></p>
+<p>Usando las desigualdades de las normas obtenemos</p>
+<p><span class="math display">\[
+\frac{\|\Delta x\|}{\|x\|}
+\leq
+\|A\|\|A^{-1}\|
+\frac{\|\Delta b\|}{\|b\|}.
+\]</span></p>
+<p>Esto motiva</p>
+<p><span class="math display">\[
+\boxed{\kappa(A)=\|A\|\|A^{-1}\|}.
+\]</span></p>
+<p>Siempre <span class="math inline">\(\kappa(A)\ge1\)</span>. Si <span class="math inline">\(\kappa(A)\approx10^t\)</span>, pueden perderse aproximadamente <span class="math inline">\(t\)</span> cifras decimales de precisión.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cond</span>(A)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="el-gran-experimento-pluto-hilbert" class="level2" data-number="3.6">
+<h2 data-number="3.6" class="anchored" data-anchor-id="el-gran-experimento-pluto-hilbert"><span class="header-section-number">3.6</span> 13. El gran experimento Pluto: Hilbert</h2>
+<p><span class="math display">\[
+H_{ij}=\frac{1}{i+j-1}.
+\]</span></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hilbert</span>(n) <span class="op">=</span> [<span class="fl">1.0</span><span class="op">/</span>(i<span class="op">+</span>j<span class="op">-</span><span class="fl">1</span>) for i <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span>n, j <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span>n]</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="fl">6</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>H <span class="op">=</span> <span class="fu">hilbert</span>(n)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>x_exacta <span class="op">=</span> <span class="fu">ones</span>(n)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> H<span class="op">*</span>x_exacta</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>x_calculada <span class="op">=</span> H <span class="op">\</span> b</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>κ <span class="op">=</span> <span class="fu">cond</span>(H)</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>error_relativo <span class="op">=</span> <span class="fu">norm</span>(x_calculada<span class="op">-</span>x_exacta)<span class="op">/</span><span class="fu">norm</span>(x_exacta)</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>residuo_relativo <span class="op">=</span> <span class="fu">norm</span>(b<span class="op">-</span>H<span class="op">*</span>x_calculada)<span class="op">/</span><span class="fu">norm</span>(b)</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>κ, error_relativo, residuo_relativo</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Después pruebe <code>n = 10</code> y <code>n = 14</code>.</p>
+<p>La pregunta incómoda:</p>
+<blockquote class="blockquote">
+<p>¿Podemos obtener simultáneamente un residuo muy pequeño y una respuesta muy inexacta?</p>
+</blockquote>
+<p>Sí. Un residuo pequeño no garantiza un error pequeño cuando el problema está mal condicionado.</p>
+</section>
+<section id="error-hacia-adelante-y-hacia-atrás" class="level2" data-number="3.7">
+<h2 data-number="3.7" class="anchored" data-anchor-id="error-hacia-adelante-y-hacia-atrás"><span class="header-section-number">3.7</span> 14. Error hacia adelante y hacia atrás</h2>
+<p>El residuo</p>
+<p><span class="math display">\[
+r=b-A\tilde{x}
+\]</span></p>
+<p>implica</p>
+<p><span class="math display">\[
+A\tilde{x}=b-r.
+\]</span></p>
+<p>Por tanto, <span class="math inline">\(\tilde{x}\)</span> es la solución exacta de un problema ligeramente perturbado. Ésta es la idea del <strong>error hacia atrás</strong>.</p>
+<p>El condicionamiento conecta ambos mundos:</p>
+<p><span class="math display">\[
+\frac{\|x-\tilde{x}\|}{\|x\|}
+\lesssim
+\kappa(A)\frac{\|r\|}{\|b\|}.
+\]</span></p>
+<p>Como brújula conceptual:</p>
+<p><span class="math display">\[
+\boxed{
+\text{error final}
+\approx
+\text{condicionamiento del problema}
+\times
+\text{error del algoritmo}
+}
+\]</span></p>
+</section>
+<section id="la-estructura-también-es-información" class="level2" data-number="3.8">
+<h2 data-number="3.8" class="anchored" data-anchor-id="la-estructura-también-es-información"><span class="header-section-number">3.8</span> 15. La estructura también es información</h2>
+<p>Una matriz puede ser triangular, tridiagonal, de banda, dispersa, simétrica o definida positiva.</p>
+<p>Esa información puede cambiar el algoritmo y el costo.</p>
+<section id="tridiagonal" class="level3" data-number="3.8.1">
+<h3 data-number="3.8.1" class="anchored" data-anchor-id="tridiagonal"><span class="header-section-number">3.8.1</span> Tridiagonal</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="fl">1000</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> <span class="fu">Tridiagonal</span>(<span class="fu">-ones</span>(n<span class="op">-</span><span class="fl">1</span>), <span class="fl">2</span><span class="fu">ones</span>(n), <span class="fu">-ones</span>(n<span class="op">-</span><span class="fl">1</span>))</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> <span class="fu">ones</span>(n)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> A <span class="op">\</span> b</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="simétrica-definida-positiva" class="level3" data-number="3.8.2">
+<h3 data-number="3.8.2" class="anchored" data-anchor-id="simétrica-definida-positiva"><span class="header-section-number">3.8.2</span> Simétrica definida positiva</h3>
+<p>Para una matriz SPD podemos usar Cholesky,</p>
+<p><span class="math display">\[
+A=R^TR,
+\]</span></p>
+<p>con costo aproximado</p>
+<p><span class="math display">\[
+\frac13n^3
+\]</span></p>
+<p>en vez de <span class="math inline">\(\frac23n^3\)</span> de LU general.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> <span class="fu">randn</span>(<span class="fl">5</span>,<span class="fl">5</span>)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>B <span class="op">=</span> A<span class="op">'*</span>A <span class="op">+</span> I</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>F <span class="op">=</span> <span class="fu">cholesky</span>(B)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<blockquote class="blockquote">
+<p><strong>Antes de escoger un algoritmo, pregunte qué sabe acerca de la matriz.</strong></p>
+</blockquote>
+<hr>
+</section>
+</section>
+</section>
+<section id="clase-3-laboratorio-predice-ejecuta-observa-explica" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Clase 3 — Laboratorio: predice, ejecuta, observa, explica</h1>
+<section id="regla-del-laboratorio" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="regla-del-laboratorio"><span class="header-section-number">4.1</span> 16. Regla del laboratorio</h2>
+<p>Para cada experimento:</p>
+<ol type="1">
+<li><strong>Predice.</strong></li>
+<li><strong>Ejecuta.</strong></li>
+<li><strong>Observa.</strong></li>
+<li><strong>Explica.</strong></li>
+</ol>
+<p>No queremos saber solamente qué comando escribir. Queremos saber qué pregunta hacerle al resultado.</p>
+</section>
+<section id="problema-1-inversa-o-sistema" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="problema-1-inversa-o-sistema"><span class="header-section-number">4.2</span> 17. Problema 1 — ¿Inversa o sistema?</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> <span class="fu">randn</span>(<span class="fl">500</span>,<span class="fl">500</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> <span class="fu">randn</span>(<span class="fl">500</span>)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="pp">@elapsed</span> A<span class="op">\</span>b</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="pp">@elapsed</span> <span class="fu">inv</span>(A)<span class="op">*</span>b</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Repita varias veces.</p>
+<p><strong>Discuta:</strong> ¿cuál es conceptualmente apropiado?, ¿cuál es más rápido?, ¿por qué calcular información que no necesitamos?</p>
+</section>
+<section id="problema-2-el-residuo-puede-engañar" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="problema-2-el-residuo-puede-engañar"><span class="header-section-number">4.3</span> 18. Problema 2 — El residuo puede engañar</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>H <span class="op">=</span> <span class="fu">hilbert</span>(<span class="fl">12</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>x_exacta <span class="op">=</span> <span class="fu">ones</span>(<span class="fl">12</span>)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> H<span class="op">*</span>x_exacta</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> H<span class="op">\</span>b</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="fu">norm</span>(b<span class="op">-</span>H<span class="op">*</span>x)<span class="op">/</span><span class="fu">norm</span>(b)</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="fu">norm</span>(x<span class="op">-</span>x_exacta)<span class="op">/</span><span class="fu">norm</span>(x_exacta)</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="fu">cond</span>(H)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Julia produjo una respuesta con residuo pequeño.</p>
+<blockquote class="blockquote">
+<p><strong>¿Debemos confiar en ella?</strong></p>
+</blockquote>
+</section>
+<section id="problema-3-perturbar-los-datos" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="problema-3-perturbar-los-datos"><span class="header-section-number">4.4</span> 19. Problema 3 — Perturbar los datos</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> [<span class="fl">1.0</span> <span class="fl">1.0</span>; <span class="fl">1.0</span> <span class="fl">1.000001</span>]</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>x_exacta <span class="op">=</span> [<span class="fl">1.0</span>,<span class="fl">1.0</span>]</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> A<span class="op">*</span>x_exacta</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cond</span>(A)</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>δb <span class="op">=</span> [<span class="fl">1e-8</span>,<span class="op">-</span><span class="fl">1e-8</span>]</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>x1 <span class="op">=</span> A<span class="op">\</span>b</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>x2 <span class="op">=</span> <span class="fu">A\</span>(b<span class="op">+</span>δb)</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a><span class="fu">norm</span>(δb)<span class="op">/</span><span class="fu">norm</span>(b)</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a><span class="fu">norm</span>(x2<span class="op">-</span>x1)<span class="op">/</span><span class="fu">norm</span>(x1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Explique cómo una perturbación diminuta puede producir un cambio mucho mayor en la solución.</p>
+</section>
+<section id="problema-4-el-pivote-rebelde" class="level2" data-number="4.5">
+<h2 data-number="4.5" class="anchored" data-anchor-id="problema-4-el-pivote-rebelde"><span class="header-section-number">4.5</span> 20. Problema 4 — El pivote rebelde</h2>
+<p>Use</p>
+<p><span class="math display">\[
+A(\varepsilon)=
+\begin{bmatrix}
+-\varepsilon&amp;1\\
+1&amp;-1
+\end{bmatrix}
+\]</span></p>
+<p>para <span class="math inline">\(\varepsilon=10^{-2},10^{-6},10^{-12}\)</span>.</p>
+<p>Calcule <code>cond(A)</code> y resuelva con <code>A\b</code>.</p>
+<p>Si el condicionamiento no explica una pérdida catastrófica pero una eliminación sin pivoteo sí puede producirla:</p>
+<blockquote class="blockquote">
+<p><strong>¿el problema está en el problema matemático o en el algoritmo?</strong></p>
+</blockquote>
+</section>
+<section id="problema-5-el-costo-tiene-pendiente" class="level2" data-number="4.6">
+<h2 data-number="4.6" class="anchored" data-anchor-id="problema-5-el-costo-tiene-pendiente"><span class="header-section-number">4.6</span> 21. Problema 5 — El costo tiene pendiente</h2>
+<p>Mida tiempos para multiplicación matriz-vector con</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>ns <span class="op">=</span> [<span class="fl">250</span>,<span class="fl">500</span>,<span class="fl">1000</span>,<span class="fl">2000</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Si <span class="math inline">\(t\approx Cn^p\)</span>, entonces</p>
+<p><span class="math display">\[
+p\approx
+\frac{\log(t_2/t_1)}{\log(n_2/n_1)}.
+\]</span></p>
+<p>¿Se acerca a 2? ¿Por qué no tiene que dar exactamente 2?</p>
+</section>
+<section id="problema-6-la-estructura-vale-dinero" class="level2" data-number="4.7">
+<h2 data-number="4.7" class="anchored" data-anchor-id="problema-6-la-estructura-vale-dinero"><span class="header-section-number">4.7</span> 22. Problema 6 — La estructura vale dinero</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="fl">2000</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>A_densa <span class="op">=</span> <span class="fu">diagm</span>(</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">-</span><span class="fl">1</span> <span class="op">=&gt;</span> <span class="fu">-ones</span>(n<span class="op">-</span><span class="fl">1</span>),</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>     <span class="fl">0</span> <span class="op">=&gt;</span>  <span class="fl">2</span><span class="fu">ones</span>(n),</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>     <span class="fl">1</span> <span class="op">=&gt;</span> <span class="fu">-ones</span>(n<span class="op">-</span><span class="fl">1</span>)</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>A_tri <span class="op">=</span> <span class="fu">Tridiagonal</span>(</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">-ones</span>(n<span class="op">-</span><span class="fl">1</span>),</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>     <span class="fl">2</span><span class="fu">ones</span>(n),</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">-ones</span>(n<span class="op">-</span><span class="fl">1</span>)</span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Resuelva ambos sistemas con el mismo <span class="math inline">\(b\)</span> y compare tiempo y memoria.</p>
+<p>Las matrices representan el mismo operador.</p>
+<blockquote class="blockquote">
+<p>¿Por qué no representan el mismo problema computacional?</p>
+</blockquote>
+</section>
+<section id="problema-7-vandermonde-regresa-por-la-puerta-trasera" class="level2" data-number="4.8">
+<h2 data-number="4.8" class="anchored" data-anchor-id="problema-7-vandermonde-regresa-por-la-puerta-trasera"><span class="header-section-number">4.8</span> 23. Problema 7 — Vandermonde regresa por la puerta trasera</h2>
+<p>Para</p>
+<p><span class="math display">\[
+t_i=\frac{i}{n},\qquad i=0,\ldots,n,
+\]</span></p>
+<p>construya matrices de Vandermonde para distintos <span class="math inline">\(n\)</span> y calcule <code>cond(V)</code>.</p>
+<p>La interpolación fue nuestra puerta de entrada al capítulo.</p>
+<blockquote class="blockquote">
+<p>Ahora que conocemos condicionamiento, ¿qué descubrimos sobre esa puerta?</p>
+</blockquote>
+</section>
+<section id="problema-final-diagnóstico-numérico" class="level2" data-number="4.9">
+<h2 data-number="4.9" class="anchored" data-anchor-id="problema-final-diagnóstico-numérico"><span class="header-section-number">4.9</span> 24. Problema final — Diagnóstico numérico</h2>
+<p>Un compañero afirma:</p>
+<blockquote class="blockquote">
+<p>“El residuo es de orden <span class="math inline">\(10^{-14}\)</span>, así que la solución tiene unas catorce cifras correctas.”</p>
+</blockquote>
+<p>¿Está de acuerdo?</p>
+<p>La respuesta debe usar:</p>
+<ul>
+<li>residuo,</li>
+<li>error hacia atrás,</li>
+<li>número de condición,</li>
+<li>error hacia adelante.</li>
+</ul>
+<p>No basta contestar sí o no.</p>
+<hr>
+</section>
+</section>
+<section id="una-pequeña-historia-para-cerrar" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> 25. Una pequeña historia para cerrar</h1>
+<p>Nicholas Higham recoge una anécdota de B. V. Bowden sobre una antigua máquina construida con transformadores para resolver ecuaciones simultáneas. Cuando se le pidió resolver un sistema incompatible, la máquina manifestó su desacuerdo de una manera poco sutil:</p>
+<p><strong>voló el fusible principal y apagó las luces.</strong></p>
+<p>Las computadoras actuales suelen protestar con menos teatro.</p>
+<p>Pero la pregunta sigue siendo la misma:</p>
+<blockquote class="blockquote">
+<p><strong>¿Tiene sentido el problema que estamos pidiendo resolver y debemos confiar en la respuesta obtenida?</strong></p>
+</blockquote>
+<hr>
+</section>
+<section id="lo-que-debe-quedar-del-capítulo" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> 26. Lo que debe quedar del capítulo</h1>
+<p>Al terminar estas tres clases, el estudiante debería poder explicar:</p>
+<ol type="1">
+<li>cómo la interpolación conduce a un sistema lineal;</li>
+<li>por qué <code>A\b</code> es preferible a <code>inv(A)*b</code>;</li>
+<li>cómo LU reduce un sistema general a sistemas triangulares;</li>
+<li>por qué LU cuesta <span class="math inline">\(O(n^3)\)</span>;</li>
+<li>por qué necesitamos pivoteo;</li>
+<li>qué miden las normas;</li>
+<li>qué significa <span class="math inline">\(\kappa(A)\)</span>;</li>
+<li>por qué un residuo pequeño no siempre implica una solución exacta;</li>
+<li>cómo distinguir condicionamiento y estabilidad;</li>
+<li>por qué la estructura puede cambiar el método apropiado.</li>
+</ol>
+<p><span class="math display">\[
+\boxed{\text{No basta obtener un número. Hay que saber si merece confianza.}}
+\]</span></p>
+</section>
+<section id="fuentes-y-lecturas-recomendadas" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> Fuentes y lecturas recomendadas</h1>
+<ul>
+<li>Tobin A. Driscoll y Richard J. Braun, <em>Fundamentals of Numerical Computation</em>, capítulo 2, “Linear systems of equations”.</li>
+<li>Nicholas J. Higham, <em>Accuracy and Stability of Numerical Algorithms</em>, 2nd ed., SIAM, 2002.</li>
+<li>Richard L. Burden, J. Douglas Faires y Annette M. Burden, <em>Numerical Analysis</em>, texto clásico de consulta.</li>
+<li>Lloyd N. Trefethen y David Bau III, <em>Numerical Linear Algebra</em>, SIAM, 1997.</li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
