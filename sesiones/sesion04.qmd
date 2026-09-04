@@ -836,3 +836,5 @@ El material de esta sesión está basado principalmente en los apartados 1.2--1.
 
 <https://tobydriscoll.net/fnc-julia/home.html>
 
+
+👉 [**Problemas de repaso del Capítulo1**](problemas_capitulo1_analisis_numerico.pdf)
