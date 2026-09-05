@@ -176,10 +176,11 @@ Definiendo $z=Ux$, resolvemos
 
 $$
 Lz=b,\qquad Ux=z.
+$$
 
 👉 [**Factorización LU de una matriz 4×4: ejemplo paso a paso y ejercicio**](factorizacion_LU_4x4.pdf)
 
-$$
+
 
 Por tanto:
 

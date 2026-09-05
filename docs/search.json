@@ -46,7 +46,7 @@
     "href": "sesiones/sesion05.html#factorización-lu",
     "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
     "section": "2.6 6. Factorización LU",
-    "text": "2.6 6. Factorización LU\nBuscamos\n\\[\nA=LU.\n\\]\nEntonces\n\\[\nAx=b\n\\quad\\Longrightarrow\\quad\nLUx=b.\n\\]\nDefiniendo \\(z=Ux\\), resolvemos\n$$ Lz=b,Ux=z.\n👉 Factorización LU de una matriz 4×4: ejemplo paso a paso y ejercicio\n$$\nPor tanto:\n\nFactorizar \\(A=LU\\).\nResolver \\(Lz=b\\).\nResolver \\(Ux=z\\).\n\nSi tenemos muchos lados derechos \\(b_1,b_2,\\ldots\\), la factorización de \\(A\\) se hace una sola vez.\nF = lu(A)\nx1 = F \\ b1\nx2 = F \\ b2"
+    "text": "2.6 6. Factorización LU\nBuscamos\n\\[\nA=LU.\n\\]\nEntonces\n\\[\nAx=b\n\\quad\\Longrightarrow\\quad\nLUx=b.\n\\]\nDefiniendo \\(z=Ux\\), resolvemos\n\\[\nLz=b,\\qquad Ux=z.\n\\]\n👉 Factorización LU de una matriz 4×4: ejemplo paso a paso y ejercicio\nPor tanto:\n\nFactorizar \\(A=LU\\).\nResolver \\(Lz=b\\).\nResolver \\(Ux=z\\).\n\nSi tenemos muchos lados derechos \\(b_1,b_2,\\ldots\\), la factorización de \\(A\\) se hace una sola vez.\nF = lu(A)\nx1 = F \\ b1\nx2 = F \\ b2"
   },
   {
     "objectID": "sesiones/sesion05.html#cierre-de-la-primera-clase",
