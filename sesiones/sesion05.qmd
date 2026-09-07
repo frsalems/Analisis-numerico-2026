@@ -331,6 +331,7 @@ norm(r)
 Guardemos una pregunta para más adelante:
 
 > ¿Un residuo pequeño garantiza que $\tilde{x}$ está cerca de la solución verdadera?
+
 ### Laboratorio: un circuito eléctrico como sistema lineal
 
 Las leyes de Ohm y Kirchhoff conducen a un sistema lineal para las
@@ -339,6 +340,8 @@ los voltajes, resolver el sistema y observar también su residuo y
 condicionamiento.
 
 👉 [**Explorar el circuito de tres mallas en Pluto**](circuito_kirchhoff_pluto.jl)
+
+Para utilizar las regletas interactivas, descarga el archivo y ábrelo desde Pluto.
 
 > **Predice → mueve → observa → explica.**
 
@@ -614,6 +617,7 @@ Sí. Un residuo pequeño no garantiza un error pequeño cuando el problema está
 En este cuaderno, una regleta permite variar la dimensión \(n\) y observar
 simultáneamente cómo cambian el número de condición, el error relativo
 y el residuo relativo.
+Para utilizar las regletas interactivas, descarga el archivo y ábrelo desde Pluto.
 
 > **Regla del experimento:** predice → mueve → observa → explica.
 

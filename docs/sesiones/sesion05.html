@@ -280,7 +280,10 @@ window.Quarto = {
   </ul></li>
   <li><a href="#matrices-en-julia" id="toc-matrices-en-julia" class="nav-link" data-scroll-target="#matrices-en-julia"><span class="header-section-number">2.3</span> Matrices en Julia</a></li>
   <li><a href="#el-problema-central-axb" id="toc-el-problema-central-axb" class="nav-link" data-scroll-target="#el-problema-central-axb"><span class="header-section-number">2.4</span> El problema central: <span class="math inline">\(Ax=b\)</span></a></li>
-  <li><a href="#el-residuo" id="toc-el-residuo" class="nav-link" data-scroll-target="#el-residuo"><span class="header-section-number">2.5</span> El residuo</a></li>
+  <li><a href="#el-residuo" id="toc-el-residuo" class="nav-link" data-scroll-target="#el-residuo"><span class="header-section-number">2.5</span> El residuo</a>
+  <ul class="collapse">
+  <li><a href="#laboratorio-un-circuito-eléctrico-como-sistema-lineal" id="toc-laboratorio-un-circuito-eléctrico-como-sistema-lineal" class="nav-link" data-scroll-target="#laboratorio-un-circuito-eléctrico-como-sistema-lineal"><span class="header-section-number">2.5.1</span> Laboratorio: un circuito eléctrico como sistema lineal</a></li>
+  </ul></li>
   <li><a href="#sistemas-triangulares" id="toc-sistemas-triangulares" class="nav-link" data-scroll-target="#sistemas-triangulares"><span class="header-section-number">2.6</span> Sistemas triangulares</a></li>
   <li><a href="#factorización-lu" id="toc-factorización-lu" class="nav-link" data-scroll-target="#factorización-lu"><span class="header-section-number">2.7</span> Factorización LU</a></li>
   <li><a href="#cierre-de-la-primera-clase" id="toc-cierre-de-la-primera-clase" class="nav-link" data-scroll-target="#cierre-de-la-primera-clase"><span class="header-section-number">2.8</span> 7. Cierre de la primera clase</a></li>
@@ -614,13 +617,17 @@ r=b-A\tilde{x}.
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">norm</span>(r)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Guardemos una pregunta para más adelante:</p>
 <blockquote class="blockquote">
-<p>¿Un residuo pequeño garantiza que <span class="math inline">\(\tilde{x}\)</span> está cerca de la solución verdadera? ### Laboratorio: un circuito eléctrico como sistema lineal</p>
+<p>¿Un residuo pequeño garantiza que <span class="math inline">\(\tilde{x}\)</span> está cerca de la solución verdadera?</p>
 </blockquote>
+<section id="laboratorio-un-circuito-eléctrico-como-sistema-lineal" class="level3" data-number="2.5.1">
+<h3 data-number="2.5.1" class="anchored" data-anchor-id="laboratorio-un-circuito-eléctrico-como-sistema-lineal"><span class="header-section-number">2.5.1</span> Laboratorio: un circuito eléctrico como sistema lineal</h3>
 <p>Las leyes de Ohm y Kirchhoff conducen a un sistema lineal para las corrientes de un circuito. En el siguiente laboratorio podrás modificar los voltajes, resolver el sistema y observar también su residuo y condicionamiento.</p>
 <p>👉 <a href="circuito_kirchhoff_pluto.jl"><strong>Explorar el circuito de tres mallas en Pluto</strong></a></p>
+<p>Para utilizar las regletas interactivas, descarga el archivo y ábrelo desde Pluto.</p>
 <blockquote class="blockquote">
 <p><strong>Predice → mueve → observa → explica.</strong></p>
 </blockquote>
+</section>
 </section>
 <section id="sistemas-triangulares" class="level2" data-number="2.6">
 <h2 data-number="2.6" class="anchored" data-anchor-id="sistemas-triangulares"><span class="header-section-number">2.6</span> Sistemas triangulares</h2>
@@ -827,7 +834,7 @@ H_{ij}=\frac{1}{i+j-1}.
 </blockquote>
 <p>Sí. Un residuo pequeño no garantiza un error pequeño cuando el problema está mal condicionado. ### Cuaderno interactivo</p>
 <p>👉 <a href="hilbert_interactivo_pluto.jl"><strong>Explorar matrices de Hilbert en Pluto</strong></a></p>
-<p>En este cuaderno, una regleta permite variar la dimensión (n) y observar simultáneamente cómo cambian el número de condición, el error relativo y el residuo relativo.</p>
+<p>En este cuaderno, una regleta permite variar la dimensión (n) y observar simultáneamente cómo cambian el número de condición, el error relativo y el residuo relativo. Para utilizar las regletas interactivas, descarga el archivo y ábrelo desde Pluto.</p>
 <blockquote class="blockquote">
 <p><strong>Regla del experimento:</strong> predice → mueve → observa → explica.</p>
 </blockquote>
