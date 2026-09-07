@@ -10,169 +10,169 @@
     "objectID": "sesiones/sesion05.html#interpolación-polinomial",
     "href": "sesiones/sesion05.html#interpolación-polinomial",
     "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "2.1 1. Interpolación polinomial",
-    "text": "2.1 1. Interpolación polinomial\nDados \\(n\\) puntos \\((t_i,y_i)\\) buscamos un polinomio de grado menor que \\(n\\),\n\\[\np(t)=c_1+c_2t+\\cdots+c_nt^{n-1},\n\\]\ntal que \\(p(t_i)=y_i\\). Estas condiciones producen\n\\[\n\\begin{bmatrix}\n1&t_1&\\cdots&t_1^{n-1}\\\\\n1&t_2&\\cdots&t_2^{n-1}\\\\\n\\vdots&\\vdots&&\\vdots\\\\\n1&t_n&\\cdots&t_n^{n-1}\n\\end{bmatrix}c=y.\n\\]\nLa matriz es una matriz de Vandermonde. Así, un problema de interpolación nos conduce naturalmente a\n\\[\nVc=y.\n\\]\n\nMuchos problemas que aparentemente no tienen nada que ver con álgebra lineal terminan convertidos en un sistema lineal.\n\n\n2.1.1 Experimento Pluto\nt = [0.0,1.0,2.0,3.0]\ny = [1.0,2.0,0.0,5.0]\nV = [t[i]^j for i in 1:length(t), j in 0:length(t)-1]\nc = V \\ y\nV*c - y\nPredice antes de ejecutar: ¿qué representa c? ¿Por qué el residuo no tiene que ser exactamente cero?"
+    "section": "2.2 Interpolación polinomial",
+    "text": "2.2 Interpolación polinomial\nDados \\(n\\) puntos \\((t_i,y_i)\\) buscamos un polinomio de grado menor que \\(n\\),\n\\[\np(t)=c_1+c_2t+\\cdots+c_nt^{n-1},\n\\]\ntal que \\(p(t_i)=y_i\\). Estas condiciones producen\n\\[\n\\begin{bmatrix}\n1&t_1&\\cdots&t_1^{n-1}\\\\\n1&t_2&\\cdots&t_2^{n-1}\\\\\n\\vdots&\\vdots&&\\vdots\\\\\n1&t_n&\\cdots&t_n^{n-1}\n\\end{bmatrix}c=y.\n\\]\nLa matriz es una matriz de Vandermonde. Así, un problema de interpolación nos conduce naturalmente a\n\\[\nVc=y.\n\\]\n\nMuchos problemas que aparentemente no tienen nada que ver con álgebra lineal terminan convertidos en un sistema lineal.\n\n\n2.2.1 Experimento Pluto\nt = [0.0,1.0,2.0,3.0]\ny = [1.0,2.0,0.0,5.0]\nV = [t[i]^j for i in 1:length(t), j in 0:length(t)-1]\nc = V \\ y\nV*c - y\nPredice antes de ejecutar: ¿qué representa c? ¿Por qué el residuo no tiene que ser exactamente cero?"
   },
   {
     "objectID": "sesiones/sesion05.html#matrices-en-julia",
     "href": "sesiones/sesion05.html#matrices-en-julia",
     "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "2.2 2. Matrices en Julia",
-    "text": "2.2 2. Matrices en Julia\nusing LinearAlgebra\n\nA = [1.0 2.0 3.0;\n     4.0 5.0 6.0;\n     7.0 8.0 10.0]\n\nb = [1.0,2.0,3.0]\n\nsize(A)\nA'\nA*b\nUna matriz no es solamente una tabla de números. Numéricamente conviene pensarla como una transformación lineal."
+    "section": "2.3 Matrices en Julia",
+    "text": "2.3 Matrices en Julia\nusing LinearAlgebra\n\nA = [1.0 2.0 3.0;\n     4.0 5.0 6.0;\n     7.0 8.0 10.0]\n\nb = [1.0,2.0,3.0]\n\nsize(A)\nA'\nA*b\nUna matriz no es solamente una tabla de números. Numéricamente conviene pensarla como una transformación lineal."
   },
   {
     "objectID": "sesiones/sesion05.html#el-problema-central-axb",
     "href": "sesiones/sesion05.html#el-problema-central-axb",
     "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "2.3 3. El problema central: \\(Ax=b\\)",
-    "text": "2.3 3. El problema central: \\(Ax=b\\)\nSi \\(A\\) es invertible, matemáticamente\n\\[\nx=A^{-1}b.\n\\]\nPero eso no significa que debamos calcular la inversa.\nEn Julia usamos\nx = A \\ b\ny no\nx = inv(A)*b\n\nRegla práctica: no calcule la inversa de una matriz para resolver un sistema lineal.\n\nLa expresión matemática y el algoritmo numérico no son la misma cosa."
+    "section": "2.4 El problema central: \\(Ax=b\\)",
+    "text": "2.4 El problema central: \\(Ax=b\\)\nSi \\(A\\) es invertible, matemáticamente\n\\[\nx=A^{-1}b.\n\\]\nPero eso no significa que debamos calcular la inversa.\nEn Julia usamos\nx = A \\ b\ny no\nx = inv(A)*b\n\nRegla práctica: no calcule la inversa de una matriz para resolver un sistema lineal.\n\nLa expresión matemática y el algoritmo numérico no son la misma cosa."
   },
   {
     "objectID": "sesiones/sesion05.html#el-residuo",
     "href": "sesiones/sesion05.html#el-residuo",
     "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "2.4 4. El residuo",
-    "text": "2.4 4. El residuo\nSi Julia produce \\(\\tilde{x}\\), podemos calcular\n\\[\nr=b-A\\tilde{x}.\n\\]\nx = A \\ b\nr = b - A*x\nnorm(r)\nGuardemos una pregunta para más adelante:\n\n¿Un residuo pequeño garantiza que \\(\\tilde{x}\\) está cerca de la solución verdadera?"
+    "section": "2.5 El residuo",
+    "text": "2.5 El residuo\nSi Julia produce \\(\\tilde{x}\\), podemos calcular\n\\[\nr=b-A\\tilde{x}.\n\\]\nx = A \\ b\nr = b - A*x\nnorm(r)\nGuardemos una pregunta para más adelante:\n\n¿Un residuo pequeño garantiza que \\(\\tilde{x}\\) está cerca de la solución verdadera? ### Laboratorio: un circuito eléctrico como sistema lineal\n\nLas leyes de Ohm y Kirchhoff conducen a un sistema lineal para las corrientes de un circuito. En el siguiente laboratorio podrás modificar los voltajes, resolver el sistema y observar también su residuo y condicionamiento.\n👉 Explorar el circuito de tres mallas en Pluto\n\nPredice → mueve → observa → explica."
   },
   {
     "objectID": "sesiones/sesion05.html#sistemas-triangulares",
     "href": "sesiones/sesion05.html#sistemas-triangulares",
     "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "2.5 5. Sistemas triangulares",
-    "text": "2.5 5. Sistemas triangulares\nSi \\(L\\) es triangular inferior, \\(Lx=b\\) se resuelve desde la primera ecuación hacia la última: sustitución hacia adelante.\nSi \\(U\\) es triangular superior, usamos sustitución hacia atrás.\nfunction forwardsub(L,b)\n    n = length(b)\n    x = zeros(Float64,n)\n    x[1] = b[1]/L[1,1]\n    for i in 2:n\n        s = sum(L[i,j]*x[j] for j in 1:i-1)\n        x[i] = (b[i]-s)/L[i,i]\n    end\n    return x\nend\nAquí no queremos que un paquete esconda el algoritmo. Queremos verlo respirar."
+    "section": "2.6 Sistemas triangulares",
+    "text": "2.6 Sistemas triangulares\nSi \\(L\\) es triangular inferior, \\(Lx=b\\) se resuelve desde la primera ecuación hacia la última: sustitución hacia adelante.\nSi \\(U\\) es triangular superior, usamos sustitución hacia atrás.\nfunction forwardsub(L,b)\n    n = length(b)\n    x = zeros(Float64,n)\n    x[1] = b[1]/L[1,1]\n    for i in 2:n\n        s = sum(L[i,j]*x[j] for j in 1:i-1)\n        x[i] = (b[i]-s)/L[i,i]\n    end\n    return x\nend\nAquí no queremos que un paquete esconda el algoritmo. Queremos verlo respirar."
   },
   {
     "objectID": "sesiones/sesion05.html#factorización-lu",
     "href": "sesiones/sesion05.html#factorización-lu",
     "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "2.6 6. Factorización LU",
-    "text": "2.6 6. Factorización LU\nBuscamos\n\\[\nA=LU.\n\\]\nEntonces\n\\[\nAx=b\n\\quad\\Longrightarrow\\quad\nLUx=b.\n\\]\nDefiniendo \\(z=Ux\\), resolvemos\n\\[\nLz=b,\\qquad Ux=z.\n\\]\n👉 Factorización LU de una matriz 4×4: ejemplo paso a paso y ejercicio\nPor tanto:\n\nFactorizar \\(A=LU\\).\nResolver \\(Lz=b\\).\nResolver \\(Ux=z\\).\n\nSi tenemos muchos lados derechos \\(b_1,b_2,\\ldots\\), la factorización de \\(A\\) se hace una sola vez.\nF = lu(A)\nx1 = F \\ b1\nx2 = F \\ b2"
+    "section": "2.7 Factorización LU",
+    "text": "2.7 Factorización LU\nBuscamos\n\\[\nA=LU.\n\\]\nEntonces\n\\[\nAx=b\n\\quad\\Longrightarrow\\quad\nLUx=b.\n\\]\nDefiniendo \\(z=Ux\\), resolvemos\n\\[\nLz=b,\\qquad Ux=z.\n\\]\n👉 Factorización LU de una matriz 4×4: ejemplo paso a paso y ejercicio\nPor tanto:\n\nFactorizar \\(A=LU\\).\nResolver \\(Lz=b\\).\nResolver \\(Ux=z\\).\n\nSi tenemos muchos lados derechos \\(b_1,b_2,\\ldots\\), la factorización de \\(A\\) se hace una sola vez.\nF = lu(A)\nx1 = F \\ b1\nx2 = F \\ b2"
   },
   {
     "objectID": "sesiones/sesion05.html#cierre-de-la-primera-clase",
     "href": "sesiones/sesion05.html#cierre-de-la-primera-clase",
     "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "2.7 7. Cierre de la primera clase",
-    "text": "2.7 7. Cierre de la primera clase\n\\[\n\\text{interpolación}\\to Ax=b\\to\\text{sistemas triangulares}\\to A=LU.\n\\]\nQuedan dos preguntas:\n\n¿Cuánto cuesta el algoritmo?\n\n\n¿Siempre funciona bien?"
+    "section": "2.8 7. Cierre de la primera clase",
+    "text": "2.8 7. Cierre de la primera clase\n\\[\n\\text{interpolación}\\to Ax=b\\to\\text{sistemas triangulares}\\to A=LU.\n\\]\nQuedan dos preguntas:\n\n¿Cuánto cuesta el algoritmo?\n\n\n¿Siempre funciona bien?"
   },
   {
     "objectID": "sesiones/sesion05.html#eficiencia-y-notación-asintótica",
     "href": "sesiones/sesion05.html#eficiencia-y-notación-asintótica",
     "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "3.1 8. Eficiencia y notación asintótica",
-    "text": "3.1 8. Eficiencia y notación asintótica\nNos interesa cómo crece el trabajo con el tamaño \\(n\\).\n\\[\nn^2+3n+7=O(n^2),\\qquad\n4n^3+2n^2=O(n^3).\n\\]\nUn flop es una operación aritmética de punto flotante.\nEl producto matriz-vector requiere aproximadamente\n\\[\n2n^2\n\\]\nflops, mientras que LU requiere aproximadamente\n\\[\n\\frac{2}{3}n^3.\n\\]\nLa factorización es la parte cara.\n\n3.1.1 Experimento Pluto: ver aparecer \\(n^2\\)\nfunction tiempo_mv(n)\n    A = randn(n,n)\n    x = randn(n)\n    A*x\n    @elapsed A*x\nend\n\nt1 = tiempo_mv(1000)\nt2 = tiempo_mv(2000)\nt2/t1\nPredice: si el trabajo es \\(O(n^2)\\), ¿qué razón esperamos aproximadamente al duplicar \\(n\\)?"
+    "section": "3.1 Eficiencia y notación asintótica",
+    "text": "3.1 Eficiencia y notación asintótica\nNos interesa cómo crece el trabajo con el tamaño \\(n\\).\n\\[\nn^2+3n+7=O(n^2),\\qquad\n4n^3+2n^2=O(n^3).\n\\]\nUn flop es una operación aritmética de punto flotante.\nEl producto matriz-vector requiere aproximadamente\n\\[\n2n^2\n\\]\nflops, mientras que LU requiere aproximadamente\n\\[\n\\frac{2}{3}n^3.\n\\]\nLa factorización es la parte cara.\n\n3.1.1 Experimento Pluto: ver aparecer \\(n^2\\)\nfunction tiempo_mv(n)\n    A = randn(n,n)\n    x = randn(n)\n    A*x\n    @elapsed A*x\nend\n\nt1 = tiempo_mv(1000)\nt2 = tiempo_mv(2000)\nt2/t1\nPredice: si el trabajo es \\(O(n^2)\\), ¿qué razón esperamos aproximadamente al duplicar \\(n\\)?"
   },
   {
     "objectID": "sesiones/sesion05.html#el-problema-del-pivote",
     "href": "sesiones/sesion05.html#el-problema-del-pivote",
     "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "3.2 9. El problema del pivote",
-    "text": "3.2 9. El problema del pivote\nLU sin intercambiar filas puede fallar aunque \\(A\\) sea invertible:\n\\[\nA=\n\\begin{bmatrix}\n0&1\\\\\n1&1\n\\end{bmatrix}.\n\\]\nEl primer pivote es cero, pero \\(\\det(A)=-1\\).\nLa eliminación necesita intercambiar filas."
+    "section": "3.2 El problema del pivote",
+    "text": "3.2 El problema del pivote\nLU sin intercambiar filas puede fallar aunque \\(A\\) sea invertible:\n\\[\nA=\n\\begin{bmatrix}\n0&1\\\\\n1&1\n\\end{bmatrix}.\n\\]\nEl primer pivote es cero, pero \\(\\det(A)=-1\\).\nLa eliminación necesita intercambiar filas."
   },
   {
     "objectID": "sesiones/sesion05.html#pivoteo-parcial-y-estabilidad",
     "href": "sesiones/sesion05.html#pivoteo-parcial-y-estabilidad",
     "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "3.3 10. Pivoteo parcial y estabilidad",
-    "text": "3.3 10. Pivoteo parcial y estabilidad\nAl trabajar en una columna elegimos como pivote el elemento disponible de mayor valor absoluto.\nNo se hace sólo para evitar dividir entre cero. También importa la estabilidad.\nConsidere\n\\[\nA(\\varepsilon)=\n\\begin{bmatrix}\n-\\varepsilon&1\\\\\n1&-1\n\\end{bmatrix}.\n\\]\nSi \\(\\varepsilon\\) es diminuto, usarlo como pivote produce números enormes durante la eliminación.\nϵ = 1e-12\nA = [-ϵ 1.0; 1.0 -1.0]\nb = A*[1.0,1.0]\nx = A \\ b\nA, b, x\n\nUn problema bien condicionado puede producir una mala respuesta si usamos un algoritmo inestable."
+    "section": "3.3 Pivoteo parcial y estabilidad",
+    "text": "3.3 Pivoteo parcial y estabilidad\nAl trabajar en una columna elegimos como pivote el elemento disponible de mayor valor absoluto.\nNo se hace sólo para evitar dividir entre cero. También importa la estabilidad.\nConsidere\n\\[\nA(\\varepsilon)=\n\\begin{bmatrix}\n-\\varepsilon&1\\\\\n1&-1\n\\end{bmatrix}.\n\\]\nSi \\(\\varepsilon\\) es diminuto, usarlo como pivote produce números enormes durante la eliminación.\nϵ = 1e-12\nA = [-ϵ 1.0; 1.0 -1.0]\nb = A*[1.0,1.0]\nx = A \\ b\nA, b, x\n\nUn problema bien condicionado puede producir una mala respuesta si usamos un algoritmo inestable."
   },
   {
     "objectID": "sesiones/sesion05.html#normas",
     "href": "sesiones/sesion05.html#normas",
     "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "3.4 11. Normas",
-    "text": "3.4 11. Normas\nNecesitamos medir tamaños y perturbaciones:\n\\[\n\\|x\\|_1=\\sum_i|x_i|,\n\\qquad\n\\|x\\|_2=\\left(\\sum_i|x_i|^2\\right)^{1/2},\n\\qquad\n\\|x\\|_\\infty=\\max_i|x_i|.\n\\]\nx = [2.0,-3.0,1.0,-1.0]\nnorm(x,1)\nnorm(x,2)\nnorm(x,Inf)\nPara una norma matricial inducida,\n\\[\n\\|A\\|=\\max_{x\\ne0}\\frac{\\|Ax\\|}{\\|x\\|},\n\\]\ny por tanto\n\\[\n\\|Ax\\|\\leq\\|A\\|\\|x\\|.\n\\]"
+    "section": "3.4 Normas",
+    "text": "3.4 Normas\nNecesitamos medir tamaños y perturbaciones:\n\\[\n\\|x\\|_1=\\sum_i|x_i|,\n\\qquad\n\\|x\\|_2=\\left(\\sum_i|x_i|^2\\right)^{1/2},\n\\qquad\n\\|x\\|_\\infty=\\max_i|x_i|.\n\\]\nx = [2.0,-3.0,1.0,-1.0]\nnorm(x,1)\nnorm(x,2)\nnorm(x,Inf)\nPara una norma matricial inducida,\n\\[\n\\|A\\|=\\max_{x\\ne0}\\frac{\\|Ax\\|}{\\|x\\|},\n\\]\ny por tanto\n\\[\n\\|Ax\\|\\leq\\|A\\|\\|x\\|.\n\\]"
   },
   {
     "objectID": "sesiones/sesion05.html#condicionamiento-de-axb",
     "href": "sesiones/sesion05.html#condicionamiento-de-axb",
     "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "3.5 12. Condicionamiento de \\(Ax=b\\)",
-    "text": "3.5 12. Condicionamiento de \\(Ax=b\\)\nSi\n\\[\nAx=b\n\\]\ny perturbamos \\(b\\),\n\\[\nA(x+\\Delta x)=b+\\Delta b,\n\\]\nentonces\n\\[\n\\Delta x=A^{-1}\\Delta b.\n\\]\nUsando las desigualdades de las normas obtenemos\n\\[\n\\frac{\\|\\Delta x\\|}{\\|x\\|}\n\\leq\n\\|A\\|\\|A^{-1}\\|\n\\frac{\\|\\Delta b\\|}{\\|b\\|}.\n\\]\nEsto motiva\n\\[\n\\boxed{\\kappa(A)=\\|A\\|\\|A^{-1}\\|}.\n\\]\nSiempre \\(\\kappa(A)\\ge1\\). Si \\(\\kappa(A)\\approx10^t\\), pueden perderse aproximadamente \\(t\\) cifras decimales de precisión.\ncond(A)"
+    "section": "3.5 Condicionamiento de \\(Ax=b\\)",
+    "text": "3.5 Condicionamiento de \\(Ax=b\\)\nSi\n\\[\nAx=b\n\\]\ny perturbamos \\(b\\),\n\\[\nA(x+\\Delta x)=b+\\Delta b,\n\\]\nentonces\n\\[\n\\Delta x=A^{-1}\\Delta b.\n\\]\nUsando las desigualdades de las normas obtenemos\n\\[\n\\frac{\\|\\Delta x\\|}{\\|x\\|}\n\\leq\n\\|A\\|\\|A^{-1}\\|\n\\frac{\\|\\Delta b\\|}{\\|b\\|}.\n\\]\nEsto motiva\n\\[\n\\boxed{\\kappa(A)=\\|A\\|\\|A^{-1}\\|}.\n\\]\nSiempre \\(\\kappa(A)\\ge1\\). Si \\(\\kappa(A)\\approx10^t\\), pueden perderse aproximadamente \\(t\\) cifras decimales de precisión.\ncond(A)"
   },
   {
     "objectID": "sesiones/sesion05.html#el-gran-experimento-pluto-hilbert",
     "href": "sesiones/sesion05.html#el-gran-experimento-pluto-hilbert",
     "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "3.6 13. El gran experimento Pluto: Hilbert",
-    "text": "3.6 13. El gran experimento Pluto: Hilbert\n\\[\nH_{ij}=\\frac{1}{i+j-1}.\n\\]\nhilbert(n) = [1.0/(i+j-1) for i in 1:n, j in 1:n]\n\nn = 6\nH = hilbert(n)\n\nx_exacta = ones(n)\nb = H*x_exacta\nx_calculada = H \\ b\n\nκ = cond(H)\nerror_relativo = norm(x_calculada-x_exacta)/norm(x_exacta)\nresiduo_relativo = norm(b-H*x_calculada)/norm(b)\n\nκ, error_relativo, residuo_relativo\nDespués pruebe n = 10 y n = 14.\nLa pregunta incómoda:\n\n¿Podemos obtener simultáneamente un residuo muy pequeño y una respuesta muy inexacta?\n\nSí. Un residuo pequeño no garantiza un error pequeño cuando el problema está mal condicionado."
+    "section": "3.6 El gran experimento Pluto: Hilbert",
+    "text": "3.6 El gran experimento Pluto: Hilbert\n\\[\nH_{ij}=\\frac{1}{i+j-1}.\n\\]\nhilbert(n) = [1.0/(i+j-1) for i in 1:n, j in 1:n]\n\nn = 6\nH = hilbert(n)\n\nx_exacta = ones(n)\nb = H*x_exacta\nx_calculada = H \\ b\n\nκ = cond(H)\nerror_relativo = norm(x_calculada-x_exacta)/norm(x_exacta)\nresiduo_relativo = norm(b-H*x_calculada)/norm(b)\n\nκ, error_relativo, residuo_relativo\nDespués pruebe n = 10 y n = 14.\nLa pregunta incómoda:\n\n¿Podemos obtener simultáneamente un residuo muy pequeño y una respuesta muy inexacta?\n\nSí. Un residuo pequeño no garantiza un error pequeño cuando el problema está mal condicionado. ### Cuaderno interactivo\n👉 Explorar matrices de Hilbert en Pluto\nEn este cuaderno, una regleta permite variar la dimensión (n) y observar simultáneamente cómo cambian el número de condición, el error relativo y el residuo relativo.\n\nRegla del experimento: predice → mueve → observa → explica."
   },
   {
     "objectID": "sesiones/sesion05.html#error-hacia-adelante-y-hacia-atrás",
     "href": "sesiones/sesion05.html#error-hacia-adelante-y-hacia-atrás",
     "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "3.7 14. Error hacia adelante y hacia atrás",
-    "text": "3.7 14. Error hacia adelante y hacia atrás\nEl residuo\n\\[\nr=b-A\\tilde{x}\n\\]\nimplica\n\\[\nA\\tilde{x}=b-r.\n\\]\nPor tanto, \\(\\tilde{x}\\) es la solución exacta de un problema ligeramente perturbado. Ésta es la idea del error hacia atrás.\nEl condicionamiento conecta ambos mundos:\n\\[\n\\frac{\\|x-\\tilde{x}\\|}{\\|x\\|}\n\\lesssim\n\\kappa(A)\\frac{\\|r\\|}{\\|b\\|}.\n\\]\nComo brújula conceptual:\n\\[\n\\boxed{\n\\text{error final}\n\\approx\n\\text{condicionamiento del problema}\n\\times\n\\text{error del algoritmo}\n}\n\\]"
+    "section": "3.7 Error hacia adelante y hacia atrás",
+    "text": "3.7 Error hacia adelante y hacia atrás\nEl residuo\n\\[\nr=b-A\\tilde{x}\n\\]\nimplica\n\\[\nA\\tilde{x}=b-r.\n\\]\nPor tanto, \\(\\tilde{x}\\) es la solución exacta de un problema ligeramente perturbado. Ésta es la idea del error hacia atrás.\nEl condicionamiento conecta ambos mundos:\n\\[\n\\frac{\\|x-\\tilde{x}\\|}{\\|x\\|}\n\\lesssim\n\\kappa(A)\\frac{\\|r\\|}{\\|b\\|}.\n\\]\nComo brújula conceptual:\n\\[\n\\boxed{\n\\text{error final}\n\\approx\n\\text{condicionamiento del problema}\n\\times\n\\text{error del algoritmo}\n}\n\\]"
   },
   {
     "objectID": "sesiones/sesion05.html#la-estructura-también-es-información",
     "href": "sesiones/sesion05.html#la-estructura-también-es-información",
     "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "3.8 15. La estructura también es información",
-    "text": "3.8 15. La estructura también es información\nUna matriz puede ser triangular, tridiagonal, de banda, dispersa, simétrica o definida positiva.\nEsa información puede cambiar el algoritmo y el costo.\n\n3.8.1 Tridiagonal\nn = 1000\nA = Tridiagonal(-ones(n-1), 2ones(n), -ones(n-1))\nb = ones(n)\nx = A \\ b\n\n\n3.8.2 Simétrica definida positiva\nPara una matriz SPD podemos usar Cholesky,\n\\[\nA=R^TR,\n\\]\ncon costo aproximado\n\\[\n\\frac13n^3\n\\]\nen vez de \\(\\frac23n^3\\) de LU general.\nA = randn(5,5)\nB = A'*A + I\nF = cholesky(B)\n\nAntes de escoger un algoritmo, pregunte qué sabe acerca de la matriz."
+    "section": "3.8 La estructura también es información",
+    "text": "3.8 La estructura también es información\nUna matriz puede ser triangular, tridiagonal, de banda, dispersa, simétrica o definida positiva.\nEsa información puede cambiar el algoritmo y el costo.\n\n3.8.1 Tridiagonal\nn = 1000\nA = Tridiagonal(-ones(n-1), 2ones(n), -ones(n-1))\nb = ones(n)\nx = A \\ b\n\n\n3.8.2 Simétrica definida positiva\nPara una matriz SPD podemos usar Cholesky,\n\\[\nA=R^TR,\n\\]\ncon costo aproximado\n\\[\n\\frac13n^3\n\\]\nen vez de \\(\\frac23n^3\\) de LU general.\nA = randn(5,5)\nB = A'*A + I\nF = cholesky(B)\n\nAntes de escoger un algoritmo, pregunte qué sabe acerca de la matriz."
   },
   {
     "objectID": "sesiones/sesion05.html#regla-del-laboratorio",
     "href": "sesiones/sesion05.html#regla-del-laboratorio",
     "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "4.1 16. Regla del laboratorio",
-    "text": "4.1 16. Regla del laboratorio\nPara cada experimento:\n\nPredice.\nEjecuta.\nObserva.\nExplica.\n\nNo queremos saber solamente qué comando escribir. Queremos saber qué pregunta hacerle al resultado."
+    "section": "4.1 Regla del laboratorio",
+    "text": "4.1 Regla del laboratorio\nPara cada experimento:\n\nPredice.\nEjecuta.\nObserva.\nExplica.\n\nNo queremos saber solamente qué comando escribir. Queremos saber qué pregunta hacerle al resultado."
   },
   {
     "objectID": "sesiones/sesion05.html#problema-1-inversa-o-sistema",
     "href": "sesiones/sesion05.html#problema-1-inversa-o-sistema",
     "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "4.2 17. Problema 1 — ¿Inversa o sistema?",
-    "text": "4.2 17. Problema 1 — ¿Inversa o sistema?\nA = randn(500,500)\nb = randn(500)\n\n@elapsed A\\b\n@elapsed inv(A)*b\nRepita varias veces.\nDiscuta: ¿cuál es conceptualmente apropiado?, ¿cuál es más rápido?, ¿por qué calcular información que no necesitamos?"
+    "section": "4.2 Problema 1 — ¿Inversa o sistema?",
+    "text": "4.2 Problema 1 — ¿Inversa o sistema?\nA = randn(500,500)\nb = randn(500)\n\n@elapsed A\\b\n@elapsed inv(A)*b\nRepita varias veces.\nDiscuta: ¿cuál es conceptualmente apropiado?, ¿cuál es más rápido?, ¿por qué calcular información que no necesitamos?"
   },
   {
     "objectID": "sesiones/sesion05.html#problema-2-el-residuo-puede-engañar",
     "href": "sesiones/sesion05.html#problema-2-el-residuo-puede-engañar",
     "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "4.3 18. Problema 2 — El residuo puede engañar",
-    "text": "4.3 18. Problema 2 — El residuo puede engañar\nH = hilbert(12)\nx_exacta = ones(12)\nb = H*x_exacta\nx = H\\b\n\nnorm(b-H*x)/norm(b)\nnorm(x-x_exacta)/norm(x_exacta)\ncond(H)\nJulia produjo una respuesta con residuo pequeño.\n\n¿Debemos confiar en ella?"
+    "section": "4.3 Problema 2 — El residuo puede engañar",
+    "text": "4.3 Problema 2 — El residuo puede engañar\nH = hilbert(12)\nx_exacta = ones(12)\nb = H*x_exacta\nx = H\\b\n\nnorm(b-H*x)/norm(b)\nnorm(x-x_exacta)/norm(x_exacta)\ncond(H)\nJulia produjo una respuesta con residuo pequeño.\n\n¿Debemos confiar en ella?"
   },
   {
     "objectID": "sesiones/sesion05.html#problema-3-perturbar-los-datos",
     "href": "sesiones/sesion05.html#problema-3-perturbar-los-datos",
     "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "4.4 19. Problema 3 — Perturbar los datos",
-    "text": "4.4 19. Problema 3 — Perturbar los datos\nA = [1.0 1.0; 1.0 1.000001]\nx_exacta = [1.0,1.0]\nb = A*x_exacta\n\ncond(A)\n\nδb = [1e-8,-1e-8]\nx1 = A\\b\nx2 = A\\(b+δb)\n\nnorm(δb)/norm(b)\nnorm(x2-x1)/norm(x1)\nExplique cómo una perturbación diminuta puede producir un cambio mucho mayor en la solución."
+    "section": "4.4 Problema 3 — Perturbar los datos",
+    "text": "4.4 Problema 3 — Perturbar los datos\nA = [1.0 1.0; 1.0 1.000001]\nx_exacta = [1.0,1.0]\nb = A*x_exacta\n\ncond(A)\n\nδb = [1e-8,-1e-8]\nx1 = A\\b\nx2 = A\\(b+δb)\n\nnorm(δb)/norm(b)\nnorm(x2-x1)/norm(x1)\nExplique cómo una perturbación diminuta puede producir un cambio mucho mayor en la solución."
   },
   {
     "objectID": "sesiones/sesion05.html#problema-4-el-pivote-rebelde",
     "href": "sesiones/sesion05.html#problema-4-el-pivote-rebelde",
     "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "4.5 20. Problema 4 — El pivote rebelde",
-    "text": "4.5 20. Problema 4 — El pivote rebelde\nUse\n\\[\nA(\\varepsilon)=\n\\begin{bmatrix}\n-\\varepsilon&1\\\\\n1&-1\n\\end{bmatrix}\n\\]\npara \\(\\varepsilon=10^{-2},10^{-6},10^{-12}\\).\nCalcule cond(A) y resuelva con A\\b.\nSi el condicionamiento no explica una pérdida catastrófica pero una eliminación sin pivoteo sí puede producirla:\n\n¿el problema está en el problema matemático o en el algoritmo?"
+    "section": "4.5 Problema 4 — El pivote rebelde",
+    "text": "4.5 Problema 4 — El pivote rebelde\nUse\n\\[\nA(\\varepsilon)=\n\\begin{bmatrix}\n-\\varepsilon&1\\\\\n1&-1\n\\end{bmatrix}\n\\]\npara \\(\\varepsilon=10^{-2},10^{-6},10^{-12}\\).\nCalcule cond(A) y resuelva con A\\b.\nSi el condicionamiento no explica una pérdida catastrófica pero una eliminación sin pivoteo sí puede producirla:\n\n¿el problema está en el problema matemático o en el algoritmo?"
   },
   {
     "objectID": "sesiones/sesion05.html#problema-5-el-costo-tiene-pendiente",
     "href": "sesiones/sesion05.html#problema-5-el-costo-tiene-pendiente",
     "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "4.6 21. Problema 5 — El costo tiene pendiente",
-    "text": "4.6 21. Problema 5 — El costo tiene pendiente\nMida tiempos para multiplicación matriz-vector con\nns = [250,500,1000,2000]\nSi \\(t\\approx Cn^p\\), entonces\n\\[\np\\approx\n\\frac{\\log(t_2/t_1)}{\\log(n_2/n_1)}.\n\\]\n¿Se acerca a 2? ¿Por qué no tiene que dar exactamente 2?"
+    "section": "4.6 Problema 5 — El costo tiene pendiente",
+    "text": "4.6 Problema 5 — El costo tiene pendiente\nMida tiempos para multiplicación matriz-vector con\nns = [250,500,1000,2000]\nSi \\(t\\approx Cn^p\\), entonces\n\\[\np\\approx\n\\frac{\\log(t_2/t_1)}{\\log(n_2/n_1)}.\n\\]\n¿Se acerca a 2? ¿Por qué no tiene que dar exactamente 2?"
   },
   {
     "objectID": "sesiones/sesion05.html#problema-6-la-estructura-vale-dinero",
     "href": "sesiones/sesion05.html#problema-6-la-estructura-vale-dinero",
     "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "4.7 22. Problema 6 — La estructura vale dinero",
-    "text": "4.7 22. Problema 6 — La estructura vale dinero\nn = 2000\n\nA_densa = diagm(\n    -1 =&gt; -ones(n-1),\n     0 =&gt;  2ones(n),\n     1 =&gt; -ones(n-1)\n)\n\nA_tri = Tridiagonal(\n    -ones(n-1),\n     2ones(n),\n    -ones(n-1)\n)\nResuelva ambos sistemas con el mismo \\(b\\) y compare tiempo y memoria.\nLas matrices representan el mismo operador.\n\n¿Por qué no representan el mismo problema computacional?"
+    "section": "4.7 Problema 6 — La estructura vale dinero",
+    "text": "4.7 Problema 6 — La estructura vale dinero\nn = 2000\n\nA_densa = diagm(\n    -1 =&gt; -ones(n-1),\n     0 =&gt;  2ones(n),\n     1 =&gt; -ones(n-1)\n)\n\nA_tri = Tridiagonal(\n    -ones(n-1),\n     2ones(n),\n    -ones(n-1)\n)\nResuelva ambos sistemas con el mismo \\(b\\) y compare tiempo y memoria.\nLas matrices representan el mismo operador.\n\n¿Por qué no representan el mismo problema computacional?"
   },
   {
     "objectID": "sesiones/sesion05.html#problema-7-vandermonde-regresa-por-la-puerta-trasera",
     "href": "sesiones/sesion05.html#problema-7-vandermonde-regresa-por-la-puerta-trasera",
     "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "4.8 23. Problema 7 — Vandermonde regresa por la puerta trasera",
-    "text": "4.8 23. Problema 7 — Vandermonde regresa por la puerta trasera\nPara\n\\[\nt_i=\\frac{i}{n},\\qquad i=0,\\ldots,n,\n\\]\nconstruya matrices de Vandermonde para distintos \\(n\\) y calcule cond(V).\nLa interpolación fue nuestra puerta de entrada al capítulo.\n\nAhora que conocemos condicionamiento, ¿qué descubrimos sobre esa puerta?"
+    "section": "4.8 Problema 7 — Vandermonde regresa por la puerta trasera",
+    "text": "4.8 Problema 7 — Vandermonde regresa por la puerta trasera\nPara\n\\[\nt_i=\\frac{i}{n},\\qquad i=0,\\ldots,n,\n\\]\nconstruya matrices de Vandermonde para distintos \\(n\\) y calcule cond(V).\nLa interpolación fue nuestra puerta de entrada al capítulo.\n\nAhora que conocemos condicionamiento, ¿qué descubrimos sobre esa puerta?"
   },
   {
     "objectID": "sesiones/sesion05.html#problema-final-diagnóstico-numérico",
     "href": "sesiones/sesion05.html#problema-final-diagnóstico-numérico",
     "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "4.9 24. Problema final — Diagnóstico numérico",
-    "text": "4.9 24. Problema final — Diagnóstico numérico\nUn compañero afirma:\n\n“El residuo es de orden \\(10^{-14}\\), así que la solución tiene unas catorce cifras correctas.”\n\n¿Está de acuerdo?\nLa respuesta debe usar:\n\nresiduo,\nerror hacia atrás,\nnúmero de condición,\nerror hacia adelante.\n\nNo basta contestar sí o no."
+    "section": "4.9 Problema final — Diagnóstico numérico",
+    "text": "4.9 Problema final — Diagnóstico numérico\nUn compañero afirma:\n\n“El residuo es de orden \\(10^{-14}\\), así que la solución tiene unas catorce cifras correctas.”\n\n¿Está de acuerdo?\nLa respuesta debe usar:\n\nresiduo,\nerror hacia atrás,\nnúmero de condición,\nerror hacia adelante.\n\nNo basta contestar sí o no."
   },
   {
     "objectID": "sesiones/sesion03.html",
@@ -768,5 +768,19 @@
       "Sesiones",
       "Sesión 04: Condicionamiento, algoritmos y estabilidad"
     ]
+  },
+  {
+    "objectID": "sesiones/sesion05.html#aplicación-fuerzas-en-una-armadura",
+    "href": "sesiones/sesion05.html#aplicación-fuerzas-en-una-armadura",
+    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
+    "section": "2.1 Aplicación: fuerzas en una armadura",
+    "text": "2.1 Aplicación: fuerzas en una armadura\nAntes de estudiar cómo resolver sistemas lineales, veamos cómo uno de ellos aparece naturalmente a partir de un problema físico.\n\n\n\nArmadura triangular de tres barras.\n\n\nLos sistemas lineales no aparecen solamente como ejercicios de álgebra. Surgen de manera natural al modelar problemas físicos.\nConsideremos una armadura triangular formada por tres barras. Las fuerzas internas en las barras son\n\\[\nF_{12},\\qquad F_{13},\\qquad F_{23},\n\\]\ny las reacciones en los apoyos son\n\\[\nH_1,\\qquad V_1,\\qquad V_2.\n\\]\nEn el nodo superior actúa una carga vertical conocida (W_3).\nLa idea fundamental es sencilla:\n\nEn cada nodo, la suma de las fuerzas horizontales y verticales debe ser cero.\n\n\n2.1.1 Ecuaciones de equilibrio\nEn el nodo 1 tenemos\n\\[\nV_1 + F_{13}\\sin\\alpha = 0,\n\\]\n\\[\nH_1 + F_{12} + F_{13}\\cos\\alpha = 0.\n\\]\nEn el nodo 2,\n\\[\nV_2 + F_{23}\\sin\\beta = 0,\n\\]\n\\[\n-F_{12} - F_{23}\\cos\\beta = 0.\n\\]\nFinalmente, en el nodo 3,\n\\[\n-F_{13}\\sin\\alpha-F_{23}\\sin\\beta=W_3,\n\\]\n\\[\n-F_{13}\\cos\\alpha+F_{23}\\cos\\beta=0.\n\\]\nTenemos entonces seis ecuaciones lineales para las seis incógnitas\n\\[\nx=\n\\begin{pmatrix}\nV_1\\\\\nH_1\\\\\nV_2\\\\\nF_{12}\\\\\nF_{13}\\\\\nF_{23}\n\\end{pmatrix}.\n\\]\nEl sistema puede escribirse como\n\\[\nAx=b,\n\\]\ndonde\n\\[\nA=\n\\begin{pmatrix}\n1&0&0&0&\\sin\\alpha&0\\\\\n0&1&0&1&\\cos\\alpha&0\\\\\n0&0&1&0&0&\\sin\\beta\\\\\n0&0&0&-1&0&-\\cos\\beta\\\\\n0&0&0&0&-\\sin\\alpha&-\\sin\\beta\\\\\n0&0&0&0&-\\cos\\alpha&\\cos\\beta\n\\end{pmatrix},\n\\]\ny\n\\[\nb=\n\\begin{pmatrix}\n0\\\\\n0\\\\\n0\\\\\n0\\\\\nW_3\\\\\n0\n\\end{pmatrix}.\n\\]\n\n\n2.1.2 Un caso concreto\nTomemos\n\\[\n\\alpha=\\beta=45^\\circ,\n\\qquad\nW_3=1000\\;\\text{N}.\n\\]\nEn Julia:\n\nusing LinearAlgebra\n\nα = deg2rad(45.0)\nβ = deg2rad(45.0)\nW3 = 1000.0\n\nA_truss = [\n    1.0  0.0  0.0   0.0       sin(α)    0.0;\n    0.0  1.0  0.0   1.0       cos(α)    0.0;\n    0.0  0.0  1.0   0.0       0.0       sin(β);\n    0.0  0.0  0.0  -1.0       0.0      -cos(β);\n    0.0  0.0  0.0   0.0      -sin(α)   -sin(β);\n    0.0  0.0  0.0   0.0      -cos(α)    cos(β)\n]\n\nb_truss = [0.0, 0.0, 0.0, 0.0, W3, 0.0]\n\nx_truss = A_truss \\ b_truss\n\n6-element Vector{Float64}:\n  500.0\n    0.0\n  500.0\n  500.00000000000006\n -707.1067811865476\n -707.1067811865476\n\n\nLas componentes de x_truss corresponden, en este orden, a\n\\[\n(V_1,H_1,V_2,F_{12},F_{13},F_{23}).\n\\]\nPara este caso obtenemos aproximadamente\n\\[\nV_1=500\\;\\text{N},\n\\qquad\nH_1=0,\n\\qquad\nV_2=500\\;\\text{N},\n\\]\ny\n\\[\nF_{12}=500\\;\\text{N},\n\\qquad\nF_{13}\\approx-707.1\\;\\text{N},\n\\qquad\nF_{23}\\approx-707.1\\;\\text{N}.\n\\]\nEl signo de las fuerzas internas depende de la convención adoptada. Con la convención anterior, los valores negativos indican que la dirección real de la fuerza es opuesta a la que supusimos inicialmente.\n\n\n2.1.3 ¿Qué queremos observar?\nEl punto importante no es solamente obtener seis números.\nEl proceso fue\n\\[\n\\text{estructura física}\n\\longrightarrow\n\\text{equilibrio de fuerzas}\n\\longrightarrow\n\\text{ecuaciones lineales}\n\\longrightarrow\nAx=bahi cabron ya\n\\longrightarrow\n\\text{solución numérica}.\n\\]\n\nPregunta para la clase:\n¿Qué información física está contenida en la matriz (A), qué información está contenida en (b), y qué representan las componentes de (x)?\n\nEste ejemplo está basado en el tratamiento de fuerzas en una armadura presentado por Laurene V. Fausett en Applied Numerical Analysis Using MATLAB."
+  },
+  {
+    "objectID": "sesiones/sesion05.html#aplicación-fuerzas-en-una-armadura-1",
+    "href": "sesiones/sesion05.html#aplicación-fuerzas-en-una-armadura-1",
+    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
+    "section": "2.2 Aplicación: fuerzas en una armadura",
+    "text": "2.2 Aplicación: fuerzas en una armadura\nLos sistemas lineales no aparecen solamente como ejercicios de álgebra. Surgen de manera natural al modelar problemas físicos.\nConsideremos una armadura triangular formada por tres barras. Las fuerzas internas en las barras son\n\\[\nF_{12},\\qquad F_{13},\\qquad F_{23},\n\\]\ny las reacciones en los apoyos son\n\\[\nH_1,\\qquad V_1,\\qquad V_2.\n\\]\nEn el nodo superior actúa una carga vertical conocida (W_3).\nLa idea fundamental es sencilla:\n\nEn cada nodo, la suma de las fuerzas horizontales y verticales debe ser cero.\n\n\n2.2.1 Ecuaciones de equilibrio\nEn el nodo 1 tenemos\n\\[\nV_1 + F_{13}\\sin\\alpha = 0,\n\\]\n\\[\nH_1 + F_{12} + F_{13}\\cos\\alpha = 0.\n\\]\nEn el nodo 2,\n\\[\nV_2 + F_{23}\\sin\\beta = 0,\n\\]\n\\[\n-F_{12} - F_{23}\\cos\\beta = 0.\n\\]\nFinalmente, en el nodo 3,\n\\[\n-F_{13}\\sin\\alpha-F_{23}\\sin\\beta=W_3,\n\\]\n\\[\n-F_{13}\\cos\\alpha+F_{23}\\cos\\beta=0.\n\\]\nTenemos entonces seis ecuaciones lineales para las seis incógnitas\n\\[\nx=\n\\begin{pmatrix}\nV_1\\\\\nH_1\\\\\nV_2\\\\\nF_{12}\\\\\nF_{13}\\\\\nF_{23}\n\\end{pmatrix}.\n\\]\nEl sistema puede escribirse como\n\\[\nAx=b,\n\\]\ndonde\n\\[\nA=\n\\begin{pmatrix}\n1&0&0&0&\\sin\\alpha&0\\\\\n0&1&0&1&\\cos\\alpha&0\\\\\n0&0&1&0&0&\\sin\\beta\\\\\n0&0&0&-1&0&-\\cos\\beta\\\\\n0&0&0&0&-\\sin\\alpha&-\\sin\\beta\\\\\n0&0&0&0&-\\cos\\alpha&\\cos\\beta\n\\end{pmatrix},\n\\]\ny\n\\[\nb=\n\\begin{pmatrix}\n0\\\\\n0\\\\\n0\\\\\n0\\\\\nW_3\\\\\n0\n\\end{pmatrix}.\n\\]\n\n\n2.2.2 Un caso concreto\nTomemos\n\\[\n\\alpha=\\beta=45^\\circ,\n\\qquad\nW_3=1000\\;\\text{N}.\n\\]\nEn Julia:\n\nusing LinearAlgebra\n\nα = deg2rad(45.0)\nβ = deg2rad(45.0)\nW3 = 1000.0\n\nA_truss = [\n    1.0  0.0  0.0   0.0       sin(α)    0.0;\n    0.0  1.0  0.0   1.0       cos(α)    0.0;\n    0.0  0.0  1.0   0.0       0.0       sin(β);\n    0.0  0.0  0.0  -1.0       0.0      -cos(β);\n    0.0  0.0  0.0   0.0      -sin(α)   -sin(β);\n    0.0  0.0  0.0   0.0      -cos(α)    cos(β)\n]\n\nb_truss = [0.0, 0.0, 0.0, 0.0, W3, 0.0]\n\nx_truss = A_truss \\ b_truss\n\n6-element Vector{Float64}:\n  500.0\n    0.0\n  500.0\n  500.00000000000006\n -707.1067811865476\n -707.1067811865476\n\n\nLas componentes de x_truss corresponden, en este orden, a\n\\[\n(V_1,H_1,V_2,F_{12},F_{13},F_{23}).\n\\]\nPara este caso obtenemos aproximadamente\n\\[\nV_1=500\\;\\text{N},\n\\qquad\nH_1=0,\n\\qquad\nV_2=500\\;\\text{N},\n\\]\ny\n\\[\nF_{12}=500\\;\\text{N},\n\\qquad\nF_{13}\\approx-707.1\\;\\text{N},\n\\qquad\nF_{23}\\approx-707.1\\;\\text{N}.\n\\]\nEl signo de las fuerzas internas depende de la convención adoptada. Con la convención anterior, los valores negativos indican que la dirección real de la fuerza es opuesta a la que supusimos inicialmente.\n\n\n2.2.3 ¿Qué queremos observar?\nEl punto importante no es solamente obtener seis números.\nEl proceso fue\n\\[\n\\text{estructura física}\n\\longrightarrow\n\\text{equilibrio de fuerzas}\n\\longrightarrow\n\\text{ecuaciones lineales}\n\\longrightarrow\nAx=bahi cabron ya\n\\longrightarrow\n\\text{solución numérica}.\n\\]\n\nPregunta para la clase:\n¿Qué información física está contenida en la matriz (A), qué información está contenida en (b), y qué representan las componentes de (x)?\n\nEste ejemplo está basado en el tratamiento de fuerzas en una armadura presentado por Laurene V. Fausett en Applied Numerical Analysis Using MATLAB."
   }
 ]
