@@ -81,7 +81,7 @@ Las fuentes iniciales serán ``E_1=12V``, ``E_2=5V`` y ``E_3=10V``.
 """
 
 # ╔═╡ ec19a1f5-b189-4151-a54b-a8c449cd978c
-LocalResource("circuito_tres_mallas.png")
+Resource("https://frsalems.github.io/Analisis-numerico-2026/sesiones/circuito_tres_mallas.png")
 
 # ╔═╡ 9c8612bb-85f4-4d8a-aed5-368b678d4226
 md"""
