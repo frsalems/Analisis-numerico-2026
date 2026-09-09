@@ -285,7 +285,10 @@ window.Quarto = {
   <li><a href="#laboratorio-un-circuito-eléctrico-como-sistema-lineal" id="toc-laboratorio-un-circuito-eléctrico-como-sistema-lineal" class="nav-link" data-scroll-target="#laboratorio-un-circuito-eléctrico-como-sistema-lineal"><span class="header-section-number">2.5.1</span> Laboratorio: un circuito eléctrico como sistema lineal</a></li>
   </ul></li>
   <li><a href="#sistemas-triangulares" id="toc-sistemas-triangulares" class="nav-link" data-scroll-target="#sistemas-triangulares"><span class="header-section-number">2.6</span> Sistemas triangulares</a></li>
-  <li><a href="#factorización-lu" id="toc-factorización-lu" class="nav-link" data-scroll-target="#factorización-lu"><span class="header-section-number">2.7</span> Factorización LU</a></li>
+  <li><a href="#factorización-lu" id="toc-factorización-lu" class="nav-link" data-scroll-target="#factorización-lu"><span class="header-section-number">2.7</span> Factorización LU</a>
+  <ul class="collapse">
+  <li><a href="#laboratorio-nuestro-solucionador-lu" id="toc-laboratorio-nuestro-solucionador-lu" class="nav-link" data-scroll-target="#laboratorio-nuestro-solucionador-lu"><span class="header-section-number">2.7.1</span> Laboratorio: nuestro solucionador LU</a></li>
+  </ul></li>
   <li><a href="#cierre-de-la-primera-clase" id="toc-cierre-de-la-primera-clase" class="nav-link" data-scroll-target="#cierre-de-la-primera-clase"><span class="header-section-number">2.8</span> 7. Cierre de la primera clase</a></li>
   </ul></li>
   <li><a href="#clase-2-rápido-significa-bueno" id="toc-clase-2-rápido-significa-bueno" class="nav-link" data-scroll-target="#clase-2-rápido-significa-bueno"><span class="header-section-number">3</span> Clase 2 — ¿Rápido significa bueno?</a>
@@ -295,7 +298,11 @@ window.Quarto = {
   <li><a href="#experimento-pluto-ver-aparecer-n2" id="toc-experimento-pluto-ver-aparecer-n2" class="nav-link" data-scroll-target="#experimento-pluto-ver-aparecer-n2"><span class="header-section-number">3.1.1</span> Experimento Pluto: ver aparecer <span class="math inline">\(n^2\)</span></a></li>
   </ul></li>
   <li><a href="#el-problema-del-pivote" id="toc-el-problema-del-pivote" class="nav-link" data-scroll-target="#el-problema-del-pivote"><span class="header-section-number">3.2</span> El problema del pivote</a></li>
-  <li><a href="#pivoteo-parcial-y-estabilidad" id="toc-pivoteo-parcial-y-estabilidad" class="nav-link" data-scroll-target="#pivoteo-parcial-y-estabilidad"><span class="header-section-number">3.3</span> Pivoteo parcial y estabilidad</a></li>
+  <li><a href="#pivoteo-parcial-y-estabilidad" id="toc-pivoteo-parcial-y-estabilidad" class="nav-link" data-scroll-target="#pivoteo-parcial-y-estabilidad"><span class="header-section-number">3.3</span> Pivoteo parcial y estabilidad</a>
+  <ul class="collapse">
+  <li><a href="#algoritmo" id="toc-algoritmo" class="nav-link" data-scroll-target="#algoritmo"><span class="header-section-number">3.3.1</span> Algoritmo</a></li>
+  <li><a href="#nuestra-implementación-en-julia" id="toc-nuestra-implementación-en-julia" class="nav-link" data-scroll-target="#nuestra-implementación-en-julia"><span class="header-section-number">3.3.2</span> Nuestra implementación en Julia</a></li>
+  </ul></li>
   <li><a href="#normas" id="toc-normas" class="nav-link" data-scroll-target="#normas"><span class="header-section-number">3.4</span> Normas</a></li>
   <li><a href="#condicionamiento-de-axb" id="toc-condicionamiento-de-axb" class="nav-link" data-scroll-target="#condicionamiento-de-axb"><span class="header-section-number">3.5</span> Condicionamiento de <span class="math inline">\(Ax=b\)</span></a></li>
   <li><a href="#el-gran-experimento-pluto-hilbert" id="toc-el-gran-experimento-pluto-hilbert" class="nav-link" data-scroll-target="#el-gran-experimento-pluto-hilbert"><span class="header-section-number">3.6</span> El gran experimento Pluto: Hilbert</a></li>
@@ -672,6 +679,15 @@ Lz=b,\qquad Ux=z.
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>F <span class="op">=</span> <span class="fu">lu</span>(A)</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>x1 <span class="op">=</span> F <span class="op">\</span> b1</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>x2 <span class="op">=</span> F <span class="op">\</span> b2</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="laboratorio-nuestro-solucionador-lu" class="level3" data-number="2.7.1">
+<h3 data-number="2.7.1" class="anchored" data-anchor-id="laboratorio-nuestro-solucionador-lu"><span class="header-section-number">2.7.1</span> Laboratorio: nuestro solucionador LU</h3>
+<p>Antes de estudiar el pivoteo, trabajaremos con nuestra propia implementación de la factorización LU y las sustituciones hacia adelante y hacia atrás.</p>
+<p>👉 <a href="lu_sin_linearalgebra_pluto.jl"><strong>Abrir laboratorio LU en Pluto</strong></a></p>
+<p>En este cuaderno resolveremos sistemas lineales sin utilizar <code>A \ b</code> ni la factorización LU de <code>LinearAlgebra</code>.</p>
+<blockquote class="blockquote">
+<p><strong>Experimento:</strong> predice → ejecuta → observa → explica.</p>
+</blockquote>
+</section>
 </section>
 <section id="cierre-de-la-primera-clase" class="level2" data-number="2.8">
 <h2 data-number="2.8" class="anchored" data-anchor-id="cierre-de-la-primera-clase"><span class="header-section-number">2.8</span> 7. Cierre de la primera clase</h2>
@@ -748,14 +764,79 @@ A(\varepsilon)=
 \end{bmatrix}.
 \]</span></p>
 <p>Si <span class="math inline">\(\varepsilon\)</span> es diminuto, usarlo como pivote produce números enormes durante la eliminación.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>ϵ <span class="op">=</span> <span class="fl">1e-12</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> [<span class="op">-</span>ϵ <span class="fl">1.0</span>; <span class="fl">1.0</span> <span class="op">-</span><span class="fl">1.0</span>]</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> A<span class="op">*</span>[<span class="fl">1.0</span>,<span class="fl">1.0</span>]</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> A <span class="op">\</span> b</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>A, b, x</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>e = 1e-12</p>
+<p>A = [-e 1.0; 1.0 -1.0]</p>
+<p>x_exacta = [1.0, 1.0] b = A * x_exacta</p>
+<p>x_nuestra = resolver_LU(A, b)</p>
+<p>A, b, x_nuestra</p>
 <blockquote class="blockquote">
-<p>Un problema bien condicionado puede producir una mala respuesta si usamos un algoritmo inestable.</p>
+<p>Un problema bien condicionado puede producir una mala respuesta si usamos un algoritmo inestable. ## Factorización LU con pivoteo parcial</p>
 </blockquote>
+<p>El pivoteo parcial puede incorporarse directamente al proceso de eliminación. En cada etapa (k), antes de eliminar los elementos situados debajo del pivote, buscamos en la columna (k) el elemento de mayor magnitud entre las filas (k,,n).</p>
+<p>Si este elemento se encuentra en una fila distinta de (k), intercambiamos las dos filas y continuamos la eliminación.</p>
+<p>Los intercambios realizados pueden representarse mediante una matriz de permutación (P). Por esta razón, la factorización obtenida ya no tiene la forma</p>
+<p><span class="math display">\[
+A=LU,
+\]</span></p>
+<p>sino</p>
+<p><span class="math display">\[
+\boxed{PA=LU}.
+\]</span></p>
+<section id="algoritmo" class="level3" data-number="3.3.1">
+<h3 data-number="3.3.1" class="anchored" data-anchor-id="algoritmo"><span class="header-section-number">3.3.1</span> Algoritmo</h3>
+<p>En forma esquemática, para (k=1,,n-1):</p>
+<ol type="1">
+<li><p>Buscar</p>
+<p><span class="math display">\[
+p=\mathop{\mathrm{arg\,max}}_{i=k,\ldots,n}|u_{ik}|.
+\]</span></p></li>
+<li><p>Intercambiar las filas (k) y (p) de (U).</p></li>
+<li><p>Registrar el mismo intercambio en la matriz de permutación (P).</p></li>
+<li><p>Si ya se han calculado multiplicadores en etapas anteriores, intercambiar también las entradas correspondientes de (L).</p></li>
+<li><p>Para (i=k+1,,n), calcular</p>
+<p><span class="math display">\[
+m_{ik}=\frac{u_{ik}}{u_{kk}},
+\]</span></p>
+<p>guardar (m_{ik}) en (L) y efectuar</p>
+<p><span class="math display">\[
+R_i\leftarrow R_i-m_{ik}R_k.
+\]</span></p></li>
+</ol>
+<p>Al terminar, (L) es triangular inferior, (U) es triangular superior y se cumple</p>
+<p><span class="math display">\[
+PA=LU.
+\]</span></p>
+</section>
+<section id="nuestra-implementación-en-julia" class="level3" data-number="3.3.2">
+<h3 data-number="3.3.2" class="anchored" data-anchor-id="nuestra-implementación-en-julia"><span class="header-section-number">3.3.2</span> Nuestra implementación en Julia</h3>
+<p>Construiremos nuestra propia función</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mi_LU_pivoteo</span>(A)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>que devolverá las tres matrices</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>P, L, U</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>sin utilizar una factorización LU proporcionada por <code>LinearAlgebra</code>.</p>
+<p>Una vez obtenida la factorización, para resolver</p>
+<p><span class="math display">\[
+Ax=b
+\]</span></p>
+<p>usaremos</p>
+<p><span class="math display">\[
+PAx=Pb,
+\]</span></p>
+<p>y como (PA=LU),</p>
+<p><span class="math display">\[
+LUx=Pb.
+\]</span></p>
+<p>Por tanto, resolveremos sucesivamente</p>
+<p><span class="math display">\[
+Ly=Pb
+\]</span></p>
+<p>mediante sustitución hacia adelante, y</p>
+<p><span class="math display">\[
+Ux=y
+\]</span></p>
+<p>mediante sustitución hacia atrás.</p>
+<p>En el laboratorio de Pluto construiremos primero una factorización (PA=LU) a mano para una matriz (3). Después haremos que <code>mi_LU_pivoteo(A)</code> realice automáticamente el mismo trabajo. 👉 <a href="lu_con_pivoteo_pluto.jl"><strong>Explorar la factorización LU con pivoteo en Pluto</strong></a></p>
+</section>
 </section>
 <section id="normas" class="level2" data-number="3.4">
 <h2 data-number="3.4" class="anchored" data-anchor-id="normas"><span class="header-section-number">3.4</span> Normas</h2>
@@ -767,10 +848,10 @@ A(\varepsilon)=
 \qquad
 \|x\|_\infty=\max_i|x_i|.
 \]</span></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> [<span class="fl">2.0</span>,<span class="op">-</span><span class="fl">3.0</span>,<span class="fl">1.0</span>,<span class="op">-</span><span class="fl">1.0</span>]</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">norm</span>(x,<span class="fl">1</span>)</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">norm</span>(x,<span class="fl">2</span>)</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="fu">norm</span>(x,<span class="cn">Inf</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> [<span class="fl">2.0</span>,<span class="op">-</span><span class="fl">3.0</span>,<span class="fl">1.0</span>,<span class="op">-</span><span class="fl">1.0</span>]</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">norm</span>(x,<span class="fl">1</span>)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">norm</span>(x,<span class="fl">2</span>)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="fu">norm</span>(x,<span class="cn">Inf</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Para una norma matricial inducida,</p>
 <p><span class="math display">\[
 \|A\|=\max_{x\ne0}\frac{\|Ax\|}{\|x\|},
@@ -806,27 +887,27 @@ A(x+\Delta x)=b+\Delta b,
 \boxed{\kappa(A)=\|A\|\|A^{-1}\|}.
 \]</span></p>
 <p>Siempre <span class="math inline">\(\kappa(A)\ge1\)</span>. Si <span class="math inline">\(\kappa(A)\approx10^t\)</span>, pueden perderse aproximadamente <span class="math inline">\(t\)</span> cifras decimales de precisión.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cond</span>(A)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cond</span>(A)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="el-gran-experimento-pluto-hilbert" class="level2" data-number="3.6">
 <h2 data-number="3.6" class="anchored" data-anchor-id="el-gran-experimento-pluto-hilbert"><span class="header-section-number">3.6</span> El gran experimento Pluto: Hilbert</h2>
 <p><span class="math display">\[
 H_{ij}=\frac{1}{i+j-1}.
 \]</span></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hilbert</span>(n) <span class="op">=</span> [<span class="fl">1.0</span><span class="op">/</span>(i<span class="op">+</span>j<span class="op">-</span><span class="fl">1</span>) for i <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span>n, j <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span>n]</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="fl">6</span></span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>H <span class="op">=</span> <span class="fu">hilbert</span>(n)</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>x_exacta <span class="op">=</span> <span class="fu">ones</span>(n)</span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> H<span class="op">*</span>x_exacta</span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>x_calculada <span class="op">=</span> H <span class="op">\</span> b</span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>κ <span class="op">=</span> <span class="fu">cond</span>(H)</span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>error_relativo <span class="op">=</span> <span class="fu">norm</span>(x_calculada<span class="op">-</span>x_exacta)<span class="op">/</span><span class="fu">norm</span>(x_exacta)</span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>residuo_relativo <span class="op">=</span> <span class="fu">norm</span>(b<span class="op">-</span>H<span class="op">*</span>x_calculada)<span class="op">/</span><span class="fu">norm</span>(b)</span>
-<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>κ, error_relativo, residuo_relativo</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">hilbert</span>(n) <span class="op">=</span> [<span class="fl">1.0</span><span class="op">/</span>(i<span class="op">+</span>j<span class="op">-</span><span class="fl">1</span>) for i <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span>n, j <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span>n]</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="fl">6</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>H <span class="op">=</span> <span class="fu">hilbert</span>(n)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>x_exacta <span class="op">=</span> <span class="fu">ones</span>(n)</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> H<span class="op">*</span>x_exacta</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>x_calculada <span class="op">=</span> H <span class="op">\</span> b</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>κ <span class="op">=</span> <span class="fu">cond</span>(H)</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>error_relativo <span class="op">=</span> <span class="fu">norm</span>(x_calculada<span class="op">-</span>x_exacta)<span class="op">/</span><span class="fu">norm</span>(x_exacta)</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>residuo_relativo <span class="op">=</span> <span class="fu">norm</span>(b<span class="op">-</span>H<span class="op">*</span>x_calculada)<span class="op">/</span><span class="fu">norm</span>(b)</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>κ, error_relativo, residuo_relativo</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Después pruebe <code>n = 10</code> y <code>n = 14</code>.</p>
 <p>La pregunta incómoda:</p>
 <blockquote class="blockquote">
@@ -873,10 +954,10 @@ A\tilde{x}=b-r.
 <p>Esa información puede cambiar el algoritmo y el costo.</p>
 <section id="tridiagonal" class="level3" data-number="3.8.1">
 <h3 data-number="3.8.1" class="anchored" data-anchor-id="tridiagonal"><span class="header-section-number">3.8.1</span> Tridiagonal</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="fl">1000</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> <span class="fu">Tridiagonal</span>(<span class="fu">-ones</span>(n<span class="op">-</span><span class="fl">1</span>), <span class="fl">2</span><span class="fu">ones</span>(n), <span class="fu">-ones</span>(n<span class="op">-</span><span class="fl">1</span>))</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> <span class="fu">ones</span>(n)</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> A <span class="op">\</span> b</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="fl">1000</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> <span class="fu">Tridiagonal</span>(<span class="fu">-ones</span>(n<span class="op">-</span><span class="fl">1</span>), <span class="fl">2</span><span class="fu">ones</span>(n), <span class="fu">-ones</span>(n<span class="op">-</span><span class="fl">1</span>))</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> <span class="fu">ones</span>(n)</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> A <span class="op">\</span> b</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="simétrica-definida-positiva" class="level3" data-number="3.8.2">
 <h3 data-number="3.8.2" class="anchored" data-anchor-id="simétrica-definida-positiva"><span class="header-section-number">3.8.2</span> Simétrica definida positiva</h3>
@@ -889,9 +970,9 @@ A=R^TR,
 \frac13n^3
 \]</span></p>
 <p>en vez de <span class="math inline">\(\frac23n^3\)</span> de LU general.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> <span class="fu">randn</span>(<span class="fl">5</span>,<span class="fl">5</span>)</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>B <span class="op">=</span> A<span class="op">'*</span>A <span class="op">+</span> I</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>F <span class="op">=</span> <span class="fu">cholesky</span>(B)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> <span class="fu">randn</span>(<span class="fl">5</span>,<span class="fl">5</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>B <span class="op">=</span> A<span class="op">'*</span>A <span class="op">+</span> I</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>F <span class="op">=</span> <span class="fu">cholesky</span>(B)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <blockquote class="blockquote">
 <p><strong>Antes de escoger un algoritmo, pregunte qué sabe acerca de la matriz.</strong></p>
 </blockquote>
@@ -914,24 +995,24 @@ A=R^TR,
 </section>
 <section id="problema-1-inversa-o-sistema" class="level2" data-number="4.2">
 <h2 data-number="4.2" class="anchored" data-anchor-id="problema-1-inversa-o-sistema"><span class="header-section-number">4.2</span> Problema 1 — ¿Inversa o sistema?</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> <span class="fu">randn</span>(<span class="fl">500</span>,<span class="fl">500</span>)</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> <span class="fu">randn</span>(<span class="fl">500</span>)</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="pp">@elapsed</span> A<span class="op">\</span>b</span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="pp">@elapsed</span> <span class="fu">inv</span>(A)<span class="op">*</span>b</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> <span class="fu">randn</span>(<span class="fl">500</span>,<span class="fl">500</span>)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> <span class="fu">randn</span>(<span class="fl">500</span>)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="pp">@elapsed</span> A<span class="op">\</span>b</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="pp">@elapsed</span> <span class="fu">inv</span>(A)<span class="op">*</span>b</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Repita varias veces.</p>
 <p><strong>Discuta:</strong> ¿cuál es conceptualmente apropiado?, ¿cuál es más rápido?, ¿por qué calcular información que no necesitamos?</p>
 </section>
 <section id="problema-2-el-residuo-puede-engañar" class="level2" data-number="4.3">
 <h2 data-number="4.3" class="anchored" data-anchor-id="problema-2-el-residuo-puede-engañar"><span class="header-section-number">4.3</span> Problema 2 — El residuo puede engañar</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>H <span class="op">=</span> <span class="fu">hilbert</span>(<span class="fl">12</span>)</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>x_exacta <span class="op">=</span> <span class="fu">ones</span>(<span class="fl">12</span>)</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> H<span class="op">*</span>x_exacta</span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> H<span class="op">\</span>b</span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="fu">norm</span>(b<span class="op">-</span>H<span class="op">*</span>x)<span class="op">/</span><span class="fu">norm</span>(b)</span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="fu">norm</span>(x<span class="op">-</span>x_exacta)<span class="op">/</span><span class="fu">norm</span>(x_exacta)</span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="fu">cond</span>(H)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>H <span class="op">=</span> <span class="fu">hilbert</span>(<span class="fl">12</span>)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>x_exacta <span class="op">=</span> <span class="fu">ones</span>(<span class="fl">12</span>)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> H<span class="op">*</span>x_exacta</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> H<span class="op">\</span>b</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="fu">norm</span>(b<span class="op">-</span>H<span class="op">*</span>x)<span class="op">/</span><span class="fu">norm</span>(b)</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="fu">norm</span>(x<span class="op">-</span>x_exacta)<span class="op">/</span><span class="fu">norm</span>(x_exacta)</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="fu">cond</span>(H)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Julia produjo una respuesta con residuo pequeño.</p>
 <blockquote class="blockquote">
 <p><strong>¿Debemos confiar en ella?</strong></p>
@@ -939,18 +1020,18 @@ A=R^TR,
 </section>
 <section id="problema-3-perturbar-los-datos" class="level2" data-number="4.4">
 <h2 data-number="4.4" class="anchored" data-anchor-id="problema-3-perturbar-los-datos"><span class="header-section-number">4.4</span> Problema 3 — Perturbar los datos</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> [<span class="fl">1.0</span> <span class="fl">1.0</span>; <span class="fl">1.0</span> <span class="fl">1.000001</span>]</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>x_exacta <span class="op">=</span> [<span class="fl">1.0</span>,<span class="fl">1.0</span>]</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> A<span class="op">*</span>x_exacta</span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cond</span>(A)</span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>δb <span class="op">=</span> [<span class="fl">1e-8</span>,<span class="op">-</span><span class="fl">1e-8</span>]</span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>x1 <span class="op">=</span> A<span class="op">\</span>b</span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>x2 <span class="op">=</span> <span class="fu">A\</span>(b<span class="op">+</span>δb)</span>
-<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="fu">norm</span>(δb)<span class="op">/</span><span class="fu">norm</span>(b)</span>
-<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a><span class="fu">norm</span>(x2<span class="op">-</span>x1)<span class="op">/</span><span class="fu">norm</span>(x1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> [<span class="fl">1.0</span> <span class="fl">1.0</span>; <span class="fl">1.0</span> <span class="fl">1.000001</span>]</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>x_exacta <span class="op">=</span> [<span class="fl">1.0</span>,<span class="fl">1.0</span>]</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> A<span class="op">*</span>x_exacta</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="fu">cond</span>(A)</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>δb <span class="op">=</span> [<span class="fl">1e-8</span>,<span class="op">-</span><span class="fl">1e-8</span>]</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>x1 <span class="op">=</span> A<span class="op">\</span>b</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>x2 <span class="op">=</span> <span class="fu">A\</span>(b<span class="op">+</span>δb)</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a><span class="fu">norm</span>(δb)<span class="op">/</span><span class="fu">norm</span>(b)</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a><span class="fu">norm</span>(x2<span class="op">-</span>x1)<span class="op">/</span><span class="fu">norm</span>(x1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Explique cómo una perturbación diminuta puede producir un cambio mucho mayor en la solución.</p>
 </section>
 <section id="problema-4-el-pivote-rebelde" class="level2" data-number="4.5">
@@ -973,7 +1054,7 @@ A(\varepsilon)=
 <section id="problema-5-el-costo-tiene-pendiente" class="level2" data-number="4.6">
 <h2 data-number="4.6" class="anchored" data-anchor-id="problema-5-el-costo-tiene-pendiente"><span class="header-section-number">4.6</span> Problema 5 — El costo tiene pendiente</h2>
 <p>Mida tiempos para multiplicación matriz-vector con</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>ns <span class="op">=</span> [<span class="fl">250</span>,<span class="fl">500</span>,<span class="fl">1000</span>,<span class="fl">2000</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>ns <span class="op">=</span> [<span class="fl">250</span>,<span class="fl">500</span>,<span class="fl">1000</span>,<span class="fl">2000</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Si <span class="math inline">\(t\approx Cn^p\)</span>, entonces</p>
 <p><span class="math display">\[
 p\approx
@@ -983,19 +1064,19 @@ p\approx
 </section>
 <section id="problema-6-la-estructura-vale-dinero" class="level2" data-number="4.7">
 <h2 data-number="4.7" class="anchored" data-anchor-id="problema-6-la-estructura-vale-dinero"><span class="header-section-number">4.7</span> Problema 6 — La estructura vale dinero</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="fl">2000</span></span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>A_densa <span class="op">=</span> <span class="fu">diagm</span>(</span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">-</span><span class="fl">1</span> <span class="op">=&gt;</span> <span class="fu">-ones</span>(n<span class="op">-</span><span class="fl">1</span>),</span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>     <span class="fl">0</span> <span class="op">=&gt;</span>  <span class="fl">2</span><span class="fu">ones</span>(n),</span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>     <span class="fl">1</span> <span class="op">=&gt;</span> <span class="fu">-ones</span>(n<span class="op">-</span><span class="fl">1</span>)</span>
-<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>A_tri <span class="op">=</span> <span class="fu">Tridiagonal</span>(</span>
-<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">-ones</span>(n<span class="op">-</span><span class="fl">1</span>),</span>
-<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>     <span class="fl">2</span><span class="fu">ones</span>(n),</span>
-<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">-ones</span>(n<span class="op">-</span><span class="fl">1</span>)</span>
-<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="fl">2000</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>A_densa <span class="op">=</span> <span class="fu">diagm</span>(</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">-</span><span class="fl">1</span> <span class="op">=&gt;</span> <span class="fu">-ones</span>(n<span class="op">-</span><span class="fl">1</span>),</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>     <span class="fl">0</span> <span class="op">=&gt;</span>  <span class="fl">2</span><span class="fu">ones</span>(n),</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>     <span class="fl">1</span> <span class="op">=&gt;</span> <span class="fu">-ones</span>(n<span class="op">-</span><span class="fl">1</span>)</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>A_tri <span class="op">=</span> <span class="fu">Tridiagonal</span>(</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">-ones</span>(n<span class="op">-</span><span class="fl">1</span>),</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>     <span class="fl">2</span><span class="fu">ones</span>(n),</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">-ones</span>(n<span class="op">-</span><span class="fl">1</span>)</span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Resuelva ambos sistemas con el mismo <span class="math inline">\(b\)</span> y compare tiempo y memoria.</p>
 <p>Las matrices representan el mismo operador.</p>
 <blockquote class="blockquote">

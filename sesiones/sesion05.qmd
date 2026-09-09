@@ -405,6 +405,17 @@ F = lu(A)
 x1 = F \ b1
 x2 = F \ b2
 ```
+### Laboratorio: nuestro solucionador LU
+
+Antes de estudiar el pivoteo, trabajaremos con nuestra propia implementación
+de la factorización LU y las sustituciones hacia adelante y hacia atrás.
+
+👉 [**Abrir laboratorio LU en Pluto**](lu_sin_linearalgebra_pluto.jl)
+
+En este cuaderno resolveremos sistemas lineales sin utilizar `A \ b` ni
+la factorización LU de `LinearAlgebra`.
+
+> **Experimento:** predice → ejecuta → observa → explica.
 
 ## 7. Cierre de la primera clase
 
@@ -498,15 +509,132 @@ $$
 
 Si $\varepsilon$ es diminuto, usarlo como pivote produce números enormes durante la eliminación.
 
-```julia
-ϵ = 1e-12
-A = [-ϵ 1.0; 1.0 -1.0]
-b = A*[1.0,1.0]
-x = A \ b
-A, b, x
-```
+e = 1e-12
+
+A = [-e 1.0;
+      1.0 -1.0]
+
+x_exacta = [1.0, 1.0]
+b = A * x_exacta
+
+x_nuestra = resolver_LU(A, b)
+
+A, b, x_nuestra
 
 > Un problema bien condicionado puede producir una mala respuesta si usamos un algoritmo inestable.
+## Factorización LU con pivoteo parcial
+
+El pivoteo parcial puede incorporarse directamente al proceso de
+eliminación. En cada etapa \(k\), antes de eliminar los elementos situados
+debajo del pivote, buscamos en la columna \(k\) el elemento de mayor
+magnitud entre las filas \(k,\ldots,n\).
+
+Si este elemento se encuentra en una fila distinta de \(k\), intercambiamos
+las dos filas y continuamos la eliminación.
+
+Los intercambios realizados pueden representarse mediante una matriz de
+permutación \(P\). Por esta razón, la factorización obtenida ya no tiene
+la forma
+
+$$
+A=LU,
+$$
+
+sino
+
+$$
+\boxed{PA=LU}.
+$$
+
+### Algoritmo
+
+En forma esquemática, para \(k=1,\ldots,n-1\):
+
+1. Buscar
+
+   $$
+   p=\mathop{\mathrm{arg\,max}}_{i=k,\ldots,n}|u_{ik}|.
+   $$
+
+2. Intercambiar las filas \(k\) y \(p\) de \(U\).
+
+3. Registrar el mismo intercambio en la matriz de permutación \(P\).
+
+4. Si ya se han calculado multiplicadores en etapas anteriores,
+   intercambiar también las entradas correspondientes de \(L\).
+
+5. Para \(i=k+1,\ldots,n\), calcular
+
+   $$
+   m_{ik}=\frac{u_{ik}}{u_{kk}},
+   $$
+
+   guardar \(m_{ik}\) en \(L\) y efectuar
+
+   $$
+   R_i\leftarrow R_i-m_{ik}R_k.
+   $$
+
+Al terminar, \(L\) es triangular inferior, \(U\) es triangular superior
+y se cumple
+
+$$
+PA=LU.
+$$
+
+### Nuestra implementación en Julia
+
+Construiremos nuestra propia función
+
+```julia
+mi_LU_pivoteo(A)
+```
+
+que devolverá las tres matrices
+
+```julia
+P, L, U
+```
+
+sin utilizar una factorización LU proporcionada por `LinearAlgebra`.
+
+Una vez obtenida la factorización, para resolver
+
+$$
+Ax=b
+$$
+
+usaremos
+
+$$
+PAx=Pb,
+$$
+
+y como \(PA=LU\),
+
+$$
+LUx=Pb.
+$$
+
+Por tanto, resolveremos sucesivamente
+
+$$
+Ly=Pb
+$$
+
+mediante sustitución hacia adelante, y
+
+$$
+Ux=y
+$$
+
+mediante sustitución hacia atrás.
+
+En el laboratorio de Pluto construiremos primero una factorización
+\(PA=LU\) a mano para una matriz \(3\times3\). Después haremos que
+`mi_LU_pivoteo(A)` realice automáticamente el mismo trabajo.
+👉 [**Explorar la factorización LU con pivoteo en Pluto**](lu_con_pivoteo_pluto.jl)
+
 
 ##  Normas
 
