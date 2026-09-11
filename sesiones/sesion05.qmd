@@ -909,22 +909,65 @@ Si el condicionamiento no explica una pérdida catastrófica pero una eliminaci�
 
 > **¿el problema está en el problema matemático o en el algoritmo?**
 
-##  Problema 5 — El costo tiene pendiente
 
-Mida tiempos para multiplicación matriz-vector con
+## 21. Problema 5: El costo tiene pendiente
+
+Queremos estudiar experimentalmente cómo crece el tiempo de ejecución
+de la multiplicación de una matriz por un vector cuando aumenta el
+tamaño del problema.
+
+Usaremos la siguiente implementación:
 
 ```julia
-ns = [250,500,1000,2000]
+function matporvec(A, x)
+    n, m = size(A)
+    length(x) == m || error("Dimensiones incompatibles.")
+
+    z = zeros(Float64, n)
+
+    for i in 1:n
+        for j in 1:m
+            z[i] += A[i,j] * x[j]
+        end
+    end
+
+    return z
+end
+```
+Ahora realice el experimento para
+
+```julia
+ns = [250, 500, 1000, 2000]
 ```
 
-Si $t\approx Cn^p$, entonces
+Para cada valor de $n$:
 
-$$
-p\approx
-\frac{\log(t_2/t_1)}{\log(n_2/n_1)}.
-$$
+1. Genere una matriz aleatoria $A$ de tamaño $n\times n$ y un vector
+   aleatorio $x$ de longitud $n$.
 
-¿Se acerca a 2? ¿Por qué no tiene que dar exactamente 2?
+2. Mida el tiempo de ejecución de
+
+   ```julia
+   matporvec(A,x)
+   ```
+
+3. Registre los tiempos obtenidos.
+
+4. Para cada par de tamaños consecutivos, calcule
+
+   $$
+   p\approx
+   \frac{\log(t_2/t_1)}
+        {\log(n_2/n_1)}.
+   $$
+
+Compare los valores obtenidos de $p$.
+
+- ¿Se acercan a $2$?
+- ¿Por qué esperaríamos un valor cercano a $2$ al observar el código de
+  `matporvec`?
+- ¿Por qué los valores experimentales no tienen que ser exactamente
+  iguales a $2$?
 
 ##  Problema 6 — La estructura vale dinero
 
