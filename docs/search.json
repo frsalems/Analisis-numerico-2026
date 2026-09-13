@@ -775,5 +775,474 @@
       "Sesiones",
       "Sesión 04: Condicionamiento, algoritmos y estabilidad"
     ]
+  },
+  {
+    "objectID": "sesiones/examen01.html",
+    "href": "sesiones/examen01.html",
+    "title": "Examen 1",
+    "section": "",
+    "text": "Primer examen de Análisis Numérico\nEste examen comprende los temas desarrollados en las sesiones 01 a 04."
+  },
+  {
+    "objectID": "sesiones/examen01.html#primer-examen-de-análisis-numérico",
+    "href": "sesiones/examen01.html#primer-examen-de-análisis-numérico",
+    "title": "Examen 1",
+    "section": "",
+    "text": "Este examen comprende los temas desarrollados en las **sesiones 01 a 04**.\n\n```{=html}\n&lt;iframe\n  src=\"examen01.pdf\"\n  width=\"100%\"\n  height=\"1100px\"\n  style=\"border: 1px solid #ddd; border-radius: 4px;\"&gt;\n&lt;/iframe&gt;\n```"
+  },
+  {
+    "objectID": "sesiones/soluciones_examen01.html",
+    "href": "sesiones/soluciones_examen01.html",
+    "title": "Soluciones del Examen 1",
+    "section": "",
+    "text": "Este documento contiene soluciones desarrolladas del Examen 1.\nConviene mantenerlo fuera del menú público del curso mientras el examen esté vigente."
+  },
+  {
+    "objectID": "sesiones/soluciones_examen01.html#en-el-intervalo-12",
+    "href": "sesiones/soluciones_examen01.html#en-el-intervalo-12",
+    "title": "Soluciones del Examen 1",
+    "section": "3.1 En el intervalo \\([1,2)\\)",
+    "text": "3.1 En el intervalo \\([1,2)\\)\nLos flotantes son\n\\[\n1.00_2,\\quad\n1.01_2,\\quad\n1.10_2,\\quad\n1.11_2.\n\\]\nEn decimal:\n\\[\n\\boxed{1,\\;1.25,\\;1.5,\\;1.75}.\n\\]\nLa separación es\n\\[\n\\Delta = 2^{-2}=0.25.\n\\]"
+  },
+  {
+    "objectID": "sesiones/soluciones_examen01.html#en-el-intervalo-48",
+    "href": "sesiones/soluciones_examen01.html#en-el-intervalo-48",
+    "title": "Soluciones del Examen 1",
+    "section": "3.2 En el intervalo \\([4,8)\\)",
+    "text": "3.2 En el intervalo \\([4,8)\\)\nAquí el exponente es \\(e=2\\), de modo que\n\\[\n1.00_2\\,2^2,\\quad\n1.01_2\\,2^2,\\quad\n1.10_2\\,2^2,\\quad\n1.11_2\\,2^2.\n\\]\nEn decimal:\n\\[\n\\boxed{4,\\;5,\\;6,\\;7}.\n\\]\nLa separación ahora es\n\\[\n\\Delta=1.\n\\]\nPor tanto, los dos flotantes vecinos de \\(5.3\\) son\n\\[\n\\boxed{5\\quad\\text{y}\\quad6}.\n\\]\nEste ejemplo muestra que el espaciamiento entre flotantes aumenta cuando crece la magnitud del número."
+  },
+  {
+    "objectID": "sesiones/soluciones_examen01.html#a-fxx5",
+    "href": "sesiones/soluciones_examen01.html#a-fxx5",
+    "title": "Soluciones del Examen 1",
+    "section": "4.1 a) \\(f(x)=x^5\\)",
+    "text": "4.1 a) \\(f(x)=x^5\\)\nComo\n\\[\nf'(x)=5x^4,\n\\]\ntenemos\n\\[\n\\kappa_f(x)\n=\n\\left|\n\\frac{x(5x^4)}{x^5}\n\\right|\n=\n\\boxed{5},\n\\]\npara \\(x\\neq0\\).\nEl problema tiene condicionamiento relativo constante."
+  },
+  {
+    "objectID": "sesiones/soluciones_examen01.html#b-fxln-x",
+    "href": "sesiones/soluciones_examen01.html#b-fxln-x",
+    "title": "Soluciones del Examen 1",
+    "section": "4.2 b) \\(f(x)=\\ln x\\)",
+    "text": "4.2 b) \\(f(x)=\\ln x\\)\nComo\n\\[\nf'(x)=\\frac1x,\n\\]\nentonces\n\\[\n\\kappa_f(x)\n=\n\\left|\n\\frac{x(1/x)}{\\ln x}\n\\right|\n=\n\\boxed{\\frac1{|\\ln x|}}.\n\\]\nCuando \\(x\\to1\\),\n\\[\n\\ln x\\to0,\n\\]\ny por tanto\n\\[\n\\kappa_f(x)\\to\\infty.\n\\]\nAsí, evaluar \\(\\ln x\\) cerca de \\(1\\) es un problema relativamente mal condicionado."
+  },
+  {
+    "objectID": "sesiones/soluciones_examen01.html#c-fxx-2",
+    "href": "sesiones/soluciones_examen01.html#c-fxx-2",
+    "title": "Soluciones del Examen 1",
+    "section": "4.3 c) \\(f(x)=x-2\\)",
+    "text": "4.3 c) \\(f(x)=x-2\\)\nTenemos \\(f'(x)=1\\), por lo que\n\\[\n\\boxed{\n\\kappa_f(x)\n=\n\\left|\n\\frac{x}{x-2}\n\\right|\n}.\n\\]\nCuando \\(x\\to2\\), el número de condición crece sin límite."
+  },
+  {
+    "objectID": "sesiones/sesion06.html",
+    "href": "sesiones/sesion06.html",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "",
+    "text": "En la sesión anterior estudiamos sistemas cuadrados,\n\\[\nAx=b,\n\\]\ny vimos que una fórmula matemática y un buen algoritmo numérico no son necesariamente la misma cosa.\nAhora abandonaremos temporalmente el mundo cuadrado. Supongamos que\n\\[\nA\\in\\mathbb R^{m\\times n},\\qquad m&gt;n.\n\\]\nTenemos más ecuaciones que incógnitas. En general, \\(Ax=b\\) no tiene solución exacta. La pregunta cambia:\n\nSi no podemos resolver exactamente \\(Ax=b\\), ¿cuál es la mejor aproximación posible?\n\nLa respuesta nos llevará por una sola idea geométrica:\n\\[\n\\boxed{\n\\text{proyección}\n\\longrightarrow\n\\text{mínimos cuadrados}\n\\longrightarrow\n\\text{regresión}\n\\longrightarrow\n\\text{QR}\n\\longrightarrow\n\\text{proyección de funciones}.\n}\n\\]\nEste documento está pensado para cuatro clases de dos horas:\n\nClase 1: proyecciones y ecuaciones normales.\nClase 2: sistemas rectangulares, mínimos cuadrados y Data Science.\nClase 3: ortogonalización, QR y solución numérica de mínimos cuadrados.\nClase 4: de vectores a funciones: un guiño al análisis funcional.\n\nLa pregunta que atravesará las cuatro clases será:\n\n¿Qué significa realmente “la mejor aproximación”?"
+  },
+  {
+    "objectID": "sesiones/sesion06.html#una-pregunta-geométrica",
+    "href": "sesiones/sesion06.html#una-pregunta-geométrica",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "2.1 1. Una pregunta geométrica",
+    "text": "2.1 1. Una pregunta geométrica\nSea \\(b\\in\\mathbb R^m\\) y sea \\(a\\neq0\\). Queremos aproximar \\(b\\) mediante un vector que esté sobre la recta\n\\[\nL=\\operatorname{span}\\{a\\}.\n\\]\nTodo vector de esa recta tiene la forma\n\\[\np=\\widehat{x}\\,a.\n\\]\nBuscamos el valor de \\(\\widehat{x}\\) que haga a \\(p\\) lo más cercano posible a \\(b\\).\nLa idea geométrica es sencilla: el punto de una recta más cercano a \\(b\\) se obtiene dejando caer una perpendicular. Si\n\\[\ne=b-p,\n\\]\nentonces\n\\[\ne\\perp a.\n\\]\nPor tanto,\n\\[\na^T(b-\\widehat{x}a)=0,\n\\]\ny de aquí\n\\[\n\\boxed{\\widehat{x}=\\frac{a^Tb}{a^Ta}}.\n\\]\nLa proyección es\n\\[\n\\boxed{p=a\\frac{a^Tb}{a^Ta}}.\n\\]"
+  },
+  {
+    "objectID": "sesiones/sesion06.html#el-error-no-desaparece-se-vuelve-perpendicular",
+    "href": "sesiones/sesion06.html#el-error-no-desaparece-se-vuelve-perpendicular",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "2.2 2. El error no desaparece: se vuelve perpendicular",
+    "text": "2.2 2. El error no desaparece: se vuelve perpendicular\nLa descomposición fundamental es\n\\[\nb=p+e,\n\\]\ncon\n\\[\np\\in\\operatorname{span}\\{a\\},\\qquad e\\perp\\operatorname{span}\\{a\\}.\n\\]\n\nIdea guía. En mínimos cuadrados no buscamos error cero. Buscamos un error que sea perpendicular a todas las direcciones en las que sí podemos movernos."
+  },
+  {
+    "objectID": "sesiones/sesion06.html#la-matriz-de-proyección-sobre-una-recta",
+    "href": "sesiones/sesion06.html#la-matriz-de-proyección-sobre-una-recta",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "2.3 3. La matriz de proyección sobre una recta",
+    "text": "2.3 3. La matriz de proyección sobre una recta\nPodemos escribir\n\\[\np=Pb,\n\\]\ndonde\n\\[\n\\boxed{P=\\frac{aa^T}{a^Ta}}.\n\\]\nCompruebe que\n\\[\nP^T=P,\\qquad P^2=P.\n\\]\nLa segunda propiedad dice que proyectar dos veces produce lo mismo que proyectar una vez.\n\n2.3.1 Experimento en Julia\nusing LinearAlgebra\n\na = [1.0,2.0]\nb = [4.0,1.0]\n\nP = a*a'/(a'*a)\np = P*b\ne = b-p\n\nprintln(\"p = \",p)\nprintln(\"e = \",e)\nprintln(\"a'e = \",a'*e)\nprintln(\"||P^2-P|| = \",norm(P*P-P))\nprintln(\"||P'-P|| = \",norm(P'-P))\nPredice antes de ejecutar:\n\n¿qué valor esperas para \\(a^Te\\)?\n¿por qué no esperamos que \\(e=0\\)?\n¿qué significado geométrico tiene \\(P^2=P\\)?"
+  },
+  {
+    "objectID": "sesiones/sesion06.html#de-una-recta-a-un-subespacio",
+    "href": "sesiones/sesion06.html#de-una-recta-a-un-subespacio",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "2.4 De una recta a un subespacio",
+    "text": "2.4 De una recta a un subespacio\nAhora supongamos que tenemos varias direcciones\n\\[\na_1,\\ldots,a_n\\in\\mathbb R^m\n\\]\ny formamos la matriz\n\\[\nA=\n\\begin{bmatrix}\na_1&a_2&\\cdots&a_n\n\\end{bmatrix}.\n\\]\nQueremos encontrar el vector\n\\[\np=A\\widehat x\n\\]\nde \\(\\operatorname{Col}(A)\\) que esté más cerca de \\(b\\).\nDefinimos nuevamente el error:\n\\[\ne=b-A\\widehat x.\n\\]\nLa condición geométrica es exactamente la misma:\n\\[\ne\\perp\\operatorname{Col}(A).\n\\]\nSer perpendicular a todas las columnas de \\(A\\) significa\n\\[\nA^Te=0.\n\\]\nPor tanto,\n\\[\nA^T(b-A\\widehat x)=0,\n\\]\ny obtenemos\n\\[\n\\boxed{\nA^TA\\widehat x=A^Tb.\n}\n\\]\nEstas son las ecuaciones normales.\nNo son una fórmula misteriosa.\nSon simplemente la traducción algebraica de\n\\[\n\\boxed{\nb-A\\widehat x\n\\perp\n\\operatorname{Col}(A).\n}\n\\]"
+  },
+  {
+    "objectID": "sesiones/sesion06.html#qué-significan-realmente-las-ecuaciones-normales",
+    "href": "sesiones/sesion06.html#qué-significan-realmente-las-ecuaciones-normales",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "2.5 5. Qué significan realmente las ecuaciones normales",
+    "text": "2.5 5. Qué significan realmente las ecuaciones normales\nNo son una receta caída del cielo. Son la traducción algebraica de\n\\[\n\\boxed{b-A\\widehat{x}\\perp\\operatorname{Col}(A)}.\n\\]\nTenemos\n\\[\nb=p+e,\n\\]\ncon\n\\[\np=A\\widehat{x}\\in\\operatorname{Col}(A),\\qquad e\\in\\operatorname{Null}(A^T).\n\\]\nAsí aparece la descomposición\n\\[\n\\mathbb R^m=\\operatorname{Col}(A)\\oplus\\operatorname{Null}(A^T).\n\\]"
+  },
+  {
+    "objectID": "sesiones/sesion06.html#la-matriz-de-proyección-sobre-operatornamecola",
+    "href": "sesiones/sesion06.html#la-matriz-de-proyección-sobre-operatornamecola",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "2.6 6. La matriz de proyección sobre \\(\\operatorname{Col}(A)\\)",
+    "text": "2.6 6. La matriz de proyección sobre \\(\\operatorname{Col}(A)\\)\nSi \\(A\\) tiene rango columna completo,\n\\[\n\\widehat{x}=(A^TA)^{-1}A^Tb,\n\\]\ny por tanto\n\\[\n\\boxed{P=A(A^TA)^{-1}A^T}.\n\\]\nOtra vez,\n\\[\nP^T=P,\\qquad P^2=P.\n\\]\n\nEsta fórmula es excelente para comprender la geometría, pero no necesariamente es la mejor manera de calcular la proyección.\n\nEsa advertencia nos llevará después a QR."
+  },
+  {
+    "objectID": "sesiones/sesion06.html#ejemplo-rectangular-pequeño",
+    "href": "sesiones/sesion06.html#ejemplo-rectangular-pequeño",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "2.7 7. Ejemplo rectangular pequeño",
+    "text": "2.7 7. Ejemplo rectangular pequeño\nConsidere\n\\[\nA=\\begin{bmatrix}\n1&0\\\\\n1&1\\\\\n1&2\n\\end{bmatrix},\\qquad\nb=\\begin{bmatrix}1\\\\2\\\\2\\end{bmatrix}.\n\\]\nusing LinearAlgebra\n\nA = [1.0 0.0;\n     1.0 1.0;\n     1.0 2.0]\n\nb = [1.0,2.0,2.0]\n\nxhat = (A'*A) \\ (A'*b)\np = A*xhat\ne = b-p\n\nprintln(\"xhat = \",xhat)\nprintln(\"p = \",p)\nprintln(\"e = \",e)\nprintln(\"A'e = \",A'*e)\n\n2.7.1 Preguntas\n\n¿Por qué \\(A^Te\\) debe ser cercano a cero?\n¿Por qué \\(Ax=b\\) no tiene que tener solución?\n¿En qué espacio vive \\(p\\)?\n¿En qué espacio vive \\(e\\)?\n¿Qué dimensión tiene cada uno?"
+  },
+  {
+    "objectID": "sesiones/sesion06.html#sistemas-sobredeterminados",
+    "href": "sesiones/sesion06.html#sistemas-sobredeterminados",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "3.1 8. Sistemas sobredeterminados",
+    "text": "3.1 8. Sistemas sobredeterminados\nSea\n\\[\nA\\in\\mathbb R^{m\\times n},\\qquad m&gt;n.\n\\]\nEn general, \\(b\\notin\\operatorname{Col}(A)\\) y el sistema \\(Ax=b\\) no tiene solución exacta. Buscamos entonces\n\\[\n\\boxed{\\widehat{x}=\\arg\\min_x\\|b-Ax\\|_2^2}.\n\\]\nÉste es el problema de mínimos cuadrados lineales."
+  },
+  {
+    "objectID": "sesiones/sesion06.html#ajustar-una-recta-a-datos",
+    "href": "sesiones/sesion06.html#ajustar-una-recta-a-datos",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "3.2 9. Ajustar una recta a datos",
+    "text": "3.2 9. Ajustar una recta a datos\nSupongamos datos\n\\[\n(t_1,y_1),\\ldots,(t_m,y_m)\n\\]\ny queremos ajustar\n\\[\ny\\approx\\beta_0+\\beta_1t.\n\\]\nEntonces\n\\[\n\\begin{bmatrix}\n1&t_1\\\\\n1&t_2\\\\\n\\vdots&\\vdots\\\\\n1&t_m\n\\end{bmatrix}\n\\begin{bmatrix}\\beta_0\\\\\\beta_1\\end{bmatrix}\n\\approx\n\\begin{bmatrix}y_1\\\\y_2\\\\\\vdots\\\\y_m\\end{bmatrix}.\n\\]\nEscribimos\n\\[\nX\\beta\\approx y.\n\\]\nLa matriz \\(X\\) es la matriz de diseño."
+  },
+  {
+    "objectID": "sesiones/sesion06.html#el-guiño-a-data-science",
+    "href": "sesiones/sesion06.html#el-guiño-a-data-science",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "3.6 El guiño a Data Science",
+    "text": "3.6 El guiño a Data Science\nEn el lenguaje habitual de Data Science:\n\ncada fila de \\(X\\) corresponde a una observación;\ncada columna contiene una variable explicativa o feature;\n\\(y\\) es el target;\n\\(\\beta\\) contiene los parámetros del modelo;\n\\(\\widehat y=X\\widehat\\beta\\) contiene las predicciones;\n\\(r=y-\\widehat y\\) contiene los residuos.\n\nAsí, detrás de una regresión lineal encontramos simplemente\n\\[\n\\boxed{\n\\text{proyección sobre el espacio generado por las columnas de }X.\n}\n\\]\nData Science aparece aquí con zapatos de Álgebra Lineal."
+  },
+  {
+    "objectID": "sesiones/sesion06.html#los-residuos-son-ortogonales-a-las-features",
+    "href": "sesiones/sesion06.html#los-residuos-son-ortogonales-a-las-features",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "3.4 11. Los residuos son ortogonales a las features",
+    "text": "3.4 11. Los residuos son ortogonales a las features\nComo\n\\[\nr=y-X\\widehat\\beta,\n\\]\nlas ecuaciones normales implican\n\\[\nX^Tr=0.\n\\]\nEs decir, el residuo es ortogonal a cada columna de \\(X\\).\nSi la primera columna de \\(X\\) es el vector de unos, entonces\n\\[\n\\mathbf1^Tr=0,\n\\]\npor lo que\n\\[\n\\boxed{\\sum_{i=1}^m r_i=0}.\n\\]\nUna propiedad estadística aparece como una consecuencia geométrica."
+  },
+  {
+    "objectID": "sesiones/sesion06.html#ejemplo-de-ajuste-lineal",
+    "href": "sesiones/sesion06.html#ejemplo-de-ajuste-lineal",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "3.5 12. Ejemplo de ajuste lineal",
+    "text": "3.5 12. Ejemplo de ajuste lineal\nusing LinearAlgebra\n\nt = [0.0,1.0,2.0,3.0,4.0,5.0]\ny = [1.2,1.9,3.0,3.9,5.1,5.8]\n\nX = hcat(ones(length(t)),t)\n\nβ = X \\ y\nyhat = X*β\nr = y-yhat\n\nprintln(\"β = \",β)\nprintln(\"||r|| = \",norm(r))\nprintln(\"X'r = \",X'*r)\nprintln(\"sum(r) = \",sum(r))\n\n3.5.1 Preguntas\n\n¿Qué representan \\(\\beta_0\\) y \\(\\beta_1\\)?\n¿Por qué X \\ y tiene sentido aunque X no sea cuadrada?\n¿Por qué X' * r debe ser pequeño?\n¿Por qué sum(r) debe ser pequeño?\n¿Qué diferencia hay entre \\(y\\) y \\(\\widehat y\\)?"
+  },
+  {
+    "objectID": "sesiones/sesion06.html#más-features",
+    "href": "sesiones/sesion06.html#más-features",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "3.6 13. Más features",
+    "text": "3.6 13. Más features\nPodemos usar\n\\[\n1,\\quad t,\\quad t^2,\\quad t^3\n\\]\ny obtener un ajuste cúbico. La matriz tiene estructura de Vandermonde, pero ahora es rectangular.\nLa interpolación y la regresión polinomial son parientes cercanos:\n\nen interpolación solemos imponer tantas condiciones como parámetros;\nen mínimos cuadrados permitimos más datos que parámetros y buscamos la mejor aproximación."
+  },
+  {
+    "objectID": "sesiones/sesion06.html#el-mismo-operador",
+    "href": "sesiones/sesion06.html#el-mismo-operador",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "3.11 . El mismo operador \\",
+    "text": "3.11 . El mismo operador \\\nEn Julia escribimos\nx = A \\ b\ntanto para matrices cuadradas como para matrices rectangulares.\nPor ejemplo:\nA = randn(8,3)\nb = randn(8)\n\nx = A \\ b\nr = b-A*x\n\nprintln(\"||r|| = \", norm(r))\nprintln(\"||A'r|| = \", norm(A'*r))\nPero hay una pregunta numérica pendiente:\n\n¿Cómo calcula Julia esta solución sin formar necesariamente las ecuaciones normales?\n\nLa respuesta será el tema de la próxima clase:\n\\[\n\\boxed{A=QR}.\n\\]"
+  },
+  {
+    "objectID": "sesiones/sesion06.html#video-para-el-guiño-geométrico",
+    "href": "sesiones/sesion06.html#video-para-el-guiño-geométrico",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "3.8 15. Video para el guiño geométrico",
+    "text": "3.8 15. Video para el guiño geométrico\nGilbert Strang, Lecture 16: Projection Matrices and Least Squares\nhttps://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/resources/lecture-16-projection-matrices-and-least-squares/\nAntes de verlo, responda:\n\n¿Qué vector se proyecta?\n¿Sobre qué subespacio?\n¿Por qué aparece \\(A^TA\\)?\n¿Dónde está la regresión lineal en este dibujo?"
+  },
+  {
+    "objectID": "sesiones/sesion06.html#video-para-el-guiño-data-science",
+    "href": "sesiones/sesion06.html#video-para-el-guiño-data-science",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "3.9 16. Video para el guiño Data Science",
+    "text": "3.9 16. Video para el guiño Data Science\nStatQuest: Linear Regression, Clearly Explained!!!\nhttps://www.youtube.com/watch?v=nk2CQITm_eo\nDurante el video identifique:\n\ndatos;\nmodelo;\nresiduos;\nsuma de cuadrados;\nvariables explicativas.\n\nDespués traduzca cada concepto al lenguaje de álgebra lineal."
+  },
+  {
+    "objectID": "sesiones/sesion06.html#el-problema-numérico-de-las-ecuaciones-normales",
+    "href": "sesiones/sesion06.html#el-problema-numérico-de-las-ecuaciones-normales",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "3.13 El problema numérico de las ecuaciones normales",
+    "text": "3.13 El problema numérico de las ecuaciones normales\nLas ecuaciones normales son\n\\[\nA^TAx=A^Tb.\n\\]\nPero, para una matriz de rango columna completo,\n\\[\n\\boxed{\\kappa_2(A^TA)=\\kappa_2(A)^2}.\n\\]\nSi\n\\[\n\\kappa_2(A)=10^6,\n\\]\nentonces\n\\[\n\\kappa_2(A^TA)=10^{12}.\n\\]\n\nFormar \\(A^TA\\) puede empeorar drásticamente el condicionamiento.\n\nNecesitamos conservar la geometría sin pagar ese precio."
+  },
+  {
+    "objectID": "sesiones/sesion06.html#columnas-ortonormales",
+    "href": "sesiones/sesion06.html#columnas-ortonormales",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "3.14 Columnas ortonormales",
+    "text": "3.14 Columnas ortonormales\nUna colección \\(q_1,\\ldots,q_n\\) es ortonormal si\n\\[\nq_i^Tq_j=\\delta_{ij}.\n\\]\nSi\n\\[\nQ=\\begin{bmatrix}q_1&\\cdots&q_n\\end{bmatrix},\n\\]\nentonces\n\\[\n\\boxed{Q^TQ=I}.\n\\]\nAdemás,\n\\[\n\\|Qx\\|_2=\\|x\\|_2.\n\\]"
+  },
+  {
+    "objectID": "sesiones/sesion06.html#gram-schmidt",
+    "href": "sesiones/sesion06.html#gram-schmidt",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "3.15 19. Gram-Schmidt",
+    "text": "3.15 19. Gram-Schmidt\nSea\n\\[\nA=\\begin{bmatrix}a_1&a_2&\\cdots&a_n\\end{bmatrix}.\n\\]\nEmpezamos con\n\\[\nq_1=\\frac{a_1}{\\|a_1\\|}.\n\\]\nPara la segunda columna,\n\\[\nv_2=a_2-(q_1^Ta_2)q_1,\n\\]\ny\n\\[\nq_2=\\frac{v_2}{\\|v_2\\|}.\n\\]\nPara la tercera,\n\\[\nv_3=a_3-(q_1^Ta_3)q_1-(q_2^Ta_3)q_2,\n\\]\ny así sucesivamente.\n\nGram-Schmidt puede verse como una máquina que elimina proyecciones una a una."
+  },
+  {
+    "objectID": "sesiones/sesion06.html#de-gram-schmidt-a-aqr",
+    "href": "sesiones/sesion06.html#de-gram-schmidt-a-aqr",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "3.16 De Gram-Schmidt a \\(A=QR\\)",
+    "text": "3.16 De Gram-Schmidt a \\(A=QR\\)\nGram-Schmidt no sólo construye los vectores ortonormales\n\\[\nq_1,\\ldots,q_n.\n\\]\nTambién nos dice cómo escribir cada columna original de \\(A\\) en términos de esas nuevas direcciones.\nPor ejemplo,\n\\[\na_1=r_{11}q_1,\n\\]\nmientras que\n\\[\na_2=r_{12}q_1+r_{22}q_2.\n\\]\nPara la tercera columna,\n\\[\na_3=r_{13}q_1+r_{23}q_2+r_{33}q_3.\n\\]\nEn general,\n\\[\na_j=\\sum_{i=1}^{j}r_{ij}q_i.\n\\]\nLos coeficientes son precisamente las proyecciones que aparecieron en Gram-Schmidt:\n\\[\nr_{ij}=q_i^Ta_j,\n\\qquad i&lt;j,\n\\]\ny\n\\[\nr_{jj}=\\|v_j\\|.\n\\]\nSi agrupamos todas las columnas obtenemos\n\\[\n\\boxed{A=QR},\n\\]\ndonde\n\\[\nQ=\n\\begin{bmatrix}\nq_1&q_2&\\cdots&q_n\n\\end{bmatrix}\n\\]\ntiene columnas ortonormales y\n\\[\nR=\n\\begin{bmatrix}\nr_{11}&r_{12}&r_{13}&\\cdots\\\\\n0&r_{22}&r_{23}&\\cdots\\\\\n0&0&r_{33}&\\cdots\\\\\n\\vdots&\\vdots&\\vdots&\\ddots\n\\end{bmatrix}\n\\]\nes triangular superior.\n\nPregunta: ¿por qué aparecen ceros debajo de la diagonal?\n\nPara una matriz alta\n\\[\nA\\in\\mathbb R^{m\\times n},\n\\qquad m&gt;n,\n\\]\nusaremos la QR delgada:\n\\[\nQ\\in\\mathbb R^{m\\times n},\n\\qquad\nR\\in\\mathbb R^{n\\times n},\n\\]\ncon\n\\[\n\\boxed{Q^TQ=I}.\n\\]"
+  },
+  {
+    "objectID": "sesiones/sesion06.html#mínimos-cuadrados-mediante-qr",
+    "href": "sesiones/sesion06.html#mínimos-cuadrados-mediante-qr",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "3.17 Mínimos cuadrados mediante QR",
+    "text": "3.17 Mínimos cuadrados mediante QR\nQueremos resolver\n\\[\n\\min_x\\|b-Ax\\|_2.\n\\]\nSi\n\\[\nA=QR,\n\\]\nentonces\n\\[\nb-Ax=b-QRx.\n\\]\nEn la solución de mínimos cuadrados, el residuo debe ser perpendicular a\n\\[\n\\operatorname{Col}(A).\n\\]\nPero\n\\[\n\\operatorname{Col}(A)=\\operatorname{Col}(Q).\n\\]\nPor tanto,\n\\[\nQ^T(b-QRx)=0.\n\\]\nUsando\n\\[\nQ^TQ=I,\n\\]\nobtenemos\n\\[\nQ^Tb-Rx=0,\n\\]\ny finalmente\n\\[\n\\boxed{Rx=Q^Tb}.\n\\]\nAhora el problema rectangular se ha convertido en un sistema cuadrado triangular.\nLa estrategia es:\n\nconstruir la factorización \\(A=QR\\);\ncalcular\n\\[\nz=Q^Tb;\n\\]\nresolver\n\\[\nRx=z\n\\]\nmediante sustitución hacia atrás.\n\n\nIdea importante. No formamos \\(A^TA\\). Conservamos la geometría de la proyección utilizando una base ortonormal.\n\n\n3.17.1 Para pensar\n\n¿Por qué \\(\\operatorname{Col}(Q)=\\operatorname{Col}(A)\\)?\n¿Qué ventaja tiene resolver un sistema triangular?\n¿Dónde quedó escondida la proyección de \\(b\\) sobre \\(\\operatorname{Col}(A)\\)?"
+  },
+  {
+    "objectID": "sesiones/sesion06.html#laboratorio-pluto-qr-a-mano",
+    "href": "sesiones/sesion06.html#laboratorio-pluto-qr-a-mano",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "3.18 Laboratorio Pluto: QR a mano",
+    "text": "3.18 Laboratorio Pluto: QR a mano\nAquí sí cargaremos las piedras antes de usar la grúa.\nAbrir laboratorio: QR a mano\nEl laboratorio construye \\(Q\\) y \\(R\\) paso a paso, verifica\n\\[\nQ^TQ\\approx I,\n\\]\n\\[\nQR\\approx A,\n\\]\ny termina resolviendo un problema de mínimos cuadrados mediante\n\\[\nRx=Q^Tb.\n\\]"
+  },
+  {
+    "objectID": "sesiones/sesion06.html#ahora-sí-julia",
+    "href": "sesiones/sesion06.html#ahora-sí-julia",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "3.19 Ahora sí: Julia",
+    "text": "3.19 Ahora sí: Julia\nusing LinearAlgebra\n\nA = randn(6,3)\n\nF = qr(A)\n\nQfull = Matrix(F.Q)\nQ = Qfull[:,1:size(A,2)]\nR = Matrix(F.R)\n\nprintln(\"size(A) = \", size(A))\nprintln(\"size(Q) = \", size(Q))\nprintln(\"size(R) = \", size(R))\n\nprintln(\"||A-QR|| = \", norm(A-Q*R))\nprintln(\"||Q'Q-I|| = \", norm(Q'*Q-I))\nPara mínimos cuadrados:\nb = randn(6)\n\nz = Q'*b\nx = R \\ z\n\nr = b - A*x\n\nprintln(\"residuo QR = \", norm(r))\nprintln(\"||A'r|| = \", norm(A'*r))\nprintln(\"diferencia con A\\\\b = \", norm(x-(A\\b)))"
+  },
+  {
+    "objectID": "sesiones/sesion06.html#gram-schmidt-para-entender-householder-para-calcular",
+    "href": "sesiones/sesion06.html#gram-schmidt-para-entender-householder-para-calcular",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "3.20 Gram-Schmidt para entender, Householder para calcular",
+    "text": "3.20 Gram-Schmidt para entender, Householder para calcular\nGram-Schmidt clásico es excelente para comprender la idea de QR. Sin embargo, no es la implementación preferida para problemas numéricamente difíciles.\nLas bibliotecas modernas suelen construir QR mediante transformaciones ortogonales más estables, especialmente reflexiones de Householder.\nLa historia será:\n\\[\n\\text{Gram-Schmidt para entender}\n\\]\npero\n\\[\n\\text{Householder para calcular con robustez}.\n\\]"
+  },
+  {
+    "objectID": "sesiones/sesion06.html#experimento-ecuaciones-normales-contra-qr",
+    "href": "sesiones/sesion06.html#experimento-ecuaciones-normales-contra-qr",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "3.21 Experimento: ecuaciones normales contra QR",
+    "text": "3.21 Experimento: ecuaciones normales contra QR\nusing LinearAlgebra\n\nt = range(0,1,length=100)\n\nA = hcat(\n    ones(length(t)),\n    t,\n    t .+ 1e-6*t.^2\n)\n\nxtrue = [1.0,2.0,-1.0]\nb = A*xtrue\n\nx_normal = (A'*A) \\ (A'*b)\nx_qr = A \\ b\n\nprintln(\"cond(A) = \",cond(A))\nprintln(\"cond(A'A) = \",cond(A'*A))\nprintln(\"error normal = \",norm(x_normal-xtrue))\nprintln(\"error QR/backslash = \",norm(x_qr-xtrue))\nPreguntas:\n\n¿Cuál matriz está peor condicionada?\n¿Por cuánto aproximadamente?\n¿Qué solución es más confiable?\n¿Por qué un residuo pequeño no cuenta toda la historia?"
+  },
+  {
+    "objectID": "sesiones/sesion06.html#quién-dijo-que-un-vector-tiene-que-ser-una-lista",
+    "href": "sesiones/sesion06.html#quién-dijo-que-un-vector-tiene-que-ser-una-lista",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "4.1 ¿Quién dijo que un vector tiene que ser una lista?",
+    "text": "4.1 ¿Quién dijo que un vector tiene que ser una lista?\nHasta ahora trabajamos con\n\\[\nx=(x_1,\\ldots,x_n).\n\\]\nPero podemos considerar funciones como vectores. Para funciones en \\([a,b]\\) definimos\n\\[\n\\boxed{\\langle f,g\\rangle=\\int_a^b f(t)g(t)\\,dt}.\n\\]\nEste producto interno induce la norma\n\\[\n\\boxed{\\|f\\|_2=\\left(\\int_a^b|f(t)|^2\\,dt\\right)^{1/2}}.\n\\]\nAhora podemos volver a hablar de longitud, distancia, ortogonalidad y proyección.\nLa geometría de \\(\\mathbb R^n\\) comienza a sobrevivir en espacios de funciones."
+  },
+  {
+    "objectID": "sesiones/sesion06.html#ortogonalidad-de-funciones",
+    "href": "sesiones/sesion06.html#ortogonalidad-de-funciones",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "4.2 Ortogonalidad de funciones",
+    "text": "4.2 Ortogonalidad de funciones\nDecimos que \\(f\\) y \\(g\\) son ortogonales si\n\\[\n\\langle f,g\\rangle=0.\n\\]\nPor ejemplo, en \\([-\\pi,\\pi]\\),\n\\[\n\\int_{-\\pi}^{\\pi}\\sin(x)\\cos(x)\\,dx=0.\n\\]\nTambién,\n\\[\n\\int_{-\\pi}^{\\pi}\\sin(nx)\\sin(mx)\\,dx=0\n\\]\nsi \\(n\\neq m\\).\nAquí empieza a asomarse Fourier."
+  },
+  {
+    "objectID": "sesiones/sesion06.html#proyección-sobre-una-función",
+    "href": "sesiones/sesion06.html#proyección-sobre-una-función",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "4.3 Proyección sobre una función",
+    "text": "4.3 Proyección sobre una función\nSea \\(\\phi\\neq0\\). Queremos aproximar \\(f\\) mediante\n\\[\np=c\\phi.\n\\]\nLa condición es\n\\[\nf-p\\perp\\phi.\n\\]\nPor tanto,\n\\[\n\\langle f-c\\phi,\\phi\\rangle=0,\n\\]\ny obtenemos\n\\[\n\\boxed{c=\\frac{\\langle f,\\phi\\rangle}{\\langle\\phi,\\phi\\rangle}}.\n\\]\nCompare con la fórmula en \\(\\mathbb R^n\\):\n\\[\n\\frac{a^Tb}{a^Ta}.\n\\]\nEs la misma geometría."
+  },
+  {
+    "objectID": "sesiones/sesion06.html#proyección-sobre-un-subespacio-de-funciones",
+    "href": "sesiones/sesion06.html#proyección-sobre-un-subespacio-de-funciones",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "4.4 Proyección sobre un subespacio de funciones",
+    "text": "4.4 Proyección sobre un subespacio de funciones\nSea\n\\[\nV=\\operatorname{span}\\{\\phi_1,\\ldots,\\phi_n\\}.\n\\]\nBuscamos\n\\[\np(t)=c_1\\phi_1(t)+\\cdots+c_n\\phi_n(t)\n\\]\nque aproxime a \\(f\\).\nLa condición\n\\[\nf-p\\perp V\n\\]\nproduce\n\\[\n\\langle f-p,\\phi_j\\rangle=0,\n\\qquad j=1,\\ldots,n.\n\\]\nSustituyendo,\n\\[\n\\sum_{k=1}^n c_k\\langle\\phi_k,\\phi_j\\rangle\n=\n\\langle f,\\phi_j\\rangle.\n\\]\nAparece el sistema\n\\[\nGc=d,\n\\]\ndonde\n\\[\n\\boxed{G_{jk}=\\langle\\phi_k,\\phi_j\\rangle}.\n\\]\n\\(G\\) es la matriz de Gram."
+  },
+  {
+    "objectID": "sesiones/sesion06.html#si-la-base-es-ortonormal",
+    "href": "sesiones/sesion06.html#si-la-base-es-ortonormal",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "4.5 Si la base es ortonormal",
+    "text": "4.5 Si la base es ortonormal\nSi\n\\[\n\\langle\\phi_i,\\phi_j\\rangle=\\delta_{ij},\n\\]\nentonces\n\\[\nG=I,\n\\]\ny los coeficientes quedan simplemente\n\\[\n\\boxed{c_j=\\langle f,\\phi_j\\rangle}.\n\\]\nEn dimensión finita buscamos \\(A=QR\\). En espacios de funciones buscamos familias ortogonales."
+  },
+  {
+    "objectID": "sesiones/sesion06.html#ejemplo-aproximar-ex-por-una-recta-en--11",
+    "href": "sesiones/sesion06.html#ejemplo-aproximar-ex-por-una-recta-en--11",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "4.6 Ejemplo: aproximar \\(e^x\\) por una recta en \\([-1,1]\\)",
+    "text": "4.6 Ejemplo: aproximar \\(e^x\\) por una recta en \\([-1,1]\\)\nBuscamos\n\\[\np(x)=c_0+c_1x\n\\]\nque minimice\n\\[\n\\int_{-1}^1\\left(e^x-c_0-c_1x\\right)^2dx.\n\\]\nTomamos\n\\[\n\\phi_0(x)=1,\\qquad\\phi_1(x)=x.\n\\]\nEn \\([-1,1]\\),\n\\[\n\\langle1,x\\rangle=0,\n\\]\nasí que ya son ortogonales.\nPara \\(c_0\\),\n\\[\nc_0=\\frac{\\langle e^x,1\\rangle}{\\langle1,1\\rangle}\n=\\frac{e-e^{-1}}{2}\n=\\sinh(1).\n\\]\nPara \\(c_1\\),\n\\[\nc_1=\\frac{\\langle e^x,x\\rangle}{\\langle x,x\\rangle}.\n\\]\nComo\n\\[\n\\int_{-1}^1xe^x\\,dx=\\frac2e,\n\\]\ny\n\\[\n\\int_{-1}^1x^2\\,dx=\\frac23,\n\\]\nobtenemos\n\\[\n\\boxed{c_1=\\frac3e}.\n\\]\nLa mejor aproximación lineal en norma \\(L^2\\) es\n\\[\n\\boxed{p(x)=\\sinh(1)+\\frac3e x}.\n\\]"
+  },
+  {
+    "objectID": "sesiones/sesion06.html#experimento-julia",
+    "href": "sesiones/sesion06.html#experimento-julia",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "4.7 Experimento Julia",
+    "text": "4.7 Experimento Julia\nusing QuadGK\n\nc0 = sinh(1)\nc1 = 3/exp(1)\n\nf(x) = exp(x)\np(x) = c0 + c1*x\nr(x) = f(x) - p(x)\n\nip_r_1, _ = quadgk(x -&gt; r(x), -1, 1)\nip_r_x, _ = quadgk(x -&gt; r(x)*x, -1, 1)\n\nprintln(\"&lt;r,1&gt; = \", ip_r_1)\nprintln(\"&lt;r,x&gt; = \", ip_r_x)\n\nfor x in [-1.0,-0.5,0.0,0.5,1.0]\n    println(x, \"   \", f(x), \"   \", p(x))\nend\nSi se dispone de Plots:\nusing Plots\n\nxx = range(-1,1,length=300)\nplot(xx,f.(xx),label=\"exp(x)\",lw=2)\nplot!(xx,p.(xx),label=\"proyección lineal\",lw=2)\nLa recta no interpola a \\(e^x\\) en puntos determinados. Es “la mejor” porque\n\\[\np=\\arg\\min_{q\\in\\operatorname{span}\\{1,x\\}}\\|e^x-q\\|_{L^2}.\n\\] La recta no interpola a \\(e^x\\) en puntos determinados. Es “la mejor” porque\n\\[\np=\\arg\\min_{q\\in\\operatorname{span}\\{1,x\\}}\\|e^x-q\\|_{L^2}.\n\\]\nAdemás, el residuo\n\\[\nr=e^x-p\n\\]\nes ortogonal al subespacio generado por \\(1\\) y \\(x\\):\n\\[\n\\boxed{\n\\langle e^x-p,1\\rangle\\approx0,\n\\qquad\n\\langle e^x-p,x\\rangle\\approx0.\n}\n\\]\nEsto es exactamente el análogo funcional de la condición\n\\[\nA^Tr\\approx0\n\\]\nen mínimos cuadrados discretos. En espacios de funciones se convierte en\n\\[\n\\boxed{\\langle r,\\phi_j\\rangle\\approx0}.\n\\]\n\nMisma geometría, distinto escenario. ## Del ajuste de datos al ajuste de funciones\n\n\n4.7.1 Datos discretos\n\\[\n\\min_c\\sum_{i=1}^m\\left[y_i-\\sum_{j=1}^n c_j\\phi_j(t_i)\\right]^2.\n\\]\n\n\n4.7.2 Funciones\n\\[\n\\min_c\\int_a^b\\left[f(t)-\\sum_{j=1}^n c_j\\phi_j(t)\\right]^2dt.\n\\]\nLa suma se convierte en integral. La matriz de diseño se convierte en una matriz de productos internos. La idea geométrica permanece:\n\\[\n\\boxed{\\text{buscar la proyección sobre un subespacio}.}\n\\]"
+  },
+  {
+    "objectID": "sesiones/sesion06.html#del-ajuste-de-datos-al-ajuste-de-funciones",
+    "href": "sesiones/sesion06.html#del-ajuste-de-datos-al-ajuste-de-funciones",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "4.8 Del ajuste de datos al ajuste de funciones",
+    "text": "4.8 Del ajuste de datos al ajuste de funciones\n\n4.8.1 Datos discretos\n\\[\n\\min_c\\sum_{i=1}^m\\left[y_i-\\sum_{j=1}^n c_j\\phi_j(t_i)\\right]^2.\n\\]\n\n\n4.8.2 Funciones\n\\[\n\\min_c\\int_a^b\\left[f(t)-\\sum_{j=1}^n c_j\\phi_j(t)\\right]^2dt.\n\\]\nLa suma se convierte en integral. La matriz de diseño se convierte en una matriz de productos internos. La idea geométrica permanece:\n\\[\n\\boxed{\\text{buscar la proyección sobre un subespacio}.}\n\\]"
+  },
+  {
+    "objectID": "sesiones/sesion06.html#la-puerta-hacia-fourier",
+    "href": "sesiones/sesion06.html#la-puerta-hacia-fourier",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "4.8 La puerta hacia Fourier",
+    "text": "4.8 La puerta hacia Fourier\nSi escogemos\n\\[\n1,\\ \\cos x,\\ \\sin x,\\ \\cos2x,\\ \\sin2x,\\ldots\n\\]\ncomo funciones base, los coeficientes aparecen como proyecciones sobre direcciones ortogonales.\n\nUna serie de Fourier puede leerse como una expansión de una función en direcciones ortogonales."
+  },
+  {
+    "objectID": "sesiones/sesion06.html#un-guiño-más-galerkin-y-edp",
+    "href": "sesiones/sesion06.html#un-guiño-más-galerkin-y-edp",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "4.9 Un guiño más: Galerkin y EDP",
+    "text": "4.9 Un guiño más: Galerkin y EDP\nEn muchos métodos para ecuaciones diferenciales buscamos\n\\[\nu_n=c_1\\phi_1+\\cdots+c_n\\phi_n.\n\\]\nEl residuo de la ecuación no se hace necesariamente cero en todos los puntos. En cambio, se exige que sea ortogonal a un espacio de funciones de prueba.\nÉsa es la filosofía de los métodos de Galerkin y una puerta conceptual hacia elementos finitos.\nNo desarrollaremos todavía la teoría. Basta reconocer la cadena\n\\[\n\\boxed{\n\\text{proyección}\n\\to\n\\text{mínimos cuadrados}\n\\to\n\\text{bases ortogonales}\n\\to\n\\text{aproximación de funciones}\n\\to\n\\text{métodos para EDP}.\n}\n\\]"
+  },
+  {
+    "objectID": "sesiones/sesion06.html#dónde-empieza-el-análisis-funcional",
+    "href": "sesiones/sesion06.html#dónde-empieza-el-análisis-funcional",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "4.10 ¿Dónde empieza el análisis funcional?",
+    "text": "4.10 ¿Dónde empieza el análisis funcional?\nHasta ahora usamos espacios de funciones casi como si fueran \\(\\mathbb R^n\\). Pero aparecen preguntas nuevas:\n\n¿toda sucesión de Cauchy tiene límite dentro del espacio?\n¿qué significa que una base sea completa?\n¿cuándo existe una mejor aproximación?\n¿qué propiedades debe tener el producto interno?\n¿qué ocurre cuando la dimensión es infinita?\n\nEstas preguntas conducen a espacios normados, espacios de Banach y espacios de Hilbert.\nEl objetivo del guiño no es desarrollar la teoría, sino reconocer que la geometría aprendida esta semana no termina en las matrices."
+  },
+  {
+    "objectID": "sesiones/sesion06.html#problema-1-proyección-sobre-una-recta",
+    "href": "sesiones/sesion06.html#problema-1-proyección-sobre-una-recta",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "6.1 Problema 1 — Proyección sobre una recta",
+    "text": "6.1 Problema 1 — Proyección sobre una recta\nSean\n\\[\na=\\begin{bmatrix}2\\\\1\\\\2\\end{bmatrix},\\qquad\nb=\\begin{bmatrix}1\\\\3\\\\0\\end{bmatrix}.\n\\]\n\nCalcule la proyección de \\(b\\) sobre \\(\\operatorname{span}\\{a\\}\\).\nCalcule el error.\nVerifique ortogonalidad.\nConstruya la matriz de proyección.\nVerifique \\(P^2=P\\)."
+  },
+  {
+    "objectID": "sesiones/sesion06.html#problema-2-ecuaciones-normales",
+    "href": "sesiones/sesion06.html#problema-2-ecuaciones-normales",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "6.2 Problema 2 — Ecuaciones normales",
+    "text": "6.2 Problema 2 — Ecuaciones normales\nSea\n\\[\nA=\\begin{bmatrix}\n1&0\\\\\n1&1\\\\\n1&2\\\\\n1&3\n\\end{bmatrix},\\qquad\nb=\\begin{bmatrix}1\\\\2\\\\2\\\\4\\end{bmatrix}.\n\\]\n\nEscriba las ecuaciones normales.\nResuélvalas a mano.\nCalcule \\(p=A\\widehat{x}\\).\nCalcule \\(e=b-p\\).\nVerifique \\(A^Te=0\\)."
+  },
+  {
+    "objectID": "sesiones/sesion06.html#problema-3-regresión-y-data-science",
+    "href": "sesiones/sesion06.html#problema-3-regresión-y-data-science",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "6.3 Problema 3 — Regresión y Data Science",
+    "text": "6.3 Problema 3 — Regresión y Data Science\nUse\nt = [0.,1.,2.,3.,4.,5.,6.]\ny = [1.1,1.8,2.9,4.2,4.8,6.1,6.8]\n\nAjuste una recta.\nAjuste un polinomio cuadrático.\nCompare los residuos.\nExplique qué columnas funcionan como features.\n¿Un residuo menor implica automáticamente un mejor modelo?"
+  },
+  {
+    "objectID": "sesiones/sesion06.html#problema-4-qr-manual",
+    "href": "sesiones/sesion06.html#problema-4-qr-manual",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "6.4 Problema 4 — QR manual",
+    "text": "6.4 Problema 4 — QR manual\nUse el laboratorio\nQR a mano\ny reproduzca la factorización sin llamar a qr(A) hasta el final."
+  },
+  {
+    "objectID": "sesiones/sesion06.html#problema-5-ecuaciones-normales-contra-qr",
+    "href": "sesiones/sesion06.html#problema-5-ecuaciones-normales-contra-qr",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "6.5 Problema 5 — Ecuaciones normales contra QR",
+    "text": "6.5 Problema 5 — Ecuaciones normales contra QR\nConstruya una matriz rectangular mal condicionada y compare\nx1 = (A'*A) \\ (A'*b)\nx2 = A \\ b\nCompare residuo, error respecto a una solución conocida, cond(A) y cond(A'*A)."
+  },
+  {
+    "objectID": "sesiones/sesion06.html#problema-6-proyección-de-una-función",
+    "href": "sesiones/sesion06.html#problema-6-proyección-de-una-función",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "6.6 Problema 6 — Proyección de una función",
+    "text": "6.6 Problema 6 — Proyección de una función\nEn \\([-1,1]\\), aproxime\n\\[\nf(x)=x^3+x^2+1\n\\]\nmediante una función de\n\\[\nV=\\operatorname{span}\\{1,x\\}.\n\\]\nUse\n\\[\n\\langle f,g\\rangle=\\int_{-1}^1 f(x)g(x)\\,dx.\n\\]\n\nCalcule la matriz de Gram.\nCalcule los coeficientes.\nExplique por qué algunos términos de \\(f\\) no influyen en ciertos coeficientes.\nInterprete el resultado como una proyección."
+  },
+  {
+    "objectID": "sesiones/sesion06.html#empecemos-con-un-dibujo",
+    "href": "sesiones/sesion06.html#empecemos-con-un-dibujo",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "2.1 Empecemos con un dibujo",
+    "text": "2.1 Empecemos con un dibujo\nusing LinearAlgebra\nusing Plots\n\na = [1.0, 2.0]\nb = [4.0, 1.0]\n\nxhat = dot(a,b) / dot(a,a)\np = xhat*a\ne = b-p\n\nt = range(-0.5, 2.5, length=100)\n\nplot(t .* a[1], t .* a[2],\n     label=\"span(a)\",\n     xlabel=\"x₁\", ylabel=\"x₂\",\n     aspect_ratio=:equal,\n     xlims=(-0.5,4.5),\n     ylims=(-0.5,5.0))\n\nplot!([0,b[1]], [0,b[2]], marker=:circle, label=\"b\")\nplot!([0,p[1]], [0,p[2]], marker=:circle, label=\"p\")\nplot!([p[1],b[1]], [p[2],b[2]],\n      linestyle=:dash, marker=:circle,\n      label=\"e = b-p\")\nConsideremos los vectores \\[\n\\boxed{\nb=p+e,\n\\qquad\np\\in\\operatorname{span}\\{a\\},\n\\qquad\ne\\perp a\n}\n\\] Consideremos una recta que pasa por el origen, con dirección dada por el vector \\(a\\), y un vector \\(b\\) que no pertenece a esa recta.\nQueremos encontrar el punto de \\(\\operatorname{span}\\{a\\}\\) que esté más cerca de \\(b\\).\nTomemos\n\\[\na=\n\\begin{bmatrix}\n1\\\\\n2\n\\end{bmatrix},\n\\qquad\nb=\n\\begin{bmatrix}\n4\\\\\n1\n\\end{bmatrix}.\n\\]\nQueremos aproximar \\(b\\) mediante un vector que esté sobre la recta\n\\[\nL=\\operatorname{span}\\{a\\}.\n\\]\nTodos los vectores de esta recta tienen la forma\n\\[\np=xa.\n\\]\nLa pregunta es:\n\n¿Qué valor de \\(x\\) hace que \\(xa\\) sea el punto de la recta más cercano a \\(b\\)?\n\nGeométricamente, el punto más cercano se obtiene dejando caer una perpendicular desde \\(b\\) hacia la recta.\nSi definimos el error\n\\[\ne=b-p,\n\\]\nentonces la condición fundamental es\n\\[\ne\\perp a.\n\\]\nPor tanto,\n\\[\na^T(b-xa)=0.\n\\]\nDesarrollando,\n\\[\na^Tb-xa^Ta=0,\n\\]\ny obtenemos\n\\[\n\\boxed{\n\\widehat x=\\frac{a^Tb}{a^Ta}\n}.\n\\]\nPara nuestro ejemplo,\n\\[\na^Tb=6,\n\\qquad\na^Ta=5,\n\\]\nde modo que\n\\[\n\\widehat x=\\frac65.\n\\]\nLa proyección es entonces\n\\[\np=\\widehat xa\n=\n\\frac65\n\\begin{bmatrix}\n1\\\\\n2\n\\end{bmatrix}\n=\n\\begin{bmatrix}\n6/5\\\\\n12/5\n\\end{bmatrix}.\n\\]\nEl error es\n\\[\ne=b-p\n=\n\\begin{bmatrix}\n14/5\\\\\n-7/5\n\\end{bmatrix}.\n\\]\nY efectivamente,\n\\[\na^Te=0.\n\\]\n\nIdea fundamental. El error no desaparece. Se vuelve perpendicular al espacio donde estamos buscando la aproximación."
+  },
+  {
+    "objectID": "sesiones/sesion06.html#la-fórmula-general",
+    "href": "sesiones/sesion06.html#la-fórmula-general",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "2.2 La fórmula general",
+    "text": "2.2 La fórmula general\nSea ahora\n\\[\na\\in\\mathbb R^m,\n\\qquad\nb\\in\\mathbb R^m.\n\\]\nQueremos aproximar \\(b\\) por un vector de\n\\[\n\\operatorname{span}\\{a\\}.\n\\]\nLa misma argumentación conduce a\n\\[\n\\boxed{\n\\widehat x=\\frac{a^Tb}{a^Ta}\n}\n\\]\ny\n\\[\n\\boxed{\np=a\\frac{a^Tb}{a^Ta}.\n}\n\\]\nLa estructura importante es\n\\[\nb=p+e,\n\\]\ndonde\n\\[\np\\in\\operatorname{span}\\{a\\},\n\\qquad\ne\\perp\\operatorname{span}\\{a\\}.\n\\]"
+  },
+  {
+    "objectID": "sesiones/sesion06.html#la-matriz-de-proyección",
+    "href": "sesiones/sesion06.html#la-matriz-de-proyección",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "2.3 La matriz de proyección",
+    "text": "2.3 La matriz de proyección\nPodemos escribir\n\\[\np=Pb,\n\\]\ndonde\n\\[\n\\boxed{\nP=\\frac{aa^T}{a^Ta}.\n}\n\\]\nEsta matriz tiene dos propiedades importantes:\n\\[\nP^T=P\n\\]\ny\n\\[\nP^2=P.\n\\]\nLa segunda propiedad tiene una interpretación muy sencilla:\n\nUna vez que un vector ha sido proyectado sobre el subespacio, proyectarlo nuevamente no cambia nada.\n\n\n2.3.1 Experimento en Julia\nusing LinearAlgebra\n\na = [1.0, 2.0]\nb = [4.0, 1.0]\n\nP = a*a'/(a'*a)\n\np = P*b\ne = b-p\n\nprintln(\"p = \", p)\nprintln(\"e = \", e)\nprintln(\"a'e = \", a'*e)\nprintln(\"||P^2-P|| = \", norm(P*P-P))\nAntes de ejecutar:\n\n¿Qué valor debería tener aproximadamente a'*e?\n¿Por qué no esperamos que e sea cero?\n¿Por qué debería ser pequeño norm(P*P-P)?"
+  },
+  {
+    "objectID": "sesiones/sesion06.html#un-sistema-que-no-tiene-solución-exacta",
+    "href": "sesiones/sesion06.html#un-sistema-que-no-tiene-solución-exacta",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "2.5 Un sistema que no tiene solución exacta",
+    "text": "2.5 Un sistema que no tiene solución exacta\nConsideremos\n\\[\nA=\n\\begin{bmatrix}\n1&0\\\\\n1&1\\\\\n1&2\n\\end{bmatrix},\n\\qquad\nb=\n\\begin{bmatrix}\n1\\\\\n2\\\\\n2\n\\end{bmatrix}.\n\\]\nTenemos tres ecuaciones y solamente dos incógnitas.\nEn general,\n\\[\nAx=b\n\\]\nno tiene solución exacta.\nPero podemos encontrar\n\\[\nA\\widehat x\n\\]\nlo más cercano posible a \\(b\\).\nusing LinearAlgebra\n\nA = [1.0 0.0;\n     1.0 1.0;\n     1.0 2.0]\n\nb = [1.0, 2.0, 2.0]\n\nxhat = (A'*A) \\ (A'*b)\n\np = A*xhat\ne = b-p\n\nprintln(\"xhat = \", xhat)\nprintln(\"p = \", p)\nprintln(\"e = \", e)\nprintln(\"A'e = \", A'*e)\nObserve especialmente\nA'*e\ny explique el resultado."
+  },
+  {
+    "objectID": "sesiones/sesion06.html#para-cerrar",
+    "href": "sesiones/sesion06.html#para-cerrar",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "2.6 Para cerrar",
+    "text": "2.6 Para cerrar\nLa idea de toda la clase puede resumirse en\n\\[\n\\boxed{\n\\text{aproximar}\n\\quad\\Longrightarrow\\quad\n\\text{proyectar}\n\\quad\\Longrightarrow\\quad\n\\text{error perpendicular}.\n}\n\\]\nCuando \\(b\\) no pertenece al espacio de soluciones posibles, no buscamos forzar una solución exacta.\nBuscamos el elemento del subespacio que quede más cerca de \\(b\\).\nLa próxima pregunta será:\n\n¿Qué significa exactamente “más cerca” y cómo aparece aquí el problema de mínimos cuadrados?\n\n\n2.6.1 Preguntas\n\n¿Por qué \\(A^Te\\) debe ser cercano a cero?\n¿Por qué \\(Ax=b\\) no tiene que tener solución?\n¿En qué espacio vive \\(p\\)?\n¿En qué espacio vive \\(e\\)?\n¿Qué dimensión tiene cada uno?"
+  },
+  {
+    "objectID": "sesiones/sesion06.html#cuando-los-datos-no-obedecen-exactamente",
+    "href": "sesiones/sesion06.html#cuando-los-datos-no-obedecen-exactamente",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "3.1 Cuando los datos no obedecen exactamente",
+    "text": "3.1 Cuando los datos no obedecen exactamente\nSupongamos que medimos una cantidad en distintos instantes y obtenemos\n\\[\n(t_1,y_1),\\ldots,(t_m,y_m).\n\\]\nQueremos describir aproximadamente los datos mediante una recta\n\\[\ny=\\beta_0+\\beta_1t.\n\\]\nSi los datos estuvieran exactamente sobre una recta, tendríamos\n\\[\n\\beta_0+\\beta_1t_i=y_i,\n\\qquad i=1,\\ldots,m.\n\\]\nPero con datos reales esto casi nunca ocurre.\nPor tanto, en lugar de escribir\n\\[\nX\\beta=y,\n\\]\nescribimos\n\\[\n\\boxed{X\\beta\\approx y}.\n\\]\nLa pregunta ya no es:\n\n¿Cuál es la solución exacta?\n\nsino:\n\n¿Qué valores de \\(\\beta_0\\) y \\(\\beta_1\\) producen la mejor aproximación a los datos?"
+  },
+  {
+    "objectID": "sesiones/sesion06.html#la-matriz-de-diseño",
+    "href": "sesiones/sesion06.html#la-matriz-de-diseño",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "3.2 La matriz de diseño",
+    "text": "3.2 La matriz de diseño\nPodemos escribir el problema como\n\\[\n\\begin{bmatrix}\n1&t_1\\\\\n1&t_2\\\\\n\\vdots&\\vdots\\\\\n1&t_m\n\\end{bmatrix}\n\\begin{bmatrix}\n\\beta_0\\\\\n\\beta_1\n\\end{bmatrix}\n\\approx\n\\begin{bmatrix}\ny_1\\\\\ny_2\\\\\n\\vdots\\\\\ny_m\n\\end{bmatrix}.\n\\]\nEs decir,\n\\[\nX\\beta\\approx y.\n\\]\nLa matriz\n\\[\nX=\n\\begin{bmatrix}\n1&t_1\\\\\n1&t_2\\\\\n\\vdots&\\vdots\\\\\n1&t_m\n\\end{bmatrix}\n\\]\nse llama matriz de diseño.\nComo normalmente\n\\[\nm&gt;2,\n\\]\ntenemos más ecuaciones que incógnitas.\nEn general,\n\\[\ny\\notin\\operatorname{Col}(X),\n\\]\npor lo que el sistema no tiene solución exacta.\nAquí reaparece la geometría de la clase anterior.\nBuscamos\n\\[\n\\widehat y=X\\widehat\\beta\n\\]\nque sea la proyección de \\(y\\) sobre \\(\\operatorname{Col}(X)\\):\n\\[\n\\boxed{\n\\widehat y=\n\\operatorname{proj}_{\\operatorname{Col}(X)}y.\n}\n\\]"
+  },
+  {
+    "objectID": "sesiones/sesion06.html#mínimos-cuadrados",
+    "href": "sesiones/sesion06.html#mínimos-cuadrados",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "3.3 Mínimos cuadrados",
+    "text": "3.3 Mínimos cuadrados\nDefinimos el residuo\n\\[\nr=y-X\\beta.\n\\]\nQueremos escoger \\(\\beta\\) de manera que el residuo sea tan pequeño como sea posible:\n\\[\n\\boxed{\n\\widehat\\beta\n=\n\\arg\\min_\\beta\n\\|y-X\\beta\\|_2^2.\n}\n\\]\nComo\n\\[\n\\|r\\|_2^2\n=\nr_1^2+\\cdots+r_m^2,\n\\]\nestamos minimizando la suma de los cuadrados de los residuos.\nDe ahí viene el nombre:\n\nmétodo de mínimos cuadrados.\n\nPero geométricamente no ha aparecido ninguna idea nueva.\nLa condición sigue siendo\n\\[\nr\\perp\\operatorname{Col}(X).\n\\]\nPor tanto,\n\\[\n\\boxed{X^Tr=0}.\n\\]\nSustituyendo\n\\[\nr=y-X\\widehat\\beta,\n\\]\nobtenemos\n\\[\nX^T(y-X\\widehat\\beta)=0,\n\\]\nes decir,\n\\[\n\\boxed{\nX^TX\\widehat\\beta=X^Ty.\n}\n\\]\nSon nuevamente las ecuaciones normales."
+  },
+  {
+    "objectID": "sesiones/sesion06.html#primer-ajuste-en-julia",
+    "href": "sesiones/sesion06.html#primer-ajuste-en-julia",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "3.4 Primer ajuste en Julia",
+    "text": "3.4 Primer ajuste en Julia\nConsideremos los datos\nt = [0.0,1.0,2.0,3.0,4.0,5.0]\ny = [1.2,1.9,3.0,3.9,5.1,5.8]\nConstruimos la matriz de diseño:\nX = hcat(ones(length(t)), t)\ny calculamos el ajuste:\nβ = X \\ y\n\nyhat = X*β\nr = y-yhat\n\nprintln(\"β = \", β)\nprintln(\"||r|| = \", norm(r))\nprintln(\"X'r = \", X'*r)\nprintln(\"sum(r) = \", sum(r))\n\n3.4.1 Antes de ejecutar\n\n¿Esperamos que el residuo sea exactamente cero?\n¿Qué debería ocurrir con X'*r?\n¿Qué representan las dos componentes de β?\n¿Qué diferencia existe entre y y yhat?"
+  },
+  {
+    "objectID": "sesiones/sesion06.html#ver-el-ajuste",
+    "href": "sesiones/sesion06.html#ver-el-ajuste",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "3.5 Ver el ajuste",
+    "text": "3.5 Ver el ajuste\nSi usamos Plots:\nusing Plots\n\nscatter(t, y, label=\"datos\", xlabel=\"t\", ylabel=\"y\")\nplot!(t, yhat, label=\"ajuste lineal\", linewidth=2)\nLa recta no tiene que pasar por todos los puntos.\nEso no significa que el ajuste sea incorrecto.\nLa recta se ha escogido para minimizar\n\\[\n\\sum_{i=1}^m\n(y_i-\\widehat y_i)^2.\n\\]\n\nUna regresión no busca pasar por todos los datos. Busca explicar los datos lo mejor posible dentro del modelo elegido."
+  },
+  {
+    "objectID": "sesiones/sesion06.html#dos-miradas-al-mismo-problema",
+    "href": "sesiones/sesion06.html#dos-miradas-al-mismo-problema",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "3.7 Dos miradas al mismo problema",
+    "text": "3.7 Dos miradas al mismo problema\n\n3.7.1 Mirada geométrica: Gilbert Strang\nGilbert Strang — Projection Matrices and Least Squares\nVer video en MIT OpenCourseWare\nMientras lo observa, trate de identificar:\n\n¿Qué vector se está proyectando?\n¿Sobre qué subespacio se proyecta?\n¿Dónde aparece la condición de ortogonalidad?\n¿Por qué surgen las ecuaciones normales?\n\n\n\n3.7.2 Mirada estadística: StatQuest\nStatQuest — Linear Regression, Clearly Explained!!!\nVer video en YouTube\nDurante el video identifique:\n\nlos datos;\nel modelo;\nlas predicciones;\nlos residuos;\nla suma de cuadrados.\n\nDespués traduzca esas ideas al lenguaje de álgebra lineal:\n\\[\n\\text{datos}\n\\longrightarrow\ny,\n\\qquad\n\\text{modelo}\n\\longrightarrow\n\\operatorname{Col}(X),\n\\qquad\n\\text{predicción}\n\\longrightarrow\n\\widehat y,\n\\qquad\n\\text{residuo}\n\\longrightarrow\nr.\n\\]\n\nLas dos miradas describen el mismo fenómeno:\nla regresión lineal es un problema de mínimos cuadrados y, geométricamente, una proyección."
+  },
+  {
+    "objectID": "sesiones/sesion06.html#una-propiedad-curiosa-de-los-residuos",
+    "href": "sesiones/sesion06.html#una-propiedad-curiosa-de-los-residuos",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "3.8 Una propiedad curiosa de los residuos",
+    "text": "3.8 Una propiedad curiosa de los residuos\nLa primera columna de \\(X\\) es\n\\[\n\\mathbf 1=\n\\begin{bmatrix}\n1\\\\\n\\vdots\\\\\n1\n\\end{bmatrix}.\n\\]\nComo\n\\[\nX^Tr=0,\n\\]\nel residuo es ortogonal también a esta columna.\nPor tanto,\n\\[\n\\mathbf1^Tr=0,\n\\]\ny entonces\n\\[\n\\boxed{\n\\sum_{i=1}^m r_i=0.\n}\n\\]\nEs decir, cuando el modelo incluye término independiente, los residuos suman aproximadamente cero.\nUna propiedad estadística aparece directamente de la geometría."
+  },
+  {
+    "objectID": "sesiones/sesion06.html#de-una-recta-a-modelos-más-grandes",
+    "href": "sesiones/sesion06.html#de-una-recta-a-modelos-más-grandes",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "3.9 De una recta a modelos más grandes",
+    "text": "3.9 De una recta a modelos más grandes\nNada nos obliga a utilizar solamente\n\\[\n1,\\qquad t.\n\\]\nPodemos utilizar\n\\[\n1,\\qquad t,\\qquad t^2\n\\]\ny obtener un ajuste cuadrático:\nX2 = hcat(ones(length(t)), t, t.^2)\n\nβ2 = X2 \\ y\nyhat2 = X2*β2\nr2 = y-yhat2\n\nnorm(r2)\n\n3.9.1 Preguntas\n\n¿Es el residuo cuadrático menor que el lineal?\n¿Eso significa automáticamente que el modelo cuadrático es mejor?\n¿Qué riesgo aparece si seguimos agregando columnas?\n¿Qué representan ahora las columnas de X2?\n\nEsta última pregunta abre una puerta importante:\n\nUn modelo más complicado puede ajustar mejor los datos disponibles y, sin embargo, describir peor el fenómeno.\n\nNo desarrollaremos todavía esa idea, pero es uno de los problemas centrales del aprendizaje estadístico."
+  },
+  {
+    "objectID": "sesiones/sesion06.html#interpolación-y-regresión",
+    "href": "sesiones/sesion06.html#interpolación-y-regresión",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "3.10 Interpolación y regresión",
+    "text": "3.10 Interpolación y regresión\nInterpolación y regresión están relacionadas, pero responden a preguntas distintas.\nEn interpolación buscamos típicamente\n\\[\np(t_i)=y_i\n\\]\npara todos los datos.\nEn regresión permitimos\n\\[\np(t_i)\\neq y_i\n\\]\ny buscamos minimizar el error global.\nEn forma esquemática,\n\\[\n\\boxed{\n\\text{interpolación: pasar por los datos}\n}\n\\]\nmientras que\n\\[\n\\boxed{\n\\text{regresión: aproximar los datos}.\n}\n\\]"
+  },
+  {
+    "objectID": "sesiones/sesion06.html#para-pensar-antes-de-la-clase-3",
+    "href": "sesiones/sesion06.html#para-pensar-antes-de-la-clase-3",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "3.12 Para pensar antes de la Clase 3",
+    "text": "3.12 Para pensar antes de la Clase 3\n¿Por qué podría ser mala idea calcular explícitamente\n\\[\nA^TA\n\\]\naunque las ecuaciones normales sean matemáticamente correctas? # Clase 3 — QR: construir buenas coordenadas"
+  },
+  {
+    "objectID": "sesiones/sesion06.html#gram-schmidt-quitar-proyecciones-una-por-una",
+    "href": "sesiones/sesion06.html#gram-schmidt-quitar-proyecciones-una-por-una",
+    "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
+    "section": "3.15 Gram-Schmidt: quitar proyecciones una por una",
+    "text": "3.15 Gram-Schmidt: quitar proyecciones una por una\nAntes de escribir el algoritmo general, hagámoslo con dos vectores.\nSean\n\\[\na_1=\n\\begin{bmatrix}\n1\\\\\n1\\\\\n0\n\\end{bmatrix},\n\\qquad\na_2=\n\\begin{bmatrix}\n1\\\\\n0\\\\\n1\n\\end{bmatrix}.\n\\]\nQueremos construir dos vectores ortonormales que generen el mismo subespacio que \\(a_1\\) y \\(a_2\\).\nEmpezamos normalizando \\(a_1\\):\n\\[\nq_1=\\frac{a_1}{\\|a_1\\|}.\n\\]\nComo\n\\[\n\\|a_1\\|=\\sqrt{2},\n\\]\nobtenemos\n\\[\nq_1=\n\\frac{1}{\\sqrt{2}}\n\\begin{bmatrix}\n1\\\\\n1\\\\\n0\n\\end{bmatrix}.\n\\]\nAhora \\(a_2\\) tiene una componente en la dirección de \\(q_1\\).\nLa proyección de \\(a_2\\) sobre \\(q_1\\) es\n\\[\n(q_1^Ta_2)q_1.\n\\]\nLa eliminamos:\n\\[\nv_2\n=\na_2-(q_1^Ta_2)q_1.\n\\]\nPor construcción,\n\\[\nq_1^Tv_2=0.\n\\]\nFinalmente normalizamos:\n\\[\nq_2=\\frac{v_2}{\\|v_2\\|}.\n\\]\nEntonces\n\\[\nq_1^Tq_2=0,\n\\qquad\n\\|q_1\\|=\\|q_2\\|=1.\n\\]\n\nLa idea de Gram-Schmidt es sencilla:\ntomar cada vector y quitarle las componentes que apuntan en las direcciones que ya construimos.\n\n\n3.15.1 Preguntas antes de seguir\n\n¿Por qué \\(v_2\\) es perpendicular a \\(q_1\\)?\n¿Qué ocurriría si \\(a_2\\) fuera múltiplo de \\(a_1\\)?\n¿Cambia el subespacio generado al reemplazar \\(a_1,a_2\\) por \\(q_1,q_2\\)?\n\n\n\n3.15.2 La construcción general\nSea\n\\[\nA=\n\\begin{bmatrix}\na_1&a_2&\\cdots&a_n\n\\end{bmatrix}.\n\\]\nEmpezamos con\n\\[\nq_1=\\frac{a_1}{\\|a_1\\|}.\n\\]\nPara la segunda columna,\n\\[\nv_2=a_2-(q_1^Ta_2)q_1,\n\\]\ny\n\\[\nq_2=\\frac{v_2}{\\|v_2\\|}.\n\\]\nPara la tercera columna eliminamos las proyecciones sobre las dos direcciones anteriores:\n\\[\nv_3\n=\na_3\n-(q_1^Ta_3)q_1\n-(q_2^Ta_3)q_2,\n\\]\ny después\n\\[\nq_3=\\frac{v_3}{\\|v_3\\|}.\n\\]\nContinuamos de la misma manera.\nEn general,\n\\[\nv_j\n=\na_j\n-\n\\sum_{i=1}^{j-1}\n(q_i^Ta_j)q_i,\n\\]\ny\n\\[\n\\boxed{\nq_j=\\frac{v_j}{\\|v_j\\|}\n}.\n\\]\n\nGram-Schmidt puede verse como una máquina que elimina proyecciones una por una."
   }
 ]

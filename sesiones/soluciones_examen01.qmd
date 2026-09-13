@@ -1,0 +1,454 @@
+---
+title: "Soluciones del Examen 1"
+subtitle: "Sesiones 01–04"
+author: "Francisco Sergio Salem Silva"
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    number-sections: true
+---
+
+# Nota
+
+Este documento contiene soluciones desarrolladas del **Examen 1**.  
+Conviene mantenerlo fuera del menú público del curso mientras el examen esté vigente.
+
+# Problema 1 — Aproximación y error
+
+Se quiere comparar las aproximaciones
+
+$$
+1.732
+\qquad\text{y}\qquad
+\frac{97}{56}
+$$
+
+con el valor exacto
+
+$$
+\sqrt{3}\approx 1.732050807568877.
+$$
+
+Usamos
+
+$$
+E_a=|x-\widetilde x|,
+\qquad
+E_r=\frac{|x-\widetilde x|}{|x|},
+$$
+
+y como medida de cifras significativamente correctas,
+
+$$
+-\log_{10}(E_r).
+$$
+
+Para $1.732$:
+
+$$
+E_a\approx 5.08075689e-05,
+$$
+
+$$
+E_r\approx 2.93337636e-05,
+$$
+
+y
+
+$$
+-\log_{10}(E_r)\approx 4.533.
+$$
+
+Para
+
+$$
+\frac{97}{56}\approx 1.732142857142857,
+$$
+
+obtenemos
+
+$$
+E_a\approx 9.20495740e-05,
+$$
+
+$$
+E_r\approx 5.31448463e-05,
+$$
+
+y
+
+$$
+-\log_{10}(E_r)\approx 4.275.
+$$
+
+Por tanto, entre estas dos aproximaciones,
+
+$$
+\boxed{1.732}
+$$
+
+es ligeramente mejor.
+
+# Problema 2 — Sistema de punto flotante simplificado
+
+Consideremos el sistema binario normalizado de **tres bits significativos**.
+
+Un número de la forma
+
+$$
+1.b_1b_2\times 2^e
+$$
+
+tiene tres bits significativos contando el primer $1$.
+
+## En el intervalo $[1,2)$
+
+Los flotantes son
+
+$$
+1.00_2,\quad
+1.01_2,\quad
+1.10_2,\quad
+1.11_2.
+$$
+
+En decimal:
+
+$$
+\boxed{1,\;1.25,\;1.5,\;1.75}.
+$$
+
+La separación es
+
+$$
+\Delta = 2^{-2}=0.25.
+$$
+
+## En el intervalo $[4,8)$
+
+Aquí el exponente es $e=2$, de modo que
+
+$$
+1.00_2\,2^2,\quad
+1.01_2\,2^2,\quad
+1.10_2\,2^2,\quad
+1.11_2\,2^2.
+$$
+
+En decimal:
+
+$$
+\boxed{4,\;5,\;6,\;7}.
+$$
+
+La separación ahora es
+
+$$
+\Delta=1.
+$$
+
+Por tanto, los dos flotantes vecinos de $5.3$ son
+
+$$
+\boxed{5\quad\text{y}\quad6}.
+$$
+
+Este ejemplo muestra que el espaciamiento entre flotantes aumenta cuando crece la magnitud del número.
+
+# Problema 3 — Número de condición
+
+Para una función escalar diferenciable,
+
+$$
+\kappa_f(x)
+=
+\left|
+\frac{x f'(x)}{f(x)}
+\right|.
+$$
+
+## a) $f(x)=x^5$
+
+Como
+
+$$
+f'(x)=5x^4,
+$$
+
+tenemos
+
+$$
+\kappa_f(x)
+=
+\left|
+\frac{x(5x^4)}{x^5}
+\right|
+=
+\boxed{5},
+$$
+
+para $x\neq0$.
+
+El problema tiene condicionamiento relativo constante.
+
+## b) $f(x)=\ln x$
+
+Como
+
+$$
+f'(x)=\frac1x,
+$$
+
+entonces
+
+$$
+\kappa_f(x)
+=
+\left|
+\frac{x(1/x)}{\ln x}
+\right|
+=
+\boxed{\frac1{|\ln x|}}.
+$$
+
+Cuando $x\to1$,
+
+$$
+\ln x\to0,
+$$
+
+y por tanto
+
+$$
+\kappa_f(x)\to\infty.
+$$
+
+Así, evaluar $\ln x$ cerca de $1$ es un problema relativamente mal condicionado.
+
+## c) $f(x)=x-2$
+
+Tenemos $f'(x)=1$, por lo que
+
+$$
+\boxed{
+\kappa_f(x)
+=
+\left|
+\frac{x}{x-2}
+\right|
+}.
+$$
+
+Cuando $x\to2$, el número de condición crece sin límite.
+
+# Problema 4 — Método de Horner
+
+Sea
+
+$$
+p(x)=3x^4-5x^3+2x^2+4x-6.
+$$
+
+La forma de Horner es
+
+$$
+\boxed{
+p(x)=(((3x-5)x+2)x+4)x-6.
+}
+$$
+
+Para $x=1.7$:
+
+$$
+p(1.7)
+=
+7.0713.
+$$
+
+Por tanto,
+
+$$
+\boxed{p(1.7)\approx 7.0713}.
+$$
+
+La forma de Horner utiliza solamente **cuatro multiplicaciones** para un polinomio de grado cuatro.
+
+Además reduce el número de operaciones intermedias y evita calcular explícitamente
+
+$$
+x^2,\;x^3,\;x^4.
+$$
+
+# Problema 5 — Dos fórmulas matemáticamente equivalentes
+
+Consideremos
+
+$$
+f_1(x)=\sqrt{1+x}-1
+$$
+
+y la expresión racionalizada
+
+$$
+f_2(x)=\frac{x}{\sqrt{1+x}+1}.
+$$
+
+Matemáticamente son equivalentes porque
+
+$$
+\sqrt{1+x}-1
+=
+\frac{(\sqrt{1+x}-1)(\sqrt{1+x}+1)}{\sqrt{1+x}+1}
+=
+\frac{x}{\sqrt{1+x}+1}.
+$$
+
+En aritmética `Float64` se obtienen aproximadamente:
+
+| $x$ | $\sqrt{1+x}-1$ | $x/(\sqrt{1+x}+1)$ |
+|---:|---:|---:|
+| `1e-02` | `4.9875621120889502e-03` | `4.9875621120890265e-03` |
+| `1e-04` | `4.9998750062396624e-05` | `4.9998750062496100e-05` |
+| `1e-08` | `4.9999999696126451e-09` | `4.9999999874999999e-09` |
+| `1e-12` | `5.0004445029117051e-13` | `4.9999999999987498e-13` |
+| `1e-16` | `0.0000000000000000e+00` | `4.9999999999999999e-17` |
+
+
+Para valores moderados de \(x\), ambas expresiones producen resultados muy parecidos.
+
+Sin embargo, cuando \(x\) es muy pequeño,
+
+\[
+\sqrt{1+x}\approx1,
+\]
+
+y en
+
+\[
+\sqrt{1+x}-1
+\]
+
+se restan dos números casi iguales. Aparece **cancelación sustractiva**.
+
+En particular, para
+
+\[
+x=10^{-16},
+\]
+
+la primera expresión puede producir
+
+\[
+0,
+\]
+
+mientras que la forma racionalizada produce aproximadamente
+
+\[
+5\times10^{-17}.
+\]
+
+Por ello, la forma
+
+\[
+\boxed{
+\frac{x}{\sqrt{1+x}+1}
+}
+\]
+
+es numéricamente más estable para \(x\) pequeño.
+
+# Problema 6 — Fórmula cuadrática y estabilidad
+
+Consideremos
+
+\[
+(x-10^7)(x-10^{-7})=0.
+\]
+
+Al expandir,
+
+\[
+x^2-(10^7+10^{-7})x+1=0.
+\]
+
+Las raíces exactas son
+
+\[
+\boxed{
+x_1=10^7,
+\qquad
+x_2=10^{-7}.
+}
+\]
+
+Con la fórmula cuadrática habitual,
+
+\[
+x_{1,2}
+=
+\frac{-b\pm\sqrt{b^2-4ac}}{2a},
+\]
+
+la raíz grande se calcula sin dificultad. En `Float64` se obtiene aproximadamente
+
+
+$$
+x_1\approx 10000000.
+$$
+
+Para la raíz pequeña, la resta
+
+$$
+-b-\sqrt{b^2-4ac}
+$$
+
+involucra dos números casi iguales. Numéricamente puede obtenerse
+
+$$
+x_2\approx 9.9651515483856201e-08,
+$$
+
+en lugar de $10^{-7}$.
+
+La forma estable consiste en calcular primero la raíz grande y usar el producto de las raíces:
+
+$$
+x_1x_2=\frac{c}{a}=1.
+$$
+
+Por tanto,
+
+$$
+x_2=\frac1{x_1},
+$$
+
+y obtenemos
+
+$$
+\boxed{
+x_2\approx 9.9999999999999995e-08
+}.
+$$
+
+Así evitamos la cancelación sustractiva.
+
+# Síntesis
+
+Los seis problemas tienen una misma idea de fondo:
+
+$$
+\boxed{
+\text{una fórmula correcta no garantiza un cálculo numéricamente confiable}
+}
+$$
+
+En particular:
+
+- el error absoluto y relativo permiten comparar aproximaciones;
+- el espaciamiento de los flotantes depende de la magnitud;
+- el número de condición pertenece al **problema**;
+- Horner cambia el algoritmo sin cambiar el polinomio;
+- expresiones algebraicamente equivalentes pueden comportarse de manera muy distinta en punto flotante;
+- una reformulación estable puede recuperar cifras que la fórmula ingenua pierde.

@@ -1,0 +1,19 @@
+---
+title: "Examen 1"
+subtitle: "Sesiones 01–04"
+author: "Francisco Sergio Salem Silva"
+format:
+  html:
+    toc: false
+---
+
+# Primer examen de Análisis Numérico
+
+Este examen comprende los temas desarrollados en las **sesiones 01 a 04**.
+
+<iframe
+  src="examen01.pdf"
+  width="100%"
+  height="1100px"
+  style="border: 1px solid #ddd; border-radius: 4px;">
+</iframe>

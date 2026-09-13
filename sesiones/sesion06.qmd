@@ -1,0 +1,2061 @@
+---
+title: "Sesión 06 — Proyecciones, mínimos cuadrados y QR"
+subtitle: "De la geometría de Strang a Data Science y un guiño al análisis funcional"
+author: "Francisco Sergio Salem Silva "
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    code-fold: false
+---
+
+# Propósito
+
+En la sesión anterior estudiamos sistemas cuadrados,
+
+$$
+Ax=b,
+$$
+
+y vimos que una fórmula matemática y un buen algoritmo numérico no son necesariamente la misma cosa.
+
+Ahora abandonaremos temporalmente el mundo cuadrado. Supongamos que
+
+$$
+A\in\mathbb R^{m\times n},\qquad m>n.
+$$
+
+Tenemos más ecuaciones que incógnitas. En general, $Ax=b$ no tiene solución exacta. La pregunta cambia:
+
+> **Si no podemos resolver exactamente $Ax=b$, ¿cuál es la mejor aproximación posible?**
+
+La respuesta nos llevará por una sola idea geométrica:
+
+$$
+\boxed{
+\text{proyección}
+\longrightarrow
+\text{mínimos cuadrados}
+\longrightarrow
+\text{regresión}
+\longrightarrow
+\text{QR}
+\longrightarrow
+\text{proyección de funciones}.
+}
+$$
+
+Este documento está pensado para **cuatro clases de dos horas**:
+
+1. **Clase 1:** proyecciones y ecuaciones normales.
+2. **Clase 2:** sistemas rectangulares, mínimos cuadrados y Data Science.
+3. **Clase 3:** ortogonalización, QR y solución numérica de mínimos cuadrados.
+4. **Clase 4:** de vectores a funciones: un guiño al análisis funcional.
+
+La pregunta que atravesará las cuatro clases será:
+
+> **¿Qué significa realmente "la mejor aproximación"?**
+
+***
+# Clase 1 — Proyectar es aproximar
+
+##  Empecemos con un dibujo
+```julia
+using LinearAlgebra
+using Plots
+
+a = [1.0, 2.0]
+b = [4.0, 1.0]
+
+xhat = dot(a,b) / dot(a,a)
+p = xhat*a
+e = b-p
+
+t = range(-0.5, 2.5, length=100)
+
+plot(t .* a[1], t .* a[2],
+     label="span(a)",
+     xlabel="x₁", ylabel="x₂",
+     aspect_ratio=:equal,
+     xlims=(-0.5,4.5),
+     ylims=(-0.5,5.0))
+
+plot!([0,b[1]], [0,b[2]], marker=:circle, label="b")
+plot!([0,p[1]], [0,p[2]], marker=:circle, label="p")
+plot!([p[1],b[1]], [p[2],b[2]],
+      linestyle=:dash, marker=:circle,
+      label="e = b-p")
+```
+Consideremos los vectores
+$$
+\boxed{
+b=p+e,
+\qquad
+p\in\operatorname{span}\{a\},
+\qquad
+e\perp a
+}
+$$
+Consideremos una recta que pasa por el origen, con dirección dada por el vector $a$,
+y un vector $b$ que no pertenece a esa recta.
+
+Queremos encontrar el punto de $\operatorname{span}\{a\}$ que esté más cerca de $b$.
+
+Tomemos
+
+$$
+a=
+\begin{bmatrix}
+1\\
+2
+\end{bmatrix},
+\qquad
+b=
+\begin{bmatrix}
+4\\
+1
+\end{bmatrix}.
+$$
+
+Queremos aproximar $b$ mediante un vector que esté sobre la recta
+
+$$
+L=\operatorname{span}\{a\}.
+$$
+
+Todos los vectores de esta recta tienen la forma
+
+$$
+p=xa.
+$$
+
+La pregunta es:
+
+> **¿Qué valor de $x$ hace que $xa$ sea el punto de la recta más cercano a $b$?**
+
+Geométricamente, el punto más cercano se obtiene dejando caer una
+perpendicular desde $b$ hacia la recta.
+
+Si definimos el error
+
+$$
+e=b-p,
+$$
+
+entonces la condición fundamental es
+
+$$
+e\perp a.
+$$
+
+Por tanto,
+
+$$
+a^T(b-xa)=0.
+$$
+
+Desarrollando,
+
+$$
+a^Tb-xa^Ta=0,
+$$
+
+y obtenemos
+
+$$
+\boxed{
+\widehat x=\frac{a^Tb}{a^Ta}
+}.
+$$
+
+Para nuestro ejemplo,
+
+$$
+a^Tb=6,
+\qquad
+a^Ta=5,
+$$
+
+de modo que
+
+$$
+\widehat x=\frac65.
+$$
+
+La proyección es entonces
+
+$$
+p=\widehat xa
+=
+\frac65
+\begin{bmatrix}
+1\\
+2
+\end{bmatrix}
+=
+\begin{bmatrix}
+6/5\\
+12/5
+\end{bmatrix}.
+$$
+
+El error es
+
+$$
+e=b-p
+=
+\begin{bmatrix}
+14/5\\
+-7/5
+\end{bmatrix}.
+$$
+
+Y efectivamente,
+
+$$
+a^Te=0.
+$$
+
+> **Idea fundamental.**
+> El error no desaparece. Se vuelve perpendicular al espacio donde estamos buscando la aproximación.
+
+***
+
+##  La fórmula general
+
+Sea ahora
+
+$$
+a\in\mathbb R^m,
+\qquad
+b\in\mathbb R^m.
+$$
+
+Queremos aproximar $b$ por un vector de
+
+$$
+\operatorname{span}\{a\}.
+$$
+
+La misma argumentación conduce a
+
+$$
+\boxed{
+\widehat x=\frac{a^Tb}{a^Ta}
+}
+$$
+
+y
+
+$$
+\boxed{
+p=a\frac{a^Tb}{a^Ta}.
+}
+$$
+
+La estructura importante es
+
+$$
+b=p+e,
+$$
+
+donde
+
+$$
+p\in\operatorname{span}\{a\},
+\qquad
+e\perp\operatorname{span}\{a\}.
+$$
+
+***
+
+## La matriz de proyección
+
+Podemos escribir
+
+$$
+p=Pb,
+$$
+
+donde
+
+$$
+\boxed{
+P=\frac{aa^T}{a^Ta}.
+}
+$$
+
+Esta matriz tiene dos propiedades importantes:
+
+$$
+P^T=P
+$$
+
+y
+
+$$
+P^2=P.
+$$
+
+La segunda propiedad tiene una interpretación muy sencilla:
+
+> Una vez que un vector ha sido proyectado sobre el subespacio,
+> proyectarlo nuevamente no cambia nada.
+
+### Experimento en Julia
+
+```julia
+using LinearAlgebra
+
+a = [1.0, 2.0]
+b = [4.0, 1.0]
+
+P = a*a'/(a'*a)
+
+p = P*b
+e = b-p
+
+println("p = ", p)
+println("e = ", e)
+println("a'e = ", a'*e)
+println("||P^2-P|| = ", norm(P*P-P))
+```
+
+Antes de ejecutar:
+
+1. ¿Qué valor debería tener aproximadamente `a'*e`?
+2. ¿Por qué no esperamos que `e` sea cero?
+3. ¿Por qué debería ser pequeño `norm(P*P-P)`?
+
+***
+
+## De una recta a un subespacio
+
+Ahora supongamos que tenemos varias direcciones
+
+$$
+a_1,\ldots,a_n\in\mathbb R^m
+$$
+
+y formamos la matriz
+
+$$
+A=
+\begin{bmatrix}
+a_1&a_2&\cdots&a_n
+\end{bmatrix}.
+$$
+
+Queremos encontrar el vector
+
+$$
+p=A\widehat x
+$$
+
+de $\operatorname{Col}(A)$ que esté más cerca de $b$.
+
+Definimos nuevamente el error:
+
+$$
+e=b-A\widehat x.
+$$
+
+La condición geométrica es exactamente la misma:
+
+$$
+e\perp\operatorname{Col}(A).
+$$
+
+Ser perpendicular a todas las columnas de $A$ significa
+
+$$
+A^Te=0.
+$$
+
+Por tanto,
+
+$$
+A^T(b-A\widehat x)=0,
+$$
+
+y obtenemos
+
+$$
+\boxed{
+A^TA\widehat x=A^Tb.
+}
+$$
+
+Estas son las **ecuaciones normales**.
+
+No son una fórmula misteriosa.
+
+Son simplemente la traducción algebraica de
+
+$$
+\boxed{
+b-A\widehat x
+\perp
+\operatorname{Col}(A).
+}
+$$
+
+***
+
+## Un sistema que no tiene solución exacta
+
+Consideremos
+
+$$
+A=
+\begin{bmatrix}
+1&0\\
+1&1\\
+1&2
+\end{bmatrix},
+\qquad
+b=
+\begin{bmatrix}
+1\\
+2\\
+2
+\end{bmatrix}.
+$$
+
+Tenemos tres ecuaciones y solamente dos incógnitas.
+
+En general,
+
+$$
+Ax=b
+$$
+
+no tiene solución exacta.
+
+Pero podemos encontrar
+
+$$
+A\widehat x
+$$
+
+lo más cercano posible a $b$.
+
+```julia
+using LinearAlgebra
+
+A = [1.0 0.0;
+     1.0 1.0;
+     1.0 2.0]
+
+b = [1.0, 2.0, 2.0]
+
+xhat = (A'*A) \ (A'*b)
+
+p = A*xhat
+e = b-p
+
+println("xhat = ", xhat)
+println("p = ", p)
+println("e = ", e)
+println("A'e = ", A'*e)
+```
+
+Observe especialmente
+
+```julia
+A'*e
+```
+
+y explique el resultado.
+
+***
+
+## Para cerrar
+
+La idea de toda la clase puede resumirse en
+
+$$
+\boxed{
+\text{aproximar}
+\quad\Longrightarrow\quad
+\text{proyectar}
+\quad\Longrightarrow\quad
+\text{error perpendicular}.
+}
+$$
+
+Cuando $b$ no pertenece al espacio de soluciones posibles, no buscamos
+forzar una solución exacta.
+
+Buscamos el elemento del subespacio que quede **más cerca** de $b$.
+
+La próxima pregunta será:
+
+> **¿Qué significa exactamente "más cerca" y cómo aparece aquí el problema de mínimos cuadrados?**
+
+### Preguntas
+
+1. ¿Por qué $A^Te$ debe ser cercano a cero?
+2. ¿Por qué $Ax=b$ no tiene que tener solución?
+3. ¿En qué espacio vive $p$?
+4. ¿En qué espacio vive $e$?
+5. ¿Qué dimensión tiene cada uno?
+
+***
+
+# Clase 2 — Sistemas rectangulares, mínimos cuadrados y Data Science
+
+## Cuando los datos no obedecen exactamente
+
+Supongamos que medimos una cantidad en distintos instantes y obtenemos
+
+$$
+(t_1,y_1),\ldots,(t_m,y_m).
+$$
+
+Queremos describir aproximadamente los datos mediante una recta
+
+$$
+y=\beta_0+\beta_1t.
+$$
+
+Si los datos estuvieran exactamente sobre una recta, tendríamos
+
+$$
+\beta_0+\beta_1t_i=y_i,
+\qquad i=1,\ldots,m.
+$$
+
+Pero con datos reales esto casi nunca ocurre.
+
+Por tanto, en lugar de escribir
+
+$$
+X\beta=y,
+$$
+
+escribimos
+
+$$
+\boxed{X\beta\approx y}.
+$$
+
+La pregunta ya no es:
+
+> ¿Cuál es la solución exacta?
+
+sino:
+
+> **¿Qué valores de $\beta_0$ y $\beta_1$ producen la mejor aproximación a los datos?**
+
+***
+
+## La matriz de diseño
+
+Podemos escribir el problema como
+
+$$
+\begin{bmatrix}
+1&t_1\\
+1&t_2\\
+\vdots&\vdots\\
+1&t_m
+\end{bmatrix}
+\begin{bmatrix}
+\beta_0\\
+\beta_1
+\end{bmatrix}
+\approx
+\begin{bmatrix}
+y_1\\
+y_2\\
+\vdots\\
+y_m
+\end{bmatrix}.
+$$
+
+Es decir,
+
+$$
+X\beta\approx y.
+$$
+
+La matriz
+
+$$
+X=
+\begin{bmatrix}
+1&t_1\\
+1&t_2\\
+\vdots&\vdots\\
+1&t_m
+\end{bmatrix}
+$$
+
+se llama **matriz de diseño**.
+
+Como normalmente
+
+$$
+m>2,
+$$
+
+tenemos más ecuaciones que incógnitas.
+
+En general,
+
+$$
+y\notin\operatorname{Col}(X),
+$$
+
+por lo que el sistema no tiene solución exacta.
+
+Aquí reaparece la geometría de la clase anterior.
+
+Buscamos
+
+$$
+\widehat y=X\widehat\beta
+$$
+
+que sea la proyección de $y$ sobre $\operatorname{Col}(X)$:
+
+$$
+\boxed{
+\widehat y=
+\operatorname{proj}_{\operatorname{Col}(X)}y.
+}
+$$
+
+***
+
+## Mínimos cuadrados
+
+Definimos el residuo
+
+$$
+r=y-X\beta.
+$$
+
+Queremos escoger $\beta$ de manera que el residuo sea tan pequeño como sea posible:
+
+$$
+\boxed{
+\widehat\beta
+=
+\arg\min_\beta
+\|y-X\beta\|_2^2.
+}
+$$
+
+Como
+
+$$
+\|r\|_2^2
+=
+r_1^2+\cdots+r_m^2,
+$$
+
+estamos minimizando la **suma de los cuadrados de los residuos**.
+
+De ahí viene el nombre:
+
+> **método de mínimos cuadrados.**
+
+Pero geométricamente no ha aparecido ninguna idea nueva.
+
+La condición sigue siendo
+
+$$
+r\perp\operatorname{Col}(X).
+$$
+
+Por tanto,
+
+$$
+\boxed{X^Tr=0}.
+$$
+
+Sustituyendo
+
+$$
+r=y-X\widehat\beta,
+$$
+
+obtenemos
+
+$$
+X^T(y-X\widehat\beta)=0,
+$$
+
+es decir,
+
+$$
+\boxed{
+X^TX\widehat\beta=X^Ty.
+}
+$$
+
+Son nuevamente las ecuaciones normales.
+
+***
+
+## Primer ajuste en Julia
+
+Consideremos los datos
+
+```julia
+t = [0.0,1.0,2.0,3.0,4.0,5.0]
+y = [1.2,1.9,3.0,3.9,5.1,5.8]
+```
+
+Construimos la matriz de diseño:
+
+```julia
+X = hcat(ones(length(t)), t)
+```
+
+y calculamos el ajuste:
+
+```julia
+β = X \ y
+
+yhat = X*β
+r = y-yhat
+
+println("β = ", β)
+println("||r|| = ", norm(r))
+println("X'r = ", X'*r)
+println("sum(r) = ", sum(r))
+```
+
+### Antes de ejecutar
+
+1. ¿Esperamos que el residuo sea exactamente cero?
+2. ¿Qué debería ocurrir con `X'*r`?
+3. ¿Qué representan las dos componentes de `β`?
+4. ¿Qué diferencia existe entre `y` y `yhat`?
+
+***
+
+## Ver el ajuste
+
+Si usamos `Plots`:
+
+```julia
+using Plots
+
+scatter(t, y, label="datos", xlabel="t", ylabel="y")
+plot!(t, yhat, label="ajuste lineal", linewidth=2)
+```
+
+La recta no tiene que pasar por todos los puntos.
+
+Eso no significa que el ajuste sea incorrecto.
+
+La recta se ha escogido para minimizar
+
+$$
+\sum_{i=1}^m
+(y_i-\widehat y_i)^2.
+$$
+
+> **Una regresión no busca pasar por todos los datos. Busca explicar los datos lo mejor posible dentro del modelo elegido.**
+
+***
+
+## El guiño a Data Science
+
+En el lenguaje habitual de Data Science:
+
+- cada fila de $X$ corresponde a una **observación**;
+- cada columna contiene una variable explicativa o **feature**;
+- $y$ es el **target**;
+- $\beta$ contiene los parámetros del modelo;
+- $\widehat y=X\widehat\beta$ contiene las **predicciones**;
+- $r=y-\widehat y$ contiene los **residuos**.
+
+Así, detrás de una regresión lineal encontramos simplemente
+
+$$
+\boxed{
+\text{proyección sobre el espacio generado por las columnas de }X.
+}
+$$
+
+Data Science aparece aquí con zapatos de Álgebra Lineal.
+
+***
+## Dos miradas al mismo problema
+
+### Mirada geométrica: Gilbert Strang
+
+**Gilbert Strang — Projection Matrices and Least Squares**
+
+[Ver video en MIT OpenCourseWare](https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/resources/lecture-16-projection-matrices-and-least-squares/)
+
+Mientras lo observa, trate de identificar:
+
+1. ¿Qué vector se está proyectando?
+2. ¿Sobre qué subespacio se proyecta?
+3. ¿Dónde aparece la condición de ortogonalidad?
+4. ¿Por qué surgen las ecuaciones normales?
+
+### Mirada estadística: StatQuest
+
+**StatQuest — Linear Regression, Clearly Explained!!!**
+
+[Ver video en YouTube](https://www.youtube.com/watch?v=nk2CQITm_eo)
+
+Durante el video identifique:
+
+- los datos;
+- el modelo;
+- las predicciones;
+- los residuos;
+- la suma de cuadrados.
+
+Después traduzca esas ideas al lenguaje de álgebra lineal:
+
+$$
+\text{datos}
+\longrightarrow
+y,
+\qquad
+\text{modelo}
+\longrightarrow
+\operatorname{Col}(X),
+\qquad
+\text{predicción}
+\longrightarrow
+\widehat y,
+\qquad
+\text{residuo}
+\longrightarrow
+r.
+$$
+
+> **Las dos miradas describen el mismo fenómeno:**  
+> la regresión lineal es un problema de mínimos cuadrados y, geométricamente, una proyección.
+
+
+##  Una propiedad curiosa de los residuos
+
+La primera columna de $X$ es
+
+$$
+\mathbf 1=
+\begin{bmatrix}
+1\\
+\vdots\\
+1
+\end{bmatrix}.
+$$
+
+Como
+
+$$
+X^Tr=0,
+$$
+
+el residuo es ortogonal también a esta columna.
+
+Por tanto,
+
+$$
+\mathbf1^Tr=0,
+$$
+
+y entonces
+
+$$
+\boxed{
+\sum_{i=1}^m r_i=0.
+}
+$$
+
+Es decir, cuando el modelo incluye término independiente, los residuos
+suman aproximadamente cero.
+
+Una propiedad estadística aparece directamente de la geometría.
+
+***
+
+## De una recta a modelos más grandes
+
+Nada nos obliga a utilizar solamente
+
+$$
+1,\qquad t.
+$$
+
+Podemos utilizar
+
+$$
+1,\qquad t,\qquad t^2
+$$
+
+y obtener un ajuste cuadrático:
+
+```julia
+X2 = hcat(ones(length(t)), t, t.^2)
+
+β2 = X2 \ y
+yhat2 = X2*β2
+r2 = y-yhat2
+
+norm(r2)
+```
+
+### Preguntas
+
+1. ¿Es el residuo cuadrático menor que el lineal?
+2. ¿Eso significa automáticamente que el modelo cuadrático es mejor?
+3. ¿Qué riesgo aparece si seguimos agregando columnas?
+4. ¿Qué representan ahora las columnas de `X2`?
+
+Esta última pregunta abre una puerta importante:
+
+> **Un modelo más complicado puede ajustar mejor los datos disponibles y, sin embargo, describir peor el fenómeno.**
+
+No desarrollaremos todavía esa idea, pero es uno de los problemas centrales del aprendizaje estadístico.
+
+***
+
+##  Interpolación y regresión
+
+Interpolación y regresión están relacionadas, pero responden a preguntas distintas.
+
+En interpolación buscamos típicamente
+
+$$
+p(t_i)=y_i
+$$
+
+para todos los datos.
+
+En regresión permitimos
+
+$$
+p(t_i)\neq y_i
+$$
+
+y buscamos minimizar el error global.
+
+En forma esquemática,
+
+$$
+\boxed{
+\text{interpolación: pasar por los datos}
+}
+$$
+
+mientras que
+
+$$
+\boxed{
+\text{regresión: aproximar los datos}.
+}
+$$
+
+***
+
+## . El mismo operador `\`
+
+En Julia escribimos
+
+```julia
+x = A \ b
+```
+
+tanto para matrices cuadradas como para matrices rectangulares.
+
+Por ejemplo:
+
+```julia
+A = randn(8,3)
+b = randn(8)
+
+x = A \ b
+r = b-A*x
+
+println("||r|| = ", norm(r))
+println("||A'r|| = ", norm(A'*r))
+```
+
+Pero hay una pregunta numérica pendiente:
+
+> **¿Cómo calcula Julia esta solución sin formar necesariamente las ecuaciones normales?**
+
+La respuesta será el tema de la próxima clase:
+
+$$
+\boxed{A=QR}.
+$$
+
+## Para pensar antes de la Clase 3
+
+¿Por qué podría ser mala idea calcular explícitamente
+
+$$
+A^TA
+$$
+
+aunque las ecuaciones normales sean matemáticamente correctas?
+# Clase 3 — QR: construir buenas coordenadas
+
+##  El problema numérico de las ecuaciones normales
+
+Las ecuaciones normales son
+
+$$
+A^TAx=A^Tb.
+$$
+
+Pero, para una matriz de rango columna completo,
+
+$$
+\boxed{\kappa_2(A^TA)=\kappa_2(A)^2}.
+$$
+
+Si
+
+$$
+\kappa_2(A)=10^6,
+$$
+
+entonces
+
+$$
+\kappa_2(A^TA)=10^{12}.
+$$
+
+> Formar $A^TA$ puede empeorar drásticamente el condicionamiento.
+
+Necesitamos conservar la geometría sin pagar ese precio.
+
+##  Columnas ortonormales
+
+Una colección $q_1,\ldots,q_n$ es ortonormal si
+
+$$
+q_i^Tq_j=\delta_{ij}.
+$$
+
+Si
+
+$$
+Q=\begin{bmatrix}q_1&\cdots&q_n\end{bmatrix},
+$$
+
+entonces
+
+$$
+\boxed{Q^TQ=I}.
+$$
+
+Además,
+
+$$
+\|Qx\|_2=\|x\|_2.
+$$
+
+## Gram-Schmidt: quitar proyecciones una por una
+
+Antes de escribir el algoritmo general, hagámoslo con dos vectores.
+
+Sean
+
+$$
+a_1=
+\begin{bmatrix}
+1\\
+1\\
+0
+\end{bmatrix},
+\qquad
+a_2=
+\begin{bmatrix}
+1\\
+0\\
+1
+\end{bmatrix}.
+$$
+
+Queremos construir dos vectores ortonormales que generen el mismo
+subespacio que $a_1$ y $a_2$.
+
+Empezamos normalizando $a_1$:
+
+$$
+q_1=\frac{a_1}{\|a_1\|}.
+$$
+
+Como
+
+$$
+\|a_1\|=\sqrt{2},
+$$
+
+obtenemos
+
+$$
+q_1=
+\frac{1}{\sqrt{2}}
+\begin{bmatrix}
+1\\
+1\\
+0
+\end{bmatrix}.
+$$
+
+Ahora $a_2$ tiene una componente en la dirección de $q_1$.
+
+La proyección de $a_2$ sobre $q_1$ es
+
+$$
+(q_1^Ta_2)q_1.
+$$
+
+La eliminamos:
+
+$$
+v_2
+=
+a_2-(q_1^Ta_2)q_1.
+$$
+
+Por construcción,
+
+$$
+q_1^Tv_2=0.
+$$
+
+Finalmente normalizamos:
+
+$$
+q_2=\frac{v_2}{\|v_2\|}.
+$$
+
+Entonces
+
+$$
+q_1^Tq_2=0,
+\qquad
+\|q_1\|=\|q_2\|=1.
+$$
+
+> **La idea de Gram-Schmidt es sencilla:**  
+> tomar cada vector y quitarle las componentes que apuntan en las
+> direcciones que ya construimos.
+
+### Preguntas antes de seguir
+
+1. ¿Por qué $v_2$ es perpendicular a $q_1$?
+2. ¿Qué ocurriría si $a_2$ fuera múltiplo de $a_1$?
+3. ¿Cambia el subespacio generado al reemplazar $a_1,a_2$ por $q_1,q_2$?
+
+### La construcción general
+
+Sea
+
+$$
+A=
+\begin{bmatrix}
+a_1&a_2&\cdots&a_n
+\end{bmatrix}.
+$$
+
+Empezamos con
+
+$$
+q_1=\frac{a_1}{\|a_1\|}.
+$$
+
+Para la segunda columna,
+
+$$
+v_2=a_2-(q_1^Ta_2)q_1,
+$$
+
+y
+
+$$
+q_2=\frac{v_2}{\|v_2\|}.
+$$
+
+Para la tercera columna eliminamos las proyecciones sobre las dos
+direcciones anteriores:
+
+$$
+v_3
+=
+a_3
+-(q_1^Ta_3)q_1
+-(q_2^Ta_3)q_2,
+$$
+
+y después
+
+$$
+q_3=\frac{v_3}{\|v_3\|}.
+$$
+
+Continuamos de la misma manera.
+
+En general,
+
+$$
+v_j
+=
+a_j
+-
+\sum_{i=1}^{j-1}
+(q_i^Ta_j)q_i,
+$$
+
+y
+
+$$
+\boxed{
+q_j=\frac{v_j}{\|v_j\|}
+}.
+$$
+
+> Gram-Schmidt puede verse como una máquina que elimina proyecciones
+> una por una.
+
+## De Gram-Schmidt a $A=QR$
+
+Gram-Schmidt no sólo construye los vectores ortonormales
+
+$$
+q_1,\ldots,q_n.
+$$
+
+También nos dice cómo escribir cada columna original de $A$ en términos
+de esas nuevas direcciones.
+
+Por ejemplo,
+
+$$
+a_1=r_{11}q_1,
+$$
+
+mientras que
+
+$$
+a_2=r_{12}q_1+r_{22}q_2.
+$$
+
+Para la tercera columna,
+
+$$
+a_3=r_{13}q_1+r_{23}q_2+r_{33}q_3.
+$$
+
+En general,
+
+$$
+a_j=\sum_{i=1}^{j}r_{ij}q_i.
+$$
+
+Los coeficientes son precisamente las proyecciones que aparecieron en
+Gram-Schmidt:
+
+$$
+r_{ij}=q_i^Ta_j,
+\qquad i<j,
+$$
+
+y
+
+$$
+r_{jj}=\|v_j\|.
+$$
+
+Si agrupamos todas las columnas obtenemos
+
+$$
+\boxed{A=QR},
+$$
+
+donde
+
+$$
+Q=
+\begin{bmatrix}
+q_1&q_2&\cdots&q_n
+\end{bmatrix}
+$$
+
+tiene columnas ortonormales y
+
+$$
+R=
+\begin{bmatrix}
+r_{11}&r_{12}&r_{13}&\cdots\\
+0&r_{22}&r_{23}&\cdots\\
+0&0&r_{33}&\cdots\\
+\vdots&\vdots&\vdots&\ddots
+\end{bmatrix}
+$$
+
+es triangular superior.
+
+> **Pregunta:** ¿por qué aparecen ceros debajo de la diagonal?
+
+Para una matriz alta
+
+$$
+A\in\mathbb R^{m\times n},
+\qquad m>n,
+$$
+
+usaremos la **QR delgada**:
+
+$$
+Q\in\mathbb R^{m\times n},
+\qquad
+R\in\mathbb R^{n\times n},
+$$
+
+con
+
+$$
+\boxed{Q^TQ=I}.
+$$
+
+***
+
+## Mínimos cuadrados mediante QR
+
+Queremos resolver
+
+$$
+\min_x\|b-Ax\|_2.
+$$
+
+Si
+
+$$
+A=QR,
+$$
+
+entonces
+
+$$
+b-Ax=b-QRx.
+$$
+
+En la solución de mínimos cuadrados, el residuo debe ser perpendicular a
+
+$$
+\operatorname{Col}(A).
+$$
+
+Pero
+
+$$
+\operatorname{Col}(A)=\operatorname{Col}(Q).
+$$
+
+Por tanto,
+
+$$
+Q^T(b-QRx)=0.
+$$
+
+Usando
+
+$$
+Q^TQ=I,
+$$
+
+obtenemos
+
+$$
+Q^Tb-Rx=0,
+$$
+
+y finalmente
+
+$$
+\boxed{Rx=Q^Tb}.
+$$
+
+Ahora el problema rectangular se ha convertido en un sistema cuadrado
+triangular.
+
+La estrategia es:
+
+1. construir la factorización $A=QR$;
+2. calcular
+
+   $$
+   z=Q^Tb;
+   $$
+
+3. resolver
+
+   $$
+   Rx=z
+   $$
+
+   mediante sustitución hacia atrás.
+
+> **Idea importante.**
+> No formamos $A^TA$.
+> Conservamos la geometría de la proyección utilizando una base
+> ortonormal.
+
+### Para pensar
+
+1. ¿Por qué $\operatorname{Col}(Q)=\operatorname{Col}(A)$?
+2. ¿Qué ventaja tiene resolver un sistema triangular?
+3. ¿Dónde quedó escondida la proyección de $b$ sobre
+   $\operatorname{Col}(A)$?
+   
+##  Laboratorio Pluto: QR a mano
+
+Aquí sí cargaremos las piedras antes de usar la grúa.
+
+[Abrir laboratorio: QR a mano](qr_a_mano_pluto.jl)
+
+El laboratorio construye $Q$ y $R$ paso a paso, verifica
+
+$$
+Q^TQ\approx I,
+$$
+
+$$
+QR\approx A,
+$$
+
+y termina resolviendo un problema de mínimos cuadrados mediante
+
+$$
+Rx=Q^Tb.
+$$
+
+##  Ahora sí: Julia
+
+```julia
+using LinearAlgebra
+
+A = randn(6,3)
+
+F = qr(A)
+
+Qfull = Matrix(F.Q)
+Q = Qfull[:,1:size(A,2)]
+R = Matrix(F.R)
+
+println("size(A) = ", size(A))
+println("size(Q) = ", size(Q))
+println("size(R) = ", size(R))
+
+println("||A-QR|| = ", norm(A-Q*R))
+println("||Q'Q-I|| = ", norm(Q'*Q-I))
+
+```
+
+Para mínimos cuadrados:
+
+```julia
+b = randn(6)
+
+z = Q'*b
+x = R \ z
+
+r = b - A*x
+
+println("residuo QR = ", norm(r))
+println("||A'r|| = ", norm(A'*r))
+println("diferencia con A\\b = ", norm(x-(A\b)))
+
+```
+
+##  Gram-Schmidt para entender, Householder para calcular
+
+Gram-Schmidt clásico es excelente para comprender la idea de QR. Sin embargo, no es la implementación preferida para problemas numéricamente difíciles.
+
+Las bibliotecas modernas suelen construir QR mediante transformaciones ortogonales más estables, especialmente reflexiones de Householder.
+
+La historia será:
+
+$$
+\text{Gram-Schmidt para entender}
+$$
+
+pero
+
+$$
+\text{Householder para calcular con robustez}.
+$$
+
+##  Experimento: ecuaciones normales contra QR
+
+```julia
+using LinearAlgebra
+
+t = range(0,1,length=100)
+
+A = hcat(
+    ones(length(t)),
+    t,
+    t .+ 1e-6*t.^2
+)
+
+xtrue = [1.0,2.0,-1.0]
+b = A*xtrue
+
+x_normal = (A'*A) \ (A'*b)
+x_qr = A \ b
+
+println("cond(A) = ",cond(A))
+println("cond(A'A) = ",cond(A'*A))
+println("error normal = ",norm(x_normal-xtrue))
+println("error QR/backslash = ",norm(x_qr-xtrue))
+```
+
+Preguntas:
+
+1. ¿Cuál matriz está peor condicionada?
+2. ¿Por cuánto aproximadamente?
+3. ¿Qué solución es más confiable?
+4. ¿Por qué un residuo pequeño no cuenta toda la historia?
+
+***
+
+# Clase 4 — De vectores a funciones: un guiño al análisis funcional
+
+## ¿Quién dijo que un vector tiene que ser una lista?
+
+Hasta ahora trabajamos con
+
+$$
+x=(x_1,\ldots,x_n).
+$$
+
+Pero podemos considerar **funciones como vectores**. Para funciones en $[a,b]$ definimos
+
+$$
+\boxed{\langle f,g\rangle=\int_a^b f(t)g(t)\,dt}.
+$$
+
+Este producto interno induce la norma
+
+$$
+\boxed{\|f\|_2=\left(\int_a^b|f(t)|^2\,dt\right)^{1/2}}.
+$$
+
+Ahora podemos volver a hablar de longitud, distancia, ortogonalidad y proyección.
+
+La geometría de $\mathbb R^n$ comienza a sobrevivir en espacios de funciones.
+
+## Ortogonalidad de funciones
+
+Decimos que $f$ y $g$ son ortogonales si
+
+$$
+\langle f,g\rangle=0.
+$$
+
+Por ejemplo, en $[-\pi,\pi]$,
+
+$$
+\int_{-\pi}^{\pi}\sin(x)\cos(x)\,dx=0.
+$$
+
+También,
+
+$$
+\int_{-\pi}^{\pi}\sin(nx)\sin(mx)\,dx=0
+$$
+
+si $n\neq m$.
+
+Aquí empieza a asomarse Fourier.
+
+## Proyección sobre una función
+
+Sea $\phi\neq0$. Queremos aproximar $f$ mediante
+
+$$
+p=c\phi.
+$$
+
+La condición es
+
+$$
+f-p\perp\phi.
+$$
+
+Por tanto,
+
+$$
+\langle f-c\phi,\phi\rangle=0,
+$$
+
+y obtenemos
+
+$$
+\boxed{c=\frac{\langle f,\phi\rangle}{\langle\phi,\phi\rangle}}.
+$$
+
+Compare con la fórmula en $\mathbb R^n$:
+
+$$
+\frac{a^Tb}{a^Ta}.
+$$
+
+Es la misma geometría.
+
+## Proyección sobre un subespacio de funciones
+
+Sea
+
+$$
+V=\operatorname{span}\{\phi_1,\ldots,\phi_n\}.
+$$
+
+Buscamos
+
+$$
+p(t)=c_1\phi_1(t)+\cdots+c_n\phi_n(t)
+$$
+
+que aproxime a $f$.
+
+La condición
+
+$$
+f-p\perp V
+$$
+
+produce
+
+$$
+\langle f-p,\phi_j\rangle=0,
+\qquad j=1,\ldots,n.
+$$
+
+Sustituyendo,
+
+$$
+\sum_{k=1}^n c_k\langle\phi_k,\phi_j\rangle
+=
+\langle f,\phi_j\rangle.
+$$
+
+Aparece el sistema
+
+$$
+Gc=d,
+$$
+
+donde
+
+$$
+\boxed{G_{jk}=\langle\phi_k,\phi_j\rangle}.
+$$
+
+$G$ es la **matriz de Gram**.
+
+## Si la base es ortonormal
+
+Si
+
+$$
+\langle\phi_i,\phi_j\rangle=\delta_{ij},
+$$
+
+entonces
+
+$$
+G=I,
+$$
+
+y los coeficientes quedan simplemente
+
+$$
+\boxed{c_j=\langle f,\phi_j\rangle}.
+$$
+
+En dimensión finita buscamos $A=QR$. En espacios de funciones buscamos familias ortogonales.
+
+## Ejemplo: aproximar $e^x$ por una recta en $[-1,1]$
+
+Buscamos
+
+$$
+p(x)=c_0+c_1x
+$$
+
+que minimice
+
+$$
+\int_{-1}^1\left(e^x-c_0-c_1x\right)^2dx.
+$$
+
+Tomamos
+
+$$
+\phi_0(x)=1,\qquad\phi_1(x)=x.
+$$
+
+En $[-1,1]$,
+
+$$
+\langle1,x\rangle=0,
+$$
+
+así que ya son ortogonales.
+
+Para $c_0$,
+
+$$
+c_0=\frac{\langle e^x,1\rangle}{\langle1,1\rangle}
+=\frac{e-e^{-1}}{2}
+=\sinh(1).
+$$
+
+Para $c_1$,
+
+$$
+c_1=\frac{\langle e^x,x\rangle}{\langle x,x\rangle}.
+$$
+
+Como
+
+$$
+\int_{-1}^1xe^x\,dx=\frac2e,
+$$
+
+y
+
+$$
+\int_{-1}^1x^2\,dx=\frac23,
+$$
+
+obtenemos
+
+$$
+\boxed{c_1=\frac3e}.
+$$
+
+La mejor aproximación lineal en norma $L^2$ es
+
+$$
+\boxed{p(x)=\sinh(1)+\frac3e x}.
+$$
+
+## Experimento Julia
+
+```julia
+using QuadGK
+
+c0 = sinh(1)
+c1 = 3/exp(1)
+
+f(x) = exp(x)
+p(x) = c0 + c1*x
+r(x) = f(x) - p(x)
+
+ip_r_1, _ = quadgk(x -> r(x), -1, 1)
+ip_r_x, _ = quadgk(x -> r(x)*x, -1, 1)
+
+println("<r,1> = ", ip_r_1)
+println("<r,x> = ", ip_r_x)
+
+for x in [-1.0,-0.5,0.0,0.5,1.0]
+    println(x, "   ", f(x), "   ", p(x))
+end
+```
+
+Si se dispone de `Plots`:
+
+```julia
+using Plots
+
+xx = range(-1,1,length=300)
+plot(xx,f.(xx),label="exp(x)",lw=2)
+plot!(xx,p.(xx),label="proyección lineal",lw=2)
+```
+
+La recta no interpola a $e^x$ en puntos determinados. Es "la mejor" porque
+
+$$
+p=\arg\min_{q\in\operatorname{span}\{1,x\}}\|e^x-q\|_{L^2}.
+$$
+La recta no interpola a $e^x$ en puntos determinados. Es "la mejor" porque
+
+$$
+p=\arg\min_{q\in\operatorname{span}\{1,x\}}\|e^x-q\|_{L^2}.
+$$
+
+Además, el residuo
+
+$$
+r=e^x-p
+$$
+
+es ortogonal al subespacio generado por $1$ y $x$:
+
+$$
+\boxed{
+\langle e^x-p,1\rangle\approx0,
+\qquad
+\langle e^x-p,x\rangle\approx0.
+}
+$$
+
+Esto es exactamente el análogo funcional de la condición
+
+$$
+A^Tr\approx0
+$$
+
+en mínimos cuadrados discretos. En espacios de funciones se convierte en
+
+$$
+\boxed{\langle r,\phi_j\rangle\approx0}.
+$$
+
+> **Misma geometría, distinto escenario.**
+## Del ajuste de datos al ajuste de funciones
+
+### Datos discretos
+
+$$
+\min_c\sum_{i=1}^m\left[y_i-\sum_{j=1}^n c_j\phi_j(t_i)\right]^2.
+$$
+
+### Funciones
+
+$$
+\min_c\int_a^b\left[f(t)-\sum_{j=1}^n c_j\phi_j(t)\right]^2dt.
+$$
+
+La suma se convierte en integral. La matriz de diseño se convierte en una matriz de productos internos. La idea geométrica permanece:
+
+$$
+\boxed{\text{buscar la proyección sobre un subespacio}.}
+$$
+
+## La puerta hacia Fourier
+
+Si escogemos
+
+$$
+1,\ \cos x,\ \sin x,\ \cos2x,\ \sin2x,\ldots
+$$
+
+como funciones base, los coeficientes aparecen como proyecciones sobre direcciones ortogonales.
+
+> Una serie de Fourier puede leerse como una expansión de una función en direcciones ortogonales.
+
+## Un guiño más: Galerkin y EDP
+
+En muchos métodos para ecuaciones diferenciales buscamos
+
+$$
+u_n=c_1\phi_1+\cdots+c_n\phi_n.
+$$
+
+El residuo de la ecuación no se hace necesariamente cero en todos los puntos. En cambio, se exige que sea ortogonal a un espacio de funciones de prueba.
+
+Ésa es la filosofía de los métodos de Galerkin y una puerta conceptual hacia elementos finitos.
+
+No desarrollaremos todavía la teoría. Basta reconocer la cadena
+
+$$
+\boxed{
+\text{proyección}
+\to
+\text{mínimos cuadrados}
+\to
+\text{bases ortogonales}
+\to
+\text{aproximación de funciones}
+\to
+\text{métodos para EDP}.
+}
+$$
+
+## ¿Dónde empieza el análisis funcional?
+
+Hasta ahora usamos espacios de funciones casi como si fueran $\mathbb R^n$. Pero aparecen preguntas nuevas:
+
+- ¿toda sucesión  de Cauchy  tiene límite dentro del espacio?
+- ¿qué significa que una base sea completa?
+- ¿cuándo existe una mejor aproximación?
+- ¿qué propiedades debe tener el producto interno?
+- ¿qué ocurre cuando la dimensión es infinita?
+
+Estas preguntas conducen a espacios normados, espacios de Banach y espacios de Hilbert.
+
+El objetivo del guiño no es desarrollar la teoría, sino reconocer que la geometría aprendida esta semana **no termina en las matrices**.
+
+***
+
+# Síntesis de las cuatro clases
+
+$$
+\boxed{
+\begin{array}{c}
+\text{proyección sobre una recta}\\
+\downarrow\\
+\text{proyección sobre }\operatorname{Col}(A)\\
+\downarrow\\
+A^TAx=A^Tb\\
+\downarrow\\
+\text{mínimos cuadrados}\\
+\downarrow\\
+\text{regresión y Data Science}\\
+\downarrow\\
+A=QR\\
+\downarrow\\
+Rx=Q^Tb\\
+\downarrow\\
+\text{proyección de funciones}\\
+\downarrow\\
+\text{Fourier, Hilbert, Galerkin}
+\end{array}
+}
+$$
+
+La idea que permanece es:
+
+> **Aproximar significa proyectar sobre el conjunto de respuestas que estamos dispuestos a aceptar.**
+
+***
+
+# Problemas para trabajar
+
+## Problema 1 — Proyección sobre una recta
+
+Sean
+
+$$
+a=\begin{bmatrix}2\\1\\2\end{bmatrix},\qquad
+b=\begin{bmatrix}1\\3\\0\end{bmatrix}.
+$$
+
+1. Calcule la proyección de $b$ sobre $\operatorname{span}\{a\}$.
+2. Calcule el error.
+3. Verifique ortogonalidad.
+4. Construya la matriz de proyección.
+5. Verifique $P^2=P$.
+
+## Problema 2 — Ecuaciones normales
+
+Sea
+
+$$
+A=\begin{bmatrix}
+1&0\\
+1&1\\
+1&2\\
+1&3
+\end{bmatrix},\qquad
+b=\begin{bmatrix}1\\2\\2\\4\end{bmatrix}.
+$$
+
+1. Escriba las ecuaciones normales.
+2. Resuélvalas a mano.
+3. Calcule $p=A\widehat{x}$.
+4. Calcule $e=b-p$.
+5. Verifique $A^Te=0$.
+
+## Problema 3 — Regresión y Data Science
+
+Use
+
+```julia
+t = [0.,1.,2.,3.,4.,5.,6.]
+y = [1.1,1.8,2.9,4.2,4.8,6.1,6.8]
+```
+
+1. Ajuste una recta.
+2. Ajuste un polinomio cuadrático.
+3. Compare los residuos.
+4. Explique qué columnas funcionan como features.
+5. ¿Un residuo menor implica automáticamente un mejor modelo?
+
+## Problema 4 — QR manual
+
+Use el laboratorio
+
+[QR a mano](qr_a_mano_pluto.jl)
+
+y reproduzca la factorización sin llamar a `qr(A)` hasta el final.
+
+## Problema 5 — Ecuaciones normales contra QR
+
+Construya una matriz rectangular mal condicionada y compare
+
+```julia
+x1 = (A'*A) \ (A'*b)
+x2 = A \ b
+```
+
+Compare residuo, error respecto a una solución conocida, `cond(A)` y `cond(A'*A)`.
+
+## Problema 6 — Proyección de una función
+
+En $[-1,1]$, aproxime
+
+$$
+f(x)=x^3+x^2+1
+$$
+
+mediante una función de
+
+$$
+V=\operatorname{span}\{1,x\}.
+$$
+
+Use
+
+$$
+\langle f,g\rangle=\int_{-1}^1 f(x)g(x)\,dx.
+$$
+
+1. Calcule la matriz de Gram.
+2. Calcule los coeficientes.
+3. Explique por qué algunos términos de $f$ no influyen en ciertos coeficientes.
+4. Interprete el resultado como una proyección.
+
+***
+
+# Lecturas y recursos
+
+- Driscoll y Braun, *Fundamentals of Numerical Computation*: mínimos cuadrados, factorización QR y construcción numérica de QR.
+- Gilbert Strang, *Introduction to Linear Algebra*: proyecciones, espacio columna, mínimos cuadrados y ortogonalización.
+- MIT OpenCourseWare, Lecture 16: *Projection Matrices and Least Squares*.
+- StatQuest: *Linear Regression, Clearly Explained!!!*
+- Para el salto posterior: proyecciones en espacios de funciones, bases ortogonales, Fourier y espacios de Hilbert.
+- Peter R. Turner, *Guide to Numerical Analysis* / *Guide to Scientific Computing*: aproximación de funciones, convergencia y el paso conceptual hacia espacios de funciones.
+
+# Para recordar
+
+$$
+\boxed{\text{No podemos resolver exactamente}\ \Longrightarrow\ \text{proyectamos}.}
+$$
+
+$$
+\boxed{\text{Proyectar}\ \Longrightarrow\ \text{error ortogonal}.}
+$$
+
+$$
+\boxed{\text{Columnas ortonormales}\ \Longrightarrow\ \text{cálculos más limpios y estables}.}
+$$
+
+Y finalmente:
+
+$$
+\boxed{\text{la geometría de mínimos cuadrados no termina en }\mathbb R^n.}
+$$
