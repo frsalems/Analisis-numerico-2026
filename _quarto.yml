@@ -4,10 +4,10 @@ project:
   render:
     - index.qmd
     - sesiones/*.qmd
-  
 
 website:
   title: "Análisis Numérico"
+
   navbar:
     left:
       - href: index.qmd
@@ -20,8 +20,14 @@ website:
         text: Sesión 3
       - href: sesiones/sesion04.qmd
         text: Sesión 4
+      - href: sesiones/examen01.qmd
+        text: Examen 1
+      - href: sesiones/soluciones_examen01.qmd
+        text: Soluciones
       - href: sesiones/sesion05.qmd
         text: Sesión 5
+      - href: sesiones/sesion06.qmd
+        text: Sesión 6
 
   sidebar:
     style: "docked"
@@ -34,6 +40,10 @@ website:
           - sesiones/sesion02.qmd
           - sesiones/sesion03.qmd
           - sesiones/sesion04.qmd
+          - sesiones/examen01.qmd
+          - sesiones/soluciones_examen01.qmd
+          - sesiones/sesion05.qmd
+          - sesiones/sesion06.qmd
 
 format:
   html:
