@@ -1517,5 +1517,222 @@
       "Sesiones",
       "Sesión 06 — Proyecciones, mínimos cuadrados y QR"
     ]
+  },
+  {
+    "objectID": "sesiones/seiones07.html",
+    "href": "sesiones/seiones07.html",
+    "title": "Sesión 07 — Métodos iterativos para sistemas lineales",
+    "section": "",
+    "text": "1 Prueba\n\nusing LinearAlgebra\nA = [4.0 -1.0; -1.0 4.0]\neigvals(A)\n\n2-element Vector{Float64}:\n 3.0\n 5.0"
+  },
+  {
+    "objectID": "sesiones/sesion07.html",
+    "href": "sesiones/sesion07.html",
+    "title": "Sesión 07 — Métodos iterativos para sistemas lineales",
+    "section": "",
+    "text": "Al final de esta sesión queremos entender por qué, para ciertos sistemas lineales grandes y dispersos, puede ser más conveniente iterar que aplicar directamente eliminación de Gauss.\nLa ruta será\n\\[\n\\boxed{\n\\text{problema físico}\n\\longrightarrow\n\\text{matriz dispersa}\n\\longrightarrow\n\\text{Jacobi}\n\\longrightarrow\n\\text{Gauss--Seidel}\n\\longrightarrow\n\\text{SOR}\n}\n\\]\ny todo lo implementaremos en Julia."
+  },
+  {
+    "objectID": "sesiones/sesion07.html#qué-tiene-que-ver-esto-con-sistemas-lineales",
+    "href": "sesiones/sesion07.html#qué-tiene-que-ver-esto-con-sistemas-lineales",
+    "title": "Sesión 07 — Métodos iterativos para sistemas lineales",
+    "section": "4.1 ¿Qué tiene que ver esto con sistemas lineales?",
+    "text": "4.1 ¿Qué tiene que ver esto con sistemas lineales?\nSi numeramos los nodos interiores, las ecuaciones de diferencias finitas producen un sistema\n\\[\nAT=b.\n\\]\nPara una malla de \\(3\\times 3\\) nodos interiores obtenemos nueve incógnitas. Cada ecuación sólo conecta un nodo con sus vecinos, por lo que la matriz contiene muchos ceros.\nÉsta es la primera idea importante:\n\\[\n\\boxed{\\text{la matriz es dispersa y tiene estructura}}\n\\]\nCuando la malla crece, también crece el número de incógnitas, pero cada fila sigue teniendo muy pocos elementos distintos de cero."
+  },
+  {
+    "objectID": "sesiones/sesion07.html#ejemplo",
+    "href": "sesiones/sesion07.html#ejemplo",
+    "title": "Sesión 07 — Métodos iterativos para sistemas lineales",
+    "section": "7.1 Ejemplo",
+    "text": "7.1 Ejemplo\nConsideremos el sistema\n\\[\n\\begin{aligned}\n4x_1-x_2+x_3 &=12,\\\\\n-x_1+4x_2-2x_3 &=-1,\\\\\nx_1-2x_2+4x_3 &=5.\n\\end{aligned}\n\\]\nDespejando:\n\\[\nx_1=\\frac14(12+x_2-x_3),\n\\]\n\\[\nx_2=\\frac14(-1+x_1+2x_3),\n\\]\n\\[\nx_3=\\frac14(5-x_1+2x_2).\n\\]\nTomemos\n\\[\nx^{(0)}=(0,0,0)^T.\n\\]\nLa primera iteración de Jacobi es\n\\[\nx_1^{(1)}=3,\n\\qquad\nx_2^{(1)}=-0.25,\n\\qquad\nx_3^{(1)}=1.25.\n\\]\nObsérvese que los tres valores fueron calculados usando exclusivamente \\(x^{(0)}\\)."
+  },
+  {
+    "objectID": "sesiones/sesion07.html#tres-casos",
+    "href": "sesiones/sesion07.html#tres-casos",
+    "title": "Sesión 07 — Métodos iterativos para sistemas lineales",
+    "section": "13.1 Tres casos",
+    "text": "13.1 Tres casos\nSi\n\\[\n\\omega=1,\n\\]\nobtenemos Gauss–Seidel.\nSi\n\\[\n0&lt;\\omega&lt;1,\n\\]\ntenemos subrelajación.\nSi\n\\[\n1&lt;\\omega&lt;2,\n\\]\ntenemos sobrerrelajación.\nEl método de sobrerrelajación sucesiva se conoce como\n\\[\n\\boxed{\\text{SOR}}\n\\]\npor Successive Over-Relaxation."
+  },
+  {
+    "objectID": "sesiones/sesion07.html#la-estructura-importa",
+    "href": "sesiones/sesion07.html#la-estructura-importa",
+    "title": "Sesión 07 — Métodos iterativos para sistemas lineales",
+    "section": "24.1 La estructura importa",
+    "text": "24.1 La estructura importa\nLos sistemas provenientes de discretizaciones suelen ser grandes y dispersos."
+  },
+  {
+    "objectID": "sesiones/sesion07.html#jacobi",
+    "href": "sesiones/sesion07.html#jacobi",
+    "title": "Sesión 07 — Métodos iterativos para sistemas lineales",
+    "section": "24.2 Jacobi",
+    "text": "24.2 Jacobi\nUsa solamente valores de la iteración anterior."
+  },
+  {
+    "objectID": "sesiones/sesion07.html#gaussseidel",
+    "href": "sesiones/sesion07.html#gaussseidel",
+    "title": "Sesión 07 — Métodos iterativos para sistemas lineales",
+    "section": "24.3 Gauss–Seidel",
+    "text": "24.3 Gauss–Seidel\nUsa inmediatamente la información recién calculada."
+  },
+  {
+    "objectID": "sesiones/sesion07.html#sor",
+    "href": "sesiones/sesion07.html#sor",
+    "title": "Sesión 07 — Métodos iterativos para sistemas lineales",
+    "section": "24.4 SOR",
+    "text": "24.4 SOR\nIntroduce un factor de relajación\n\\[\n\\omega\n\\]\npara intentar acelerar la convergencia."
+  },
+  {
+    "objectID": "sesiones/sesion07.html#ejercicio-1",
+    "href": "sesiones/sesion07.html#ejercicio-1",
+    "title": "Sesión 07 — Métodos iterativos para sistemas lineales",
+    "section": "25.1 Ejercicio 1",
+    "text": "25.1 Ejercicio 1\nRealice dos iteraciones de Jacobi para\n\\[\n\\begin{pmatrix}\n4&-1&0\\\\\n-1&4&-1\\\\\n0&-1&4\n\\end{pmatrix}\nx\n=\n\\begin{pmatrix}\n3\\\\2\\\\3\n\\end{pmatrix}\n\\]\npartiendo de\n\\[\nx^{(0)}=0.\n\\]"
+  },
+  {
+    "objectID": "sesiones/sesion07.html#ejercicio-2",
+    "href": "sesiones/sesion07.html#ejercicio-2",
+    "title": "Sesión 07 — Métodos iterativos para sistemas lineales",
+    "section": "25.2 Ejercicio 2",
+    "text": "25.2 Ejercicio 2\nRepita el ejercicio anterior con Gauss–Seidel.\nCompare ambas aproximaciones."
+  },
+  {
+    "objectID": "sesiones/sesion07.html#ejercicio-3",
+    "href": "sesiones/sesion07.html#ejercicio-3",
+    "title": "Sesión 07 — Métodos iterativos para sistemas lineales",
+    "section": "25.3 Ejercicio 3",
+    "text": "25.3 Ejercicio 3\nUse Julia para comparar Jacobi y Gauss–Seidel mediante\n\\[\n\\|b-Ax^{(k)}\\|_2.\n\\]"
+  },
+  {
+    "objectID": "sesiones/sesion07.html#ejercicio-4",
+    "href": "sesiones/sesion07.html#ejercicio-4",
+    "title": "Sesión 07 — Métodos iterativos para sistemas lineales",
+    "section": "25.4 Ejercicio 4",
+    "text": "25.4 Ejercicio 4\nPara el mismo sistema pruebe SOR con\n\\[\n\\omega=0.8,\\quad 1.0,\\quad 1.2,\\quad 1.5.\n\\]\nCompare el número de iteraciones."
+  },
+  {
+    "objectID": "sesiones/sesion07.html#ejercicio-5",
+    "href": "sesiones/sesion07.html#ejercicio-5",
+    "title": "Sesión 07 — Métodos iterativos para sistemas lineales",
+    "section": "25.5 Ejercicio 5",
+    "text": "25.5 Ejercicio 5\nModifique el tamaño de la placa:\n\\[\nn=10,\\quad 20,\\quad 40.\n\\]\nObserve cómo cambia el número de iteraciones."
+  },
+  {
+    "objectID": "sesiones/sesion07.html#ejercicio-6",
+    "href": "sesiones/sesion07.html#ejercicio-6",
+    "title": "Sesión 07 — Métodos iterativos para sistemas lineales",
+    "section": "25.6 Ejercicio 6",
+    "text": "25.6 Ejercicio 6\nExplique por qué en el problema de la placa no es indispensable formar explícitamente la matriz \\(A\\)."
+  },
+  {
+    "objectID": "sesiones/sesion07.html#ejercicio-7",
+    "href": "sesiones/sesion07.html#ejercicio-7",
+    "title": "Sesión 07 — Métodos iterativos para sistemas lineales",
+    "section": "25.7 Ejercicio 7",
+    "text": "25.7 Ejercicio 7\nPara el sistema cíclico con \\(n=20\\), compare:\n\nGauss–Seidel con \\(\\omega=1\\);\nGauss–Seidel con \\(\\omega\\) estimado automáticamente."
+  },
+  {
+    "objectID": "sesiones/sesion07_actualizada.html",
+    "href": "sesiones/sesion07_actualizada.html",
+    "title": "Sesión 07 — Métodos iterativos para sistemas lineales",
+    "section": "",
+    "text": "Al final de esta sesión queremos entender por qué, para ciertos sistemas lineales grandes y dispersos, puede ser más conveniente iterar que aplicar directamente eliminación de Gauss.\nLa ruta será\n\\[\n\\boxed{\n\\text{problema físico}\n\\longrightarrow\n\\text{matriz dispersa}\n\\longrightarrow\n\\text{Jacobi}\n\\longrightarrow\n\\text{Gauss--Seidel}\n\\longrightarrow\n\\text{SOR}\n}\n\\]\ny todo lo implementaremos en Julia."
+  },
+  {
+    "objectID": "sesiones/sesion07_actualizada.html#qué-tiene-que-ver-esto-con-sistemas-lineales",
+    "href": "sesiones/sesion07_actualizada.html#qué-tiene-que-ver-esto-con-sistemas-lineales",
+    "title": "Sesión 07 — Métodos iterativos para sistemas lineales",
+    "section": "4.1 ¿Qué tiene que ver esto con sistemas lineales?",
+    "text": "4.1 ¿Qué tiene que ver esto con sistemas lineales?\nSi numeramos los nodos interiores, las ecuaciones de diferencias finitas producen un sistema\n\\[\nAT=b.\n\\]\nPara una malla de (3) nodos interiores obtenemos nueve incógnitas. Cada ecuación sólo conecta un nodo con sus vecinos, por lo que la matriz contiene muchos ceros.\nÉsta es la primera idea importante:\n\\[\n\\boxed{\\text{la matriz es dispersa y tiene estructura}}\n\\]\nCuando la malla crece, también crece el número de incógnitas, pero cada fila sigue teniendo muy pocos elementos distintos de cero."
+  },
+  {
+    "objectID": "sesiones/sesion07_actualizada.html#ejemplo",
+    "href": "sesiones/sesion07_actualizada.html#ejemplo",
+    "title": "Sesión 07 — Métodos iterativos para sistemas lineales",
+    "section": "7.1 Ejemplo",
+    "text": "7.1 Ejemplo\nConsideremos el sistema\n\\[\n\\begin{aligned}\n4x_1-x_2+x_3 &=12,\\\\\n-x_1+4x_2-2x_3 &=-1,\\\\\nx_1-2x_2+4x_3 &=5.\n\\end{aligned}\n\\]\nDespejando:\n\\[\nx_1=\\frac14(12+x_2-x_3),\n\\]\n\\[\nx_2=\\frac14(-1+x_1+2x_3),\n\\]\n\\[\nx_3=\\frac14(5-x_1+2x_2).\n\\]\nTomemos\n\\[\nx^{(0)}=(0,0,0)^T.\n\\]\nLa primera iteración de Jacobi es\n\\[\nx_1^{(1)}=3,\n\\qquad\nx_2^{(1)}=-0.25,\n\\qquad\nx_3^{(1)}=1.25.\n\\]\nObsérvese que los tres valores fueron calculados usando exclusivamente (x^{(0)})."
+  },
+  {
+    "objectID": "sesiones/sesion07_actualizada.html#tres-casos",
+    "href": "sesiones/sesion07_actualizada.html#tres-casos",
+    "title": "Sesión 07 — Métodos iterativos para sistemas lineales",
+    "section": "13.1 Tres casos",
+    "text": "13.1 Tres casos\nSi\n\\[\n\\omega=1,\n\\]\nobtenemos Gauss–Seidel.\nSi\n\\[\n0&lt;\\omega&lt;1,\n\\]\ntenemos subrelajación.\nSi\n\\[\n1&lt;\\omega&lt;2,\n\\]\ntenemos sobrerrelajación.\nEl método de sobrerrelajación sucesiva se conoce como\n\\[\n\\boxed{\\text{SOR}}\n\\]\npor Successive Over-Relaxation."
+  },
+  {
+    "objectID": "sesiones/sesion07_actualizada.html#la-estructura-importa",
+    "href": "sesiones/sesion07_actualizada.html#la-estructura-importa",
+    "title": "Sesión 07 — Métodos iterativos para sistemas lineales",
+    "section": "24.1 La estructura importa",
+    "text": "24.1 La estructura importa\nLos sistemas provenientes de discretizaciones suelen ser grandes y dispersos."
+  },
+  {
+    "objectID": "sesiones/sesion07_actualizada.html#jacobi",
+    "href": "sesiones/sesion07_actualizada.html#jacobi",
+    "title": "Sesión 07 — Métodos iterativos para sistemas lineales",
+    "section": "24.2 Jacobi",
+    "text": "24.2 Jacobi\nUsa solamente valores de la iteración anterior."
+  },
+  {
+    "objectID": "sesiones/sesion07_actualizada.html#gaussseidel",
+    "href": "sesiones/sesion07_actualizada.html#gaussseidel",
+    "title": "Sesión 07 — Métodos iterativos para sistemas lineales",
+    "section": "24.3 Gauss–Seidel",
+    "text": "24.3 Gauss–Seidel\nUsa inmediatamente la información recién calculada."
+  },
+  {
+    "objectID": "sesiones/sesion07_actualizada.html#sor",
+    "href": "sesiones/sesion07_actualizada.html#sor",
+    "title": "Sesión 07 — Métodos iterativos para sistemas lineales",
+    "section": "24.4 SOR",
+    "text": "24.4 SOR\nIntroduce un factor de relajación\n\\[\n\\omega\n\\]\npara intentar acelerar la convergencia."
+  },
+  {
+    "objectID": "sesiones/sesion07_actualizada.html#ejercicio-1",
+    "href": "sesiones/sesion07_actualizada.html#ejercicio-1",
+    "title": "Sesión 07 — Métodos iterativos para sistemas lineales",
+    "section": "25.1 Ejercicio 1",
+    "text": "25.1 Ejercicio 1\nRealice dos iteraciones de Jacobi para\n\\[\n\\begin{pmatrix}\n4&-1&0\\\\\n-1&4&-1\\\\\n0&-1&4\n\\end{pmatrix}\nx\n=\n\\begin{pmatrix}\n3\\\\2\\\\3\n\\end{pmatrix}\n\\]\npartiendo de\n\\[\nx^{(0)}=0.\n\\]"
+  },
+  {
+    "objectID": "sesiones/sesion07_actualizada.html#ejercicio-2",
+    "href": "sesiones/sesion07_actualizada.html#ejercicio-2",
+    "title": "Sesión 07 — Métodos iterativos para sistemas lineales",
+    "section": "25.2 Ejercicio 2",
+    "text": "25.2 Ejercicio 2\nRepita el ejercicio anterior con Gauss–Seidel.\nCompare ambas aproximaciones."
+  },
+  {
+    "objectID": "sesiones/sesion07_actualizada.html#ejercicio-3",
+    "href": "sesiones/sesion07_actualizada.html#ejercicio-3",
+    "title": "Sesión 07 — Métodos iterativos para sistemas lineales",
+    "section": "25.3 Ejercicio 3",
+    "text": "25.3 Ejercicio 3\nUse Julia para comparar Jacobi y Gauss–Seidel mediante\n\\[\n\\|b-Ax^{(k)}\\|_2.\n\\]"
+  },
+  {
+    "objectID": "sesiones/sesion07_actualizada.html#ejercicio-4",
+    "href": "sesiones/sesion07_actualizada.html#ejercicio-4",
+    "title": "Sesión 07 — Métodos iterativos para sistemas lineales",
+    "section": "25.4 Ejercicio 4",
+    "text": "25.4 Ejercicio 4\nPara el mismo sistema pruebe SOR con\n\\[\n\\omega=0.8,\\quad 1.0,\\quad 1.2,\\quad 1.5.\n\\]\nCompare el número de iteraciones."
+  },
+  {
+    "objectID": "sesiones/sesion07_actualizada.html#ejercicio-5",
+    "href": "sesiones/sesion07_actualizada.html#ejercicio-5",
+    "title": "Sesión 07 — Métodos iterativos para sistemas lineales",
+    "section": "25.5 Ejercicio 5",
+    "text": "25.5 Ejercicio 5\nModifique el tamaño de la placa:\n\\[\nn=10,\\quad 20,\\quad 40.\n\\]\nObserve cómo cambia el número de iteraciones."
+  },
+  {
+    "objectID": "sesiones/sesion07_actualizada.html#ejercicio-6",
+    "href": "sesiones/sesion07_actualizada.html#ejercicio-6",
+    "title": "Sesión 07 — Métodos iterativos para sistemas lineales",
+    "section": "25.6 Ejercicio 6",
+    "text": "25.6 Ejercicio 6\nExplique por qué en el problema de la placa no es indispensable formar explícitamente la matriz (A)."
+  },
+  {
+    "objectID": "sesiones/sesion07_actualizada.html#ejercicio-7",
+    "href": "sesiones/sesion07_actualizada.html#ejercicio-7",
+    "title": "Sesión 07 — Métodos iterativos para sistemas lineales",
+    "section": "25.7 Ejercicio 7",
+    "text": "25.7 Ejercicio 7\nPara el sistema cíclico con (n=20), compare:\n\nGauss–Seidel con ();\nGauss–Seidel con () estimado automáticamente."
   }
 ]
