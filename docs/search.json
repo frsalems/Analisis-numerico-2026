@@ -72,925 +72,6 @@
     ]
   },
   {
-    "objectID": "sesiones/sesion05.html",
-    "href": "sesiones/sesion05.html",
-    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "",
-    "text": "En el capítulo anterior aprendimos que trabajar con números de punto flotante obliga a distinguir entre el problema matemático y el algoritmo que usamos para resolverlo.\nAhora veremos esa distinción en uno de los problemas centrales del cálculo científico:\n\\[\nAx=b.\n\\]\nEste documento está pensado para tres clases de dos horas:\n\nClase 1: de la interpolación a la factorización LU.\nClase 2: eficiencia, pivoteo, normas y condicionamiento.\nClase 3: laboratorio de problemas y experimentos en Pluto.\n\nLa pregunta que atravesará las tres clases será:\n\nJulia produjo una respuesta. ¿Debemos confiar en ella?",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion05.html#aplicación-fuerzas-en-una-armadura",
-    "href": "sesiones/sesion05.html#aplicación-fuerzas-en-una-armadura",
-    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "2.1 Aplicación: fuerzas en una armadura",
-    "text": "2.1 Aplicación: fuerzas en una armadura\nAntes de estudiar cómo resolver sistemas lineales, veamos cómo uno de ellos aparece naturalmente a partir de un problema físico.\n\n\n\nArmadura triangular de tres barras.\n\n\nLos sistemas lineales no aparecen solamente como ejercicios de álgebra. Surgen de manera natural al modelar problemas físicos.\nConsideremos una armadura triangular formada por tres barras. Las fuerzas internas en las barras son\n\\[\nF_{12},\\qquad F_{13},\\qquad F_{23},\n\\]\ny las reacciones en los apoyos son\n\\[\nH_1,\\qquad V_1,\\qquad V_2.\n\\]\nEn el nodo superior actúa una carga vertical conocida (W_3).\nLa idea fundamental es sencilla:\n\nEn cada nodo, la suma de las fuerzas horizontales y verticales debe ser cero.\n\n\n2.1.1 Ecuaciones de equilibrio\nEn el nodo 1 tenemos\n\\[\nV_1 + F_{13}\\sin\\alpha = 0,\n\\]\n\\[\nH_1 + F_{12} + F_{13}\\cos\\alpha = 0.\n\\]\nEn el nodo 2,\n\\[\nV_2 + F_{23}\\sin\\beta = 0,\n\\]\n\\[\n-F_{12} - F_{23}\\cos\\beta = 0.\n\\]\nFinalmente, en el nodo 3,\n\\[\n-F_{13}\\sin\\alpha-F_{23}\\sin\\beta=W_3,\n\\]\n\\[\n-F_{13}\\cos\\alpha+F_{23}\\cos\\beta=0.\n\\]\nTenemos entonces seis ecuaciones lineales para las seis incógnitas\n\\[\nx=\n\\begin{pmatrix}\nV_1\\\\\nH_1\\\\\nV_2\\\\\nF_{12}\\\\\nF_{13}\\\\\nF_{23}\n\\end{pmatrix}.\n\\]\nEl sistema puede escribirse como\n\\[\nAx=b,\n\\]\ndonde\n\\[\nA=\n\\begin{pmatrix}\n1&0&0&0&\\sin\\alpha&0\\\\\n0&1&0&1&\\cos\\alpha&0\\\\\n0&0&1&0&0&\\sin\\beta\\\\\n0&0&0&-1&0&-\\cos\\beta\\\\\n0&0&0&0&-\\sin\\alpha&-\\sin\\beta\\\\\n0&0&0&0&-\\cos\\alpha&\\cos\\beta\n\\end{pmatrix},\n\\]\ny\n\\[\nb=\n\\begin{pmatrix}\n0\\\\\n0\\\\\n0\\\\\n0\\\\\nW_3\\\\\n0\n\\end{pmatrix}.\n\\]\n\n\n2.1.2 Un caso concreto\nTomemos\n\\[\n\\alpha=\\beta=45^\\circ,\n\\qquad\nW_3=1000\\;\\text{N}.\n\\]\nEn Julia:\n\nusing LinearAlgebra\n\nα = deg2rad(45.0)\nβ = deg2rad(45.0)\nW3 = 1000.0\n\nA_truss = [\n    1.0  0.0  0.0   0.0       sin(α)    0.0;\n    0.0  1.0  0.0   1.0       cos(α)    0.0;\n    0.0  0.0  1.0   0.0       0.0       sin(β);\n    0.0  0.0  0.0  -1.0       0.0      -cos(β);\n    0.0  0.0  0.0   0.0      -sin(α)   -sin(β);\n    0.0  0.0  0.0   0.0      -cos(α)    cos(β)\n]\n\nb_truss = [0.0, 0.0, 0.0, 0.0, W3, 0.0]\n\nx_truss = A_truss \\ b_truss\n\n6-element Vector{Float64}:\n  500.0\n    0.0\n  500.0\n  500.00000000000006\n -707.1067811865476\n -707.1067811865476\n\n\nLas componentes de x_truss corresponden, en este orden, a\n\\[\n(V_1,H_1,V_2,F_{12},F_{13},F_{23}).\n\\]\nPara este caso obtenemos aproximadamente\n\\[\nV_1=500\\;\\text{N},\n\\qquad\nH_1=0,\n\\qquad\nV_2=500\\;\\text{N},\n\\]\ny\n\\[\nF_{12}=500\\;\\text{N},\n\\qquad\nF_{13}\\approx-707.1\\;\\text{N},\n\\qquad\nF_{23}\\approx-707.1\\;\\text{N}.\n\\]\nEl signo de las fuerzas internas depende de la convención adoptada. Con la convención anterior, los valores negativos indican que la dirección real de la fuerza es opuesta a la que supusimos inicialmente.\n\n\n2.1.3 ¿Qué queremos observar?\nEl punto importante no es solamente obtener seis números.\nEl proceso fue\n\\[\n\\text{estructura física}\n\\longrightarrow\n\\text{equilibrio de fuerzas}\n\\longrightarrow\n\\text{ecuaciones lineales}\n\\longrightarrow\nAx=bahi cabron ya\n\\longrightarrow\n\\text{solución numérica}.\n\\]\n\nPregunta para la clase:\n¿Qué información física está contenida en la matriz (A), qué información está contenida en (b), y qué representan las componentes de (x)?\n\nEste ejemplo está basado en el tratamiento de fuerzas en una armadura presentado por Laurene V. Fausett en Applied Numerical Analysis Using MATLAB.",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion05.html#interpolación-polinomial",
-    "href": "sesiones/sesion05.html#interpolación-polinomial",
-    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "2.2 Interpolación polinomial",
-    "text": "2.2 Interpolación polinomial\nDados \\(n\\) puntos \\((t_i,y_i)\\) buscamos un polinomio de grado menor que \\(n\\),\n\\[\np(t)=c_1+c_2t+\\cdots+c_nt^{n-1},\n\\]\ntal que \\(p(t_i)=y_i\\). Estas condiciones producen\n\\[\n\\begin{bmatrix}\n1&t_1&\\cdots&t_1^{n-1}\\\\\n1&t_2&\\cdots&t_2^{n-1}\\\\\n\\vdots&\\vdots&&\\vdots\\\\\n1&t_n&\\cdots&t_n^{n-1}\n\\end{bmatrix}c=y.\n\\]\nLa matriz es una matriz de Vandermonde. Así, un problema de interpolación nos conduce naturalmente a\n\\[\nVc=y.\n\\]\n\nMuchos problemas que aparentemente no tienen nada que ver con álgebra lineal terminan convertidos en un sistema lineal.\n\n\n2.2.1 Experimento Pluto\nt = [0.0,1.0,2.0,3.0]\ny = [1.0,2.0,0.0,5.0]\nV = [t[i]^j for i in 1:length(t), j in 0:length(t)-1]\nc = V \\ y\nV*c - y\nPredice antes de ejecutar: ¿qué representa c? ¿Por qué el residuo no tiene que ser exactamente cero?",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion05.html#matrices-en-julia",
-    "href": "sesiones/sesion05.html#matrices-en-julia",
-    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "2.3 Matrices en Julia",
-    "text": "2.3 Matrices en Julia\nusing LinearAlgebra\n\nA = [1.0 2.0 3.0;\n     4.0 5.0 6.0;\n     7.0 8.0 10.0]\n\nb = [1.0,2.0,3.0]\n\nsize(A)\nA'\nA*b\nUna matriz no es solamente una tabla de números. Numéricamente conviene pensarla como una transformación lineal.",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion05.html#el-problema-central-axb",
-    "href": "sesiones/sesion05.html#el-problema-central-axb",
-    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "2.4 El problema central: \\(Ax=b\\)",
-    "text": "2.4 El problema central: \\(Ax=b\\)\nSi \\(A\\) es invertible, matemáticamente\n\\[\nx=A^{-1}b.\n\\]\nPero eso no significa que debamos calcular la inversa.\nEn Julia usamos\nx = A \\ b\ny no\nx = inv(A)*b\n\nRegla práctica: no calcule la inversa de una matriz para resolver un sistema lineal.\n\nLa expresión matemática y el algoritmo numérico no son la misma cosa.",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion05.html#el-residuo",
-    "href": "sesiones/sesion05.html#el-residuo",
-    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "2.5 El residuo",
-    "text": "2.5 El residuo\nSi Julia produce \\(\\tilde{x}\\), podemos calcular\n\\[\nr=b-A\\tilde{x}.\n\\]\nx = A \\ b\nr = b - A*x\nnorm(r)\nGuardemos una pregunta para más adelante:\n\n¿Un residuo pequeño garantiza que \\(\\tilde{x}\\) está cerca de la solución verdadera?\n\n\n2.5.1 Laboratorio: un circuito eléctrico como sistema lineal\nLas leyes de Ohm y Kirchhoff conducen a un sistema lineal para las corrientes de un circuito. En el siguiente laboratorio podrás modificar los voltajes, resolver el sistema y observar también su residuo y condicionamiento.\n👉 Explorar el circuito de tres mallas en Pluto\nPara utilizar las regletas interactivas, descarga el archivo y ábrelo desde Pluto.\n\nPredice → mueve → observa → explica.",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion05.html#sistemas-triangulares",
-    "href": "sesiones/sesion05.html#sistemas-triangulares",
-    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "2.6 Sistemas triangulares",
-    "text": "2.6 Sistemas triangulares\nSi \\(L\\) es triangular inferior, \\(Lx=b\\) se resuelve desde la primera ecuación hacia la última: sustitución hacia adelante.\nSi \\(U\\) es triangular superior, usamos sustitución hacia atrás.\nfunction forwardsub(L,b)\n    n = length(b)\n    x = zeros(Float64,n)\n    x[1] = b[1]/L[1,1]\n    for i in 2:n\n        s = sum(L[i,j]*x[j] for j in 1:i-1)\n        x[i] = (b[i]-s)/L[i,i]\n    end\n    return x\nend\nAquí no queremos que un paquete esconda el algoritmo. Queremos verlo respirar.",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion05.html#factorización-lu",
-    "href": "sesiones/sesion05.html#factorización-lu",
-    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "2.7 Factorización LU",
-    "text": "2.7 Factorización LU\nBuscamos\n\\[\nA=LU.\n\\]\nEntonces\n\\[\nAx=b\n\\quad\\Longrightarrow\\quad\nLUx=b.\n\\]\nDefiniendo \\(z=Ux\\), resolvemos\n\\[\nLz=b,\\qquad Ux=z.\n\\]\n👉 Factorización LU de una matriz 4×4: ejemplo paso a paso y ejercicio\nPor tanto:\n\nFactorizar \\(A=LU\\).\nResolver \\(Lz=b\\).\nResolver \\(Ux=z\\).\n\nSi tenemos muchos lados derechos \\(b_1,b_2,\\ldots\\), la factorización de \\(A\\) se hace una sola vez.\nF = lu(A)\nx1 = F \\ b1\nx2 = F \\ b2\n\n2.7.1 Laboratorio: nuestro solucionador LU\nAntes de estudiar el pivoteo, trabajaremos con nuestra propia implementación de la factorización LU y las sustituciones hacia adelante y hacia atrás.\n👉 Abrir laboratorio LU en Pluto\nEn este cuaderno resolveremos sistemas lineales sin utilizar A \\ b ni la factorización LU de LinearAlgebra.\n\nExperimento: predice → ejecuta → observa → explica.",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion05.html#cierre-de-la-primera-clase",
-    "href": "sesiones/sesion05.html#cierre-de-la-primera-clase",
-    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "2.8 7. Cierre de la primera clase",
-    "text": "2.8 7. Cierre de la primera clase\n\\[\n\\text{interpolación}\\to Ax=b\\to\\text{sistemas triangulares}\\to A=LU.\n\\]\nQuedan dos preguntas:\n\n¿Cuánto cuesta el algoritmo?\n\n\n¿Siempre funciona bien?",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion05.html#eficiencia-y-notación-asintótica",
-    "href": "sesiones/sesion05.html#eficiencia-y-notación-asintótica",
-    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "3.1 Eficiencia y notación asintótica",
-    "text": "3.1 Eficiencia y notación asintótica\nNos interesa cómo crece el trabajo con el tamaño \\(n\\).\n\\[\nn^2+3n+7=O(n^2),\\qquad\n4n^3+2n^2=O(n^3).\n\\]\nUn flop es una operación aritmética de punto flotante.\nEl producto matriz-vector requiere aproximadamente\n\\[\n2n^2\n\\]\nflops, mientras que LU requiere aproximadamente\n\\[\n\\frac{2}{3}n^3.\n\\]\nLa factorización es la parte cara.\n\n3.1.1 Experimento Pluto: ver aparecer \\(n^2\\)\nfunction tiempo_mv(n)\n    A = randn(n,n)\n    x = randn(n)\n    A*x\n    @elapsed A*x\nend\n\nt1 = tiempo_mv(1000)\nt2 = tiempo_mv(2000)\nt2/t1\nPredice: si el trabajo es \\(O(n^2)\\), ¿qué razón esperamos aproximadamente al duplicar \\(n\\)?",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion05.html#el-problema-del-pivote",
-    "href": "sesiones/sesion05.html#el-problema-del-pivote",
-    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "3.2 El problema del pivote",
-    "text": "3.2 El problema del pivote\nLU sin intercambiar filas puede fallar aunque \\(A\\) sea invertible:\n\\[\nA=\n\\begin{bmatrix}\n0&1\\\\\n1&1\n\\end{bmatrix}.\n\\]\nEl primer pivote es cero, pero \\(\\det(A)=-1\\).\nLa eliminación necesita intercambiar filas.",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion05.html#pivoteo-parcial-y-estabilidad",
-    "href": "sesiones/sesion05.html#pivoteo-parcial-y-estabilidad",
-    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "3.3 Pivoteo parcial y estabilidad",
-    "text": "3.3 Pivoteo parcial y estabilidad\nAl trabajar en una columna elegimos como pivote el elemento disponible de mayor valor absoluto.\nNo se hace sólo para evitar dividir entre cero. También importa la estabilidad.\nConsidere\n\\[\nA(\\varepsilon)=\n\\begin{bmatrix}\n-\\varepsilon&1\\\\\n1&-1\n\\end{bmatrix}.\n\\]\nSi \\(\\varepsilon\\) es diminuto, usarlo como pivote produce números enormes durante la eliminación.\ne = 1e-12\nA = [-e 1.0; 1.0 -1.0]\nx_exacta = [1.0, 1.0] b = A * x_exacta\nx_nuestra = resolver_LU(A, b)\nA, b, x_nuestra\n\nUn problema bien condicionado puede producir una mala respuesta si usamos un algoritmo inestable. ## Factorización LU con pivoteo parcial\n\nEl pivoteo parcial puede incorporarse directamente al proceso de eliminación. En cada etapa (k), antes de eliminar los elementos situados debajo del pivote, buscamos en la columna (k) el elemento de mayor magnitud entre las filas (k,,n).\nSi este elemento se encuentra en una fila distinta de (k), intercambiamos las dos filas y continuamos la eliminación.\nLos intercambios realizados pueden representarse mediante una matriz de permutación (P). Por esta razón, la factorización obtenida ya no tiene la forma\n\\[\nA=LU,\n\\]\nsino\n\\[\n\\boxed{PA=LU}.\n\\]\n\n3.3.1 Algoritmo\nEn forma esquemática, para (k=1,,n-1):\n\nBuscar\n\\[\np=\\mathop{\\mathrm{arg\\,max}}_{i=k,\\ldots,n}|u_{ik}|.\n\\]\nIntercambiar las filas (k) y (p) de (U).\nRegistrar el mismo intercambio en la matriz de permutación (P).\nSi ya se han calculado multiplicadores en etapas anteriores, intercambiar también las entradas correspondientes de (L).\nPara (i=k+1,,n), calcular\n\\[\nm_{ik}=\\frac{u_{ik}}{u_{kk}},\n\\]\nguardar (m_{ik}) en (L) y efectuar\n\\[\nR_i\\leftarrow R_i-m_{ik}R_k.\n\\]\n\nAl terminar, (L) es triangular inferior, (U) es triangular superior y se cumple\n\\[\nPA=LU.\n\\]\n\n\n3.3.2 Nuestra implementación en Julia\nConstruiremos nuestra propia función\nmi_LU_pivoteo(A)\nque devolverá las tres matrices\nP, L, U\nsin utilizar una factorización LU proporcionada por LinearAlgebra.\nUna vez obtenida la factorización, para resolver\n\\[\nAx=b\n\\]\nusaremos\n\\[\nPAx=Pb,\n\\]\ny como (PA=LU),\n\\[\nLUx=Pb.\n\\]\nPor tanto, resolveremos sucesivamente\n\\[\nLy=Pb\n\\]\nmediante sustitución hacia adelante, y\n\\[\nUx=y\n\\]\nmediante sustitución hacia atrás.\nEn el laboratorio de Pluto construiremos primero una factorización (PA=LU) a mano para una matriz (3). Después haremos que mi_LU_pivoteo(A) realice automáticamente el mismo trabajo. 👉 Explorar la factorización LU con pivoteo en Pluto",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion05.html#normas",
-    "href": "sesiones/sesion05.html#normas",
-    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "3.4 Normas",
-    "text": "3.4 Normas\nNecesitamos medir tamaños y perturbaciones:\n\\[\n\\|x\\|_1=\\sum_i|x_i|,\n\\qquad\n\\|x\\|_2=\\left(\\sum_i|x_i|^2\\right)^{1/2},\n\\qquad\n\\|x\\|_\\infty=\\max_i|x_i|.\n\\]\nx = [2.0,-3.0,1.0,-1.0]\nnorm(x,1)\nnorm(x,2)\nnorm(x,Inf)\nPara una norma matricial inducida,\n\\[\n\\|A\\|=\\max_{x\\ne0}\\frac{\\|Ax\\|}{\\|x\\|},\n\\]\ny por tanto\n\\[\n\\|Ax\\|\\leq\\|A\\|\\|x\\|.\n\\]",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion05.html#condicionamiento-de-axb",
-    "href": "sesiones/sesion05.html#condicionamiento-de-axb",
-    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "3.5 Condicionamiento de \\(Ax=b\\)",
-    "text": "3.5 Condicionamiento de \\(Ax=b\\)\nSi\n\\[\nAx=b\n\\]\ny perturbamos \\(b\\),\n\\[\nA(x+\\Delta x)=b+\\Delta b,\n\\]\nentonces\n\\[\n\\Delta x=A^{-1}\\Delta b.\n\\]\nUsando las desigualdades de las normas obtenemos\n\\[\n\\frac{\\|\\Delta x\\|}{\\|x\\|}\n\\leq\n\\|A\\|\\|A^{-1}\\|\n\\frac{\\|\\Delta b\\|}{\\|b\\|}.\n\\]\nEsto motiva\n\\[\n\\boxed{\\kappa(A)=\\|A\\|\\|A^{-1}\\|}.\n\\]\nSiempre \\(\\kappa(A)\\ge1\\). Si \\(\\kappa(A)\\approx10^t\\), pueden perderse aproximadamente \\(t\\) cifras decimales de precisión.\ncond(A)",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion05.html#el-gran-experimento-pluto-hilbert",
-    "href": "sesiones/sesion05.html#el-gran-experimento-pluto-hilbert",
-    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "3.6 El gran experimento Pluto: Hilbert",
-    "text": "3.6 El gran experimento Pluto: Hilbert\n\\[\nH_{ij}=\\frac{1}{i+j-1}.\n\\]\nhilbert(n) = [1.0/(i+j-1) for i in 1:n, j in 1:n]\n\nn = 6\nH = hilbert(n)\n\nx_exacta = ones(n)\nb = H*x_exacta\nx_calculada = H \\ b\n\nκ = cond(H)\nerror_relativo = norm(x_calculada-x_exacta)/norm(x_exacta)\nresiduo_relativo = norm(b-H*x_calculada)/norm(b)\n\nκ, error_relativo, residuo_relativo\nDespués pruebe n = 10 y n = 14.\nLa pregunta incómoda:\n\n¿Podemos obtener simultáneamente un residuo muy pequeño y una respuesta muy inexacta?\n\nSí. Un residuo pequeño no garantiza un error pequeño cuando el problema está mal condicionado. ### Cuaderno interactivo\n👉 Explorar matrices de Hilbert en Pluto\nEn este cuaderno, una regleta permite variar la dimensión (n) y observar simultáneamente cómo cambian el número de condición, el error relativo y el residuo relativo. Para utilizar las regletas interactivas, descarga el archivo y ábrelo desde Pluto.\n\nRegla del experimento: predice → mueve → observa → explica.",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion05.html#error-hacia-adelante-y-hacia-atrás",
-    "href": "sesiones/sesion05.html#error-hacia-adelante-y-hacia-atrás",
-    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "3.7 Error hacia adelante y hacia atrás",
-    "text": "3.7 Error hacia adelante y hacia atrás\nEl residuo\n\\[\nr=b-A\\tilde{x}\n\\]\nimplica\n\\[\nA\\tilde{x}=b-r.\n\\]\nPor tanto, \\(\\tilde{x}\\) es la solución exacta de un problema ligeramente perturbado. Ésta es la idea del error hacia atrás.\nEl condicionamiento conecta ambos mundos:\n\\[\n\\frac{\\|x-\\tilde{x}\\|}{\\|x\\|}\n\\lesssim\n\\kappa(A)\\frac{\\|r\\|}{\\|b\\|}.\n\\]\nComo brújula conceptual:\n\\[\n\\boxed{\n\\text{error final}\n\\approx\n\\text{condicionamiento del problema}\n\\times\n\\text{error del algoritmo}\n}\n\\]",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion05.html#la-estructura-también-es-información",
-    "href": "sesiones/sesion05.html#la-estructura-también-es-información",
-    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "3.8 La estructura también es información",
-    "text": "3.8 La estructura también es información\nUna matriz puede ser triangular, tridiagonal, de banda, dispersa, simétrica o definida positiva.\nEsa información puede cambiar el algoritmo y el costo.\n\n3.8.1 Tridiagonal\nn = 1000\nA = Tridiagonal(-ones(n-1), 2ones(n), -ones(n-1))\nb = ones(n)\nx = A \\ b\n\n\n3.8.2 Simétrica definida positiva\nPara una matriz SPD podemos usar Cholesky,\n\\[\nA=R^TR,\n\\]\ncon costo aproximado\n\\[\n\\frac13n^3\n\\]\nen vez de \\(\\frac23n^3\\) de LU general.\nA = randn(5,5)\nB = A'*A + I\nF = cholesky(B)\n\nAntes de escoger un algoritmo, pregunte qué sabe acerca de la matriz.",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion05.html#regla-del-laboratorio",
-    "href": "sesiones/sesion05.html#regla-del-laboratorio",
-    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "4.1 Regla del laboratorio",
-    "text": "4.1 Regla del laboratorio\nPara cada experimento:\n\nPredice.\nEjecuta.\nObserva.\nExplica.\n\nNo queremos saber solamente qué comando escribir. Queremos saber qué pregunta hacerle al resultado.",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion05.html#problema-1-inversa-o-sistema",
-    "href": "sesiones/sesion05.html#problema-1-inversa-o-sistema",
-    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "4.2 Problema 1 — ¿Inversa o sistema?",
-    "text": "4.2 Problema 1 — ¿Inversa o sistema?\nA = randn(500,500)\nb = randn(500)\n\n@elapsed A\\b\n@elapsed inv(A)*b\nRepita varias veces.\nDiscuta: ¿cuál es conceptualmente apropiado?, ¿cuál es más rápido?, ¿por qué calcular información que no necesitamos?",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion05.html#problema-2-el-residuo-puede-engañar",
-    "href": "sesiones/sesion05.html#problema-2-el-residuo-puede-engañar",
-    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "4.3 Problema 2 — El residuo puede engañar",
-    "text": "4.3 Problema 2 — El residuo puede engañar\nH = hilbert(12)\nx_exacta = ones(12)\nb = H*x_exacta\nx = H\\b\n\nnorm(b-H*x)/norm(b)\nnorm(x-x_exacta)/norm(x_exacta)\ncond(H)\nJulia produjo una respuesta con residuo pequeño.\n\n¿Debemos confiar en ella?",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion05.html#problema-3-perturbar-los-datos",
-    "href": "sesiones/sesion05.html#problema-3-perturbar-los-datos",
-    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "4.4 Problema 3 — Perturbar los datos",
-    "text": "4.4 Problema 3 — Perturbar los datos\nA = [1.0 1.0; 1.0 1.000001]\nx_exacta = [1.0,1.0]\nb = A*x_exacta\n\ncond(A)\n\nδb = [1e-8,-1e-8]\nx1 = A\\b\nx2 = A\\(b+δb)\n\nnorm(δb)/norm(b)\nnorm(x2-x1)/norm(x1)\nExplique cómo una perturbación diminuta puede producir un cambio mucho mayor en la solución.",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion05.html#problema-4-el-pivote-rebelde",
-    "href": "sesiones/sesion05.html#problema-4-el-pivote-rebelde",
-    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "4.5 Problema 4 — El pivote rebelde",
-    "text": "4.5 Problema 4 — El pivote rebelde\nUse\n\\[\nA(\\varepsilon)=\n\\begin{bmatrix}\n-\\varepsilon&1\\\\\n1&-1\n\\end{bmatrix}\n\\]\npara \\(\\varepsilon=10^{-2},10^{-6},10^{-12}\\).\nCalcule cond(A) y resuelva con A\\b.\nSi el condicionamiento no explica una pérdida catastrófica pero una eliminación sin pivoteo sí puede producirla:\n\n¿el problema está en el problema matemático o en el algoritmo?",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion05.html#problema-5-el-costo-tiene-pendiente",
-    "href": "sesiones/sesion05.html#problema-5-el-costo-tiene-pendiente",
-    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "4.6 21. Problema 5: El costo tiene pendiente",
-    "text": "4.6 21. Problema 5: El costo tiene pendiente\nQueremos estudiar experimentalmente cómo crece el tiempo de ejecución de la multiplicación de una matriz por un vector cuando aumenta el tamaño del problema.\nUsaremos la siguiente implementación:\nfunction matporvec(A, x)\n    n, m = size(A)\n    length(x) == m || error(\"Dimensiones incompatibles.\")\n\n    z = zeros(Float64, n)\n\n    for i in 1:n\n        for j in 1:m\n            z[i] += A[i,j] * x[j]\n        end\n    end\n\n    return z\nend\nAhora realice el experimento para\nns = [250, 500, 1000, 2000]\nPara cada valor de \\(n\\):\n\nGenere una matriz aleatoria \\(A\\) de tamaño \\(n\\times n\\) y un vector aleatorio \\(x\\) de longitud \\(n\\).\nMida el tiempo de ejecución de\nmatporvec(A,x)\nRegistre los tiempos obtenidos.\nPara cada par de tamaños consecutivos, calcule\n\\[\np\\approx\n\\frac{\\log(t_2/t_1)}\n     {\\log(n_2/n_1)}.\n\\]\n\nCompare los valores obtenidos de \\(p\\).\n\n¿Se acercan a \\(2\\)?\n¿Por qué esperaríamos un valor cercano a \\(2\\) al observar el código de matporvec?\n¿Por qué los valores experimentales no tienen que ser exactamente iguales a \\(2\\)?",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion05.html#problema-6-la-estructura-vale-dinero",
-    "href": "sesiones/sesion05.html#problema-6-la-estructura-vale-dinero",
-    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "4.7 Problema 6 — La estructura vale dinero",
-    "text": "4.7 Problema 6 — La estructura vale dinero\nn = 2000\n\nA_densa = diagm(\n    -1 =&gt; -ones(n-1),\n     0 =&gt;  2ones(n),\n     1 =&gt; -ones(n-1)\n)\n\nA_tri = Tridiagonal(\n    -ones(n-1),\n     2ones(n),\n    -ones(n-1)\n)\nResuelva ambos sistemas con el mismo \\(b\\) y compare tiempo y memoria.\nLas matrices representan el mismo operador.\n\n¿Por qué no representan el mismo problema computacional?",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion05.html#problema-7-vandermonde-regresa-por-la-puerta-trasera",
-    "href": "sesiones/sesion05.html#problema-7-vandermonde-regresa-por-la-puerta-trasera",
-    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "4.8 Problema 7 — Vandermonde regresa por la puerta trasera",
-    "text": "4.8 Problema 7 — Vandermonde regresa por la puerta trasera\nPara\n\\[\nt_i=\\frac{i}{n},\\qquad i=0,\\ldots,n,\n\\]\nconstruya matrices de Vandermonde para distintos \\(n\\) y calcule cond(V).\nLa interpolación fue nuestra puerta de entrada al capítulo.\n\nAhora que conocemos condicionamiento, ¿qué descubrimos sobre esa puerta?",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion05.html#problema-final-diagnóstico-numérico",
-    "href": "sesiones/sesion05.html#problema-final-diagnóstico-numérico",
-    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
-    "section": "4.9 Problema final — Diagnóstico numérico",
-    "text": "4.9 Problema final — Diagnóstico numérico\nUn compañero afirma:\n\n“El residuo es de orden \\(10^{-14}\\), así que la solución tiene unas catorce cifras correctas.”\n\n¿Está de acuerdo?\nLa respuesta debe usar:\n\nresiduo,\nerror hacia atrás,\nnúmero de condición,\nerror hacia adelante.\n\nNo basta contestar sí o no.",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion03.html",
-    "href": "sesiones/sesion03.html",
-    "title": "Sesión 03: Números de punto flotante",
-    "section": "",
-    "text": "Esta sesión se trabaja con dos herramientas diferentes:\n\nQuarto es nuestro material de estudio.\nJupyter con Julia es nuestro laboratorio computacional.\n\nAntes de asistir a clase:\n\nLee con atención el material hasta la sección Epsilon de máquina.\nNo es necesario memorizar fórmulas.\nIntenta responder las preguntas marcadas como Antes de ejecutar.\nDurante la clase realizaremos los experimentos en un notebook de Jupyter.\n\n\nRegla del laboratorio: antes de ejecutar una celda, intenta predecir qué va a ocurrir.",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 03: Números de punto flotante"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion03.html#material-complementario",
-    "href": "sesiones/sesion03.html#material-complementario",
-    "title": "Sesión 03: Números de punto flotante",
-    "section": "Material complementario",
-    "text": "Material complementario\nPara una explicación más detallada de la representación de los números de punto flotante, el espaciamiento entre números representables y el error de redondeo, consulta:\n📄 Nota sobre números de punto flotante",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 03: Números de punto flotante"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion03.html#pregunta",
-    "href": "sesiones/sesion03.html#pregunta",
-    "title": "Sesión 03: Números de punto flotante",
-    "section": "Pregunta",
-    "text": "Pregunta\n¿Dónde quedó, por ejemplo, \\(1.3\\)?\nEl número real existe, pero no pertenece a este conjunto de números representables. La computadora tendría que sustituirlo por alguno de sus vecinos.",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 03: Números de punto flotante"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion03.html#antes-de-ejecutar",
-    "href": "sesiones/sesion03.html#antes-de-ejecutar",
-    "title": "Sesión 03: Números de punto flotante",
-    "section": "Antes de ejecutar",
-    "text": "Antes de ejecutar\n¿Crees que Julia considera del mismo tipo los números 1 y 1.0?\ntypeof(1)\ntypeof(1.0)\nAunque matemáticamente representan el mismo valor, 1 es normalmente Int64, mientras que 1.0 es Float64.",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 03: Números de punto flotante"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion03.html#antes-de-ejecutar-1",
-    "href": "sesiones/sesion03.html#antes-de-ejecutar-1",
-    "title": "Sesión 03: Números de punto flotante",
-    "section": "Antes de ejecutar",
-    "text": "Antes de ejecutar\n¿Cuántos bits esperas encontrar en un Float64?\nbitstring(1.0)\nCompara:\nbitstring(1.0)\nbitstring(-1.0)\ny después:\nbitstring(1.0)\nbitstring(2.0)\nObserva qué bits cambian.\nEn IEEE 754 de doble precisión se utilizan 64 bits: 1 para el signo, 11 para el exponente y 52 para la parte fraccionaria del significando.",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 03: Números de punto flotante"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion03.html#antes-de-ejecutar-2",
-    "href": "sesiones/sesion03.html#antes-de-ejecutar-2",
-    "title": "Sesión 03: Números de punto flotante",
-    "section": "Antes de ejecutar",
-    "text": "Antes de ejecutar\n¿Qué esperas obtener?\neps()\nComprueba además:\nlog2(eps())\nDeberías encontrar -52.",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 03: Números de punto flotante"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion03.html#antes-de-ejecutar-3",
-    "href": "sesiones/sesion03.html#antes-de-ejecutar-3",
-    "title": "Sesión 03: Números de punto flotante",
-    "section": "Antes de ejecutar",
-    "text": "Antes de ejecutar\nCompara:\neps(1.618)\neps(161.8)\nAhora prueba:\nnextfloat(161.8)\nnextfloat(161.8) - 161.8",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 03: Números de punto flotante"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion03.html#pregunta-1",
-    "href": "sesiones/sesion03.html#pregunta-1",
-    "title": "Sesión 03: Números de punto flotante",
-    "section": "Pregunta",
-    "text": "Pregunta\n¿Por qué aumenta la separación cuando aumenta la magnitud?\nLa clave es que el punto flotante busca mantener aproximadamente constante la precisión relativa, no la precisión absoluta.",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 03: Números de punto flotante"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion03.html#pregunta-2",
-    "href": "sesiones/sesion03.html#pregunta-2",
-    "title": "Sesión 03: Números de punto flotante",
-    "section": "Pregunta",
-    "text": "Pregunta\n¿Cuántos dígitos aproximadamente correctos tiene \\(22/7\\)?",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 03: Números de punto flotante"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion03.html#antes-de-ejecutar-4",
-    "href": "sesiones/sesion03.html#antes-de-ejecutar-4",
-    "title": "Sesión 03: Números de punto flotante",
-    "section": "Antes de ejecutar",
-    "text": "Antes de ejecutar\nPredice:\n(1.0 + e) - 1.0\nDespués prueba:\n1.0 + (e - 1.0)",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 03: Números de punto flotante"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion03.html#pregunta-3",
-    "href": "sesiones/sesion03.html#pregunta-3",
-    "title": "Sesión 03: Números de punto flotante",
-    "section": "Pregunta",
-    "text": "Pregunta\n¿Por qué dos expresiones matemáticamente equivalentes producen resultados diferentes?",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 03: Números de punto flotante"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion01.html",
-    "href": "sesiones/sesion01.html",
-    "title": "Sesión 1: ¿Qué significa calcular numéricamente?",
-    "section": "",
-    "text": "Esta primera sesión tiene dos objetivos:\n\nPresentar la dinámica general del curso y el esquema de aula inversa.\nHacer un diagnóstico breve de los conocimientos que utilizaremos durante el semestre.\n\nAdemás, comenzaremos con una idea fundamental del Análisis Numérico:\n\nUna computadora no trabaja con los números reales de manera exacta; trabaja con representaciones finitas y, por lo tanto, con aproximaciones.",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 1: ¿Qué significa calcular numéricamente?"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion01.html#para-discutir",
-    "href": "sesiones/sesion01.html#para-discutir",
-    "title": "Sesión 1: ¿Qué significa calcular numéricamente?",
-    "section": "Para discutir",
-    "text": "Para discutir\nSin buscar todavía una explicación:\n\n¿Esperabas ese resultado?\n¿Está equivocada la computadora?\n¿Qué significa realmente escribir 0.1 dentro de una computadora?\n¿Mostrar muchas cifras decimales garantiza precisión?\n\nNo necesitamos responder todo hoy. Esta pequeña anomalía será la puerta de entrada a la aritmética de punto flotante.",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 1: ¿Qué significa calcular numéricamente?"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion01.html#problema-1.-aproximación",
-    "href": "sesiones/sesion01.html#problema-1.-aproximación",
-    "title": "Sesión 1: ¿Qué significa calcular numéricamente?",
-    "section": "Problema 1. Aproximación",
-    "text": "Problema 1. Aproximación\nAproxima\n\\[\n\\sqrt{2}\n\\]\ncon cuatro cifras decimales.\nDespués responde:\n¿Qué significa decir que tu resultado es una aproximación?",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 1: ¿Qué significa calcular numéricamente?"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion01.html#problema-2.-sistemas-lineales",
-    "href": "sesiones/sesion01.html#problema-2.-sistemas-lineales",
-    "title": "Sesión 1: ¿Qué significa calcular numéricamente?",
-    "section": "Problema 2. Sistemas lineales",
-    "text": "Problema 2. Sistemas lineales\nSean\n\\[\nA=\n\\begin{pmatrix}\n2 & 1\\\\\n1 & 3\n\\end{pmatrix},\n\\qquad\nb=\n\\begin{pmatrix}\n1\\\\\n2\n\\end{pmatrix}.\n\\]\nResuelve el sistema\n\\[\nAx=b.\n\\]\nSi puedes, indica qué procedimiento utilizaste.",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 1: ¿Qué significa calcular numéricamente?"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion01.html#problema-3.-raíces-de-funciones",
-    "href": "sesiones/sesion01.html#problema-3.-raíces-de-funciones",
-    "title": "Sesión 1: ¿Qué significa calcular numéricamente?",
-    "section": "Problema 3. Raíces de funciones",
-    "text": "Problema 3. Raíces de funciones\nConsidera\n\\[\nf(x)=x^2-2.\n\\]\nSupón que no puedes utilizar directamente una función para calcular \\(\\sqrt{2}\\).\n¿Cómo intentarías encontrar aproximadamente una raíz positiva de \\(f\\)?\nNo necesitas conocer ningún método numérico específico. Describe una estrategia.",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 1: ¿Qué significa calcular numéricamente?"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion01.html#problema-4.-derivación",
-    "href": "sesiones/sesion01.html#problema-4.-derivación",
-    "title": "Sesión 1: ¿Qué significa calcular numéricamente?",
-    "section": "Problema 4. Derivación",
-    "text": "Problema 4. Derivación\nSea\n\\[\nf(x)=e^x.\n\\]\nSabemos que\n[ f’(0)=1. ]\nSi solamente pudieras evaluar la función (f), ¿cómo intentarías aproximar (f’(0))?",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 1: ¿Qué significa calcular numéricamente?"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion01.html#problema-5.-integración",
-    "href": "sesiones/sesion01.html#problema-5.-integración",
-    "title": "Sesión 1: ¿Qué significa calcular numéricamente?",
-    "section": "Problema 5. Integración",
-    "text": "Problema 5. Integración\nConsidera\n\\[\n\\int_0^1 e^{-x^2}\\,dx.\n\\]\nSupón que no conoces una antiderivada.\n¿Cómo intentarías obtener una aproximación numérica de esta integral?",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 1: ¿Qué significa calcular numéricamente?"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion01.html#problema-6.-ecuaciones-diferenciales",
-    "href": "sesiones/sesion01.html#problema-6.-ecuaciones-diferenciales",
-    "title": "Sesión 1: ¿Qué significa calcular numéricamente?",
-    "section": "Problema 6. Ecuaciones diferenciales",
-    "text": "Problema 6. Ecuaciones diferenciales\nConsidera el problema de valor inicial\n\\[\ny'(t)=y(t), \\qquad y(0)=1.\n\\]\nSupón que no conoces la solución exacta.\n¿Cómo intentarías aproximar \\(y(0.1)\\)?",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 1: ¿Qué significa calcular numéricamente?"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion01.html#pregunta",
-    "href": "sesiones/sesion01.html#pregunta",
-    "title": "Sesión 1: ¿Qué significa calcular numéricamente?",
-    "section": "Pregunta",
-    "text": "Pregunta\nSi el residuo es muy pequeño, ¿significa necesariamente que la solución calculada es exacta?\nGuardaremos esta pregunta para más adelante.",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 1: ¿Qué significa calcular numéricamente?"
-    ]
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Análisis Numérico",
-    "section": "",
-    "text": "Este sitio reúne el material de trabajo del curso de Análisis Numérico.\nLa idea central del curso es aprender a construir, utilizar y analizar métodos numéricos para resolver problemas matemáticos con ayuda de la computadora.\nTrabajaremos con Julia como lenguaje principal.\n\n\nUsaremos un esquema de aula inversa. Antes de algunas clases habrá una lectura breve, una pregunta, un experimento o un pequeño fragmento de código.\nEn las sesiones presenciales dedicaremos la mayor parte del tiempo a:\n\ndiscutir ideas;\nresolver problemas;\nprogramar;\ncomparar métodos;\nanalizar errores;\ninterpretar resultados.\n\nNo se espera que el material previo sustituya la clase. Su propósito es llegar con una primera idea para aprovechar mejor el trabajo presencial.\n\n\n\n\n\n¿Qué significa calcular numéricamente?\nPresentación del curso, diagnóstico y primeras preguntas sobre aproximación y cálculo numérico.\nIr a la Sesión 1\n\n\n\nLa computadora también aproxima\nPunto flotante, representación finita, error absoluto y error relativo.\nIr a la Sesión 2\n\n\n\n\nPara las actividades computacionales utilizaremos principalmente:\n\nJulia;\nJupyter;\nun navegador web.\n\nEl material del curso estará disponible en este sitio. No es necesario instalar Quarto para consultar las notas.\n\n\n\n\nObtener un número es apenas el principio.\n¿Cuánto podemos confiar en ese número?",
-    "crumbs": [
-      "Inicio",
-      "Análisis Numérico"
-    ]
-  },
-  {
-    "objectID": "index.html#cómo-trabajaremos",
-    "href": "index.html#cómo-trabajaremos",
-    "title": "Análisis Numérico",
-    "section": "",
-    "text": "Usaremos un esquema de aula inversa. Antes de algunas clases habrá una lectura breve, una pregunta, un experimento o un pequeño fragmento de código.\nEn las sesiones presenciales dedicaremos la mayor parte del tiempo a:\n\ndiscutir ideas;\nresolver problemas;\nprogramar;\ncomparar métodos;\nanalizar errores;\ninterpretar resultados.\n\nNo se espera que el material previo sustituya la clase. Su propósito es llegar con una primera idea para aprovechar mejor el trabajo presencial.",
-    "crumbs": [
-      "Inicio",
-      "Análisis Numérico"
-    ]
-  },
-  {
-    "objectID": "index.html#sesiones",
-    "href": "index.html#sesiones",
-    "title": "Análisis Numérico",
-    "section": "",
-    "text": "¿Qué significa calcular numéricamente?\nPresentación del curso, diagnóstico y primeras preguntas sobre aproximación y cálculo numérico.\nIr a la Sesión 1\n\n\n\nLa computadora también aproxima\nPunto flotante, representación finita, error absoluto y error relativo.\nIr a la Sesión 2",
-    "crumbs": [
-      "Inicio",
-      "Análisis Numérico"
-    ]
-  },
-  {
-    "objectID": "index.html#herramientas",
-    "href": "index.html#herramientas",
-    "title": "Análisis Numérico",
-    "section": "",
-    "text": "Para las actividades computacionales utilizaremos principalmente:\n\nJulia;\nJupyter;\nun navegador web.\n\nEl material del curso estará disponible en este sitio. No es necesario instalar Quarto para consultar las notas.",
-    "crumbs": [
-      "Inicio",
-      "Análisis Numérico"
-    ]
-  },
-  {
-    "objectID": "index.html#una-pregunta-que-nos-acompañará-todo-el-semestre",
-    "href": "index.html#una-pregunta-que-nos-acompañará-todo-el-semestre",
-    "title": "Análisis Numérico",
-    "section": "",
-    "text": "Obtener un número es apenas el principio.\n¿Cuánto podemos confiar en ese número?",
-    "crumbs": [
-      "Inicio",
-      "Análisis Numérico"
-    ]
-  },
-  {
-    "objectID": "sesiones/examen01.html",
-    "href": "sesiones/examen01.html",
-    "title": "Examen 1",
-    "section": "",
-    "text": "Primer examen de Análisis Numérico\nEste examen comprende los temas desarrollados en las sesiones 01 a 04.",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Examen 1"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion02.html",
-    "href": "sesiones/sesion02.html",
-    "title": "Sesión 2: La computadora también aproxima",
-    "section": "",
-    "text": "📄 Representación binaria y punto flotante",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 2: La computadora también aproxima"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion02.html#material-complementario",
-    "href": "sesiones/sesion02.html#material-complementario",
-    "title": "Sesión 2: La computadora también aproxima",
-    "section": "",
-    "text": "📄 Representación binaria y punto flotante",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 2: La computadora también aproxima"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion02.html#dos-minutos-en-pareja",
-    "href": "sesiones/sesion02.html#dos-minutos-en-pareja",
-    "title": "Sesión 2: La computadora también aproxima",
-    "section": "Dos minutos en pareja",
-    "text": "Dos minutos en pareja\n\n¿Cómo puede ocurrir esto en una suma tan sencilla?\n\nElaboren una explicación posible antes de continuar.",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 2: La computadora también aproxima"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion02.html#experimento-en-parejas",
-    "href": "sesiones/sesion02.html#experimento-en-parejas",
-    "title": "Sesión 2: La computadora también aproxima",
-    "section": "Experimento en parejas",
-    "text": "Experimento en parejas\n\nfor x in [1.0, 10.0, 1000.0, 1.0e10]\n    println(x, \"   \", nextfloat(x)-x)\nend\n\n1.0   2.220446049250313e-16\n10.0   1.7763568394002505e-15\n1000.0   1.1368683772161603e-13\n1.0e10   1.9073486328125e-6\n\n\nPregunta: ¿los números de punto flotante están igualmente separados en toda la recta real?",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 2: La computadora también aproxima"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion02.html#votación-rápida",
-    "href": "sesiones/sesion02.html#votación-rápida",
-    "title": "Sesión 2: La computadora también aproxima",
-    "section": "Votación rápida",
-    "text": "Votación rápida\n¿Cuál aproximación considerarías mejor? Explica tu elección a tu compañero.",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 2: La computadora también aproxima"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion04.html",
-    "href": "sesiones/sesion04.html",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "",
-    "text": "En la sesión anterior vimos que los números de punto flotante representan sólo una parte finita de los números reales y que las operaciones realizadas por una computadora pueden introducir errores de redondeo.\nAhora aparecen dos preguntas fundamentales:\n\n¿El problema matemático es sensible a pequeñas perturbaciones en los datos?\n¿El algoritmo que elegimos amplifica innecesariamente los errores?\n\nEstas preguntas conducen a dos conceptos centrales del análisis numérico:\n\ncondicionamiento, que es una propiedad del problema;\nestabilidad, que es una propiedad del algoritmo.\n\n\nIdea guía. Un problema puede estar bien condicionado y, sin embargo, ser resuelto por un algoritmo inestable.\n\nDurante esta sesión seguiremos el esquema:\npredecir → ejecutar → observar → explicar.",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion04.html#cancelación-sustractiva",
-    "href": "sesiones/sesion04.html#cancelación-sustractiva",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "2.1 Cancelación sustractiva",
-    "text": "2.1 Cancelación sustractiva\nCuando se restan dos números cercanos, el resultado puede ser mucho menor que cualquiera de los operandos. En ese proceso pueden perderse cifras significativas.\nPor ejemplo,\n\\[\n1.0000-1.0012=-0.0012.\n\\]\nLos operandos tienen cinco cifras significativas, pero el resultado contiene mucha menos información útil.\nA este fenómeno se le llama cancelación sustractiva.\n\nLa cancelación sustractiva es una de las causas más frecuentes de pérdida importante de precisión en aritmética de punto flotante.",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion04.html#experimento-1-una-resta-aparentemente-inocente",
-    "href": "sesiones/sesion04.html#experimento-1-una-resta-aparentemente-inocente",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "2.2 Experimento 1: una resta aparentemente inocente",
-    "text": "2.2 Experimento 1: una resta aparentemente inocente\nAntes de ejecutar, predice qué debería ocurrir matemáticamente.\nx = 1.0\nfor k in 1:17\n    δ = 10.0^(-k)\n    y = (x + δ) - x\n    println(k, \"   \", δ, \"   \", y)\nend\nObserva cuándo el resultado deja de coincidir con \\(\\delta\\).\nPreguntas\n\n¿Por qué comienza a perderse información?\n¿Qué relación tiene esto con eps()?\n¿Es un error de Julia o una consecuencia de la representación finita?",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion04.html#interpretación",
-    "href": "sesiones/sesion04.html#interpretación",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "3.1 Interpretación",
-    "text": "3.1 Interpretación\nAproximadamente,\n\\[\n\\frac{|\\Delta f|}{|f|}\n\\approx\n\\kappa_f(x)\n\\frac{|\\Delta x|}{|x|}.\n\\]\nPor tanto:\n\nsi \\(\\kappa_f(x)\\) es moderado, el problema está bien condicionado;\nsi \\(\\kappa_f(x)\\) es muy grande, el problema está mal condicionado.\n\nSi\n\\[\n\\kappa_f(x)\\approx 10^d,\n\\]\npodemos esperar perder aproximadamente \\(d\\) cifras decimales de precisión.",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion04.html#algunos-ejemplos",
-    "href": "sesiones/sesion04.html#algunos-ejemplos",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "3.2 Algunos ejemplos",
-    "text": "3.2 Algunos ejemplos\n\n3.2.1 Multiplicación por una constante\nSi\n\\[\nf(x)=cx,\n\\]\nentonces\n\\[\n\\kappa_f(x)\n=\n\\left|\\frac{x c}{cx}\\right|\n=1.\n\\]\nLa multiplicación por una constante no amplifica el error relativo.\n\n\n3.2.2 Suma o resta de una constante\nPara\n\\[\nf(x)=x-c,\n\\]\ntenemos\n\\[\n\\kappa_f(x)\n=\n\\left|\n\\frac{x}{x-c}\n\\right|.\n\\]\nCuando \\(x\\approx c\\), el denominador es pequeño y el número de condición puede ser enorme.\nEsto conecta directamente con la cancelación sustractiva.",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion04.html#experimento-2-observar-el-condicionamiento",
-    "href": "sesiones/sesion04.html#experimento-2-observar-el-condicionamiento",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "3.3 Experimento 2: observar el condicionamiento",
-    "text": "3.3 Experimento 2: observar el condicionamiento\nConsideremos\n\\[\nf(x)=x-1.\n\\]\nκ(x) = abs(x / (x - 1))\n\nfor k in 1:12\n    x = 1 + 10.0^(-k)\n    println(k, \"   x = \", x, \"   κ = \", κ(x))\nend\nAntes de ejecutarlo:\n¿qué esperas que ocurra con \\(\\kappa_f(x)\\) cuando \\(x\\to1\\)?",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion04.html#implementación-en-julia",
-    "href": "sesiones/sesion04.html#implementación-en-julia",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "6.1 Implementación en Julia",
-    "text": "6.1 Implementación en Julia\nNo utilizaremos la biblioteca FNC. Escribiremos nuestro propio algoritmo.\nfunction horner(c, x)\n    n = length(c)\n    y = c[n]\n\n    for k in n-1:-1:1\n        y = x*y + c[k]\n    end\n\n    return y\nend\nProbemos con\n\\[\np(x)=(x-1)^3=x^3-3x^2+3x-1.\n\\]\nLos coeficientes se introducen en orden ascendente:\nc = [-1, 3, -3, 1]\n\nhorner(c, 1.6)",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion04.html#experimento-3-directo-contra-horner",
-    "href": "sesiones/sesion04.html#experimento-3-directo-contra-horner",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "6.2 Experimento 3: directo contra Horner",
-    "text": "6.2 Experimento 3: directo contra Horner\np_directo(x) = 5*x^3 + 4*x^2 + 3*x + 2\np_horner(x)  = 2 + x*(3 + x*(4 + 5*x))\n\nx = 1.23456789\n\np_directo(x), p_horner(x)\nDiscusión\nLos dos algoritmos representan el mismo polinomio.\nPero:\n\n¿realizan las mismas operaciones?\n¿cuál necesita menos?\n¿ser matemáticamente equivalentes garantiza que se comporten igual en punto flotante?\n\nLa última pregunta nos conduce a la estabilidad.",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion04.html#experimento-4-el-algoritmo-ingenuo",
-    "href": "sesiones/sesion04.html#experimento-4-el-algoritmo-ingenuo",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "8.1 Experimento 4: el algoritmo ingenuo",
-    "text": "8.1 Experimento 4: el algoritmo ingenuo\nAntes de ejecutar: ambas raíces son conocidas exactamente. ¿Esperas obtenerlas con precisión comparable?\na = 1.0\nb = -(1e6 + 1e-6)\nc = 1.0\n\nx1 = (-b + sqrt(b^2 - 4*a*c)) / (2*a)\nx2 = (-b - sqrt(b^2 - 4*a*c)) / (2*a)\n\nprintln(\"x1 = \", x1)\nprintln(\"x2 = \", x2)\n\nerror1 = abs(x1 - 1e6) / 1e6\nerror2 = abs(x2 - 1e-6) / 1e-6\n\nprintln(\"error relativo x1 = \", error1)\nprintln(\"error relativo x2 = \", error2)\nUna raíz se obtiene con gran precisión y la otra pierde varias cifras.\n¿Dónde está el culpable?\nEn la raíz pequeña aparece una resta entre números casi iguales:\n\\[\n-b-\\sqrt{b^2-4ac}.\n\\]\nOtra vez encontramos cancelación sustractiva.",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion04.html#experimento-5-evitar-la-cancelación",
-    "href": "sesiones/sesion04.html#experimento-5-evitar-la-cancelación",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "9.1 Experimento 5: evitar la cancelación",
-    "text": "9.1 Experimento 5: evitar la cancelación\na = 1.0\nb = -(1e6 + 1e-6)\nc = 1.0\n\nx1 = (-b + sqrt(b^2 - 4*a*c)) / (2*a)\nx2 = c / (a*x1)\n\nprintln(\"x1 = \", x1)\nprintln(\"x2 = \", x2)\n\nerror2 = abs(x2 - 1e-6) / 1e-6\nprintln(\"error relativo x2 = \", error2)\nAhora compara el error de la raíz pequeña con el obtenido mediante la fórmula directa.\nTenemos dos algoritmos algebraicamente equivalentes en aritmética exacta, pero no necesariamente equivalentes en aritmética de punto flotante.\n\nLección: en análisis numérico importa no sólo qué fórmula usamos, sino también cómo la evaluamos.",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion04.html#representación",
-    "href": "sesiones/sesion04.html#representación",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "12.1 Representación",
-    "text": "12.1 Representación\nLos números reales deben aproximarse mediante números de punto flotante.",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion04.html#problema",
-    "href": "sesiones/sesion04.html#problema",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "12.2 Problema",
-    "text": "12.2 Problema\n\\[\ny=f(x)\n\\]\nEl condicionamiento describe la sensibilidad inherente del problema frente a perturbaciones en los datos.",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion04.html#algoritmo",
-    "href": "sesiones/sesion04.html#algoritmo",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "12.3 Algoritmo",
-    "text": "12.3 Algoritmo\n\\[\n\\widetilde y=\\widetilde f(x)\n\\]\nEs la secuencia concreta de operaciones utilizada para aproximar la solución.",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion04.html#estabilidad-1",
-    "href": "sesiones/sesion04.html#estabilidad-1",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "12.4 Estabilidad",
-    "text": "12.4 Estabilidad\nDescribe si el algoritmo introduce una amplificación de errores mayor de la que el propio problema exige.\nEn forma esquemática:\n\\[\n\\boxed{\\text{datos}}\n\\longrightarrow\n\\boxed{\\text{problema}}\n\\longrightarrow\n\\boxed{\\text{condicionamiento}}\n\\]\n\\[\n\\boxed{\\text{datos en punto flotante}}\n\\longrightarrow\n\\boxed{\\text{algoritmo}}\n\\longrightarrow\n\\boxed{\\text{estabilidad}}\n\\longrightarrow\n\\boxed{\\text{resultado calculado}}\n\\]\nÉsta será una distinción recurrente durante todo el curso.",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion04.html#ejercicio-1.-número-de-condición",
-    "href": "sesiones/sesion04.html#ejercicio-1.-número-de-condición",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.1 Ejercicio 1. Número de condición",
-    "text": "13.1 Ejercicio 1. Número de condición\nUtilizando\n\\[\n\\kappa_f(x)\n=\n\\left|\n\\frac{x f'(x)}{f(x)}\n\\right|,\n\\]\ncalcula el número de condición relativo de:\n\\[\n\\text{a) } f(x)=x^p,\n\\qquad\n\\text{b) } f(x)=e^x,\n\\qquad\n\\text{c) } f(x)=\\cos x.\n\\]\nIdentifica valores de \\(x\\) para los cuales el problema pueda estar mal condicionado.",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion04.html#ejercicio-2.-condicionamiento-y-composición",
-    "href": "sesiones/sesion04.html#ejercicio-2.-condicionamiento-y-composición",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.2 Ejercicio 2. Condicionamiento y composición",
-    "text": "13.2 Ejercicio 2. Condicionamiento y composición\nSean\n\\[\nh(x)=f(g(x)).\n\\]\nDemuestra, utilizando la regla de la cadena, que\n\\[\n\\kappa_h(x)\n=\n\\kappa_f(g(x))\\,\\kappa_g(x).\n\\]\nComprueba después la fórmula para\n\\[\nh(x)=\\sqrt{x+5}.\n\\]",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion04.html#ejercicio-3.-horner",
-    "href": "sesiones/sesion04.html#ejercicio-3.-horner",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.3 Ejercicio 3. Horner",
-    "text": "13.3 Ejercicio 3. Horner\nEscribe en Julia una función que evalúe mediante el algoritmo de Horner\n\\[\np(x)=2x^4-3x^3+5x^2-x+7.\n\\]\nEvalúa el polinomio en\n\\[\nx=1.5.\n\\]\nDespués evalúalo directamente mediante potencias y compara los resultados y el número de multiplicaciones requeridas por cada método.",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion04.html#ejercicio-4.-dos-fórmulas-equivalentes",
-    "href": "sesiones/sesion04.html#ejercicio-4.-dos-fórmulas-equivalentes",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.4 Ejercicio 4. Dos fórmulas equivalentes",
-    "text": "13.4 Ejercicio 4. Dos fórmulas equivalentes\nLas expresiones\n\\[\nf(x)=\\frac{1-\\cos x}{\\sin x},\n\\qquad\ng(x)=\\frac{2\\sin^2(x/2)}{\\sin x}\n\\]\nson matemáticamente equivalentes.\nEn Julia, evalúa ambas para\n\\[\nx=10^{-2},10^{-4},10^{-6},10^{-8}.\n\\]\nConstruye una tabla con los resultados.\nExplica por qué una de las fórmulas puede perder precisión más rápidamente que la otra.",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion04.html#ejercicio-5.-la-fórmula-cuadrática",
-    "href": "sesiones/sesion04.html#ejercicio-5.-la-fórmula-cuadrática",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "13.5 Ejercicio 5. La fórmula cuadrática",
-    "text": "13.5 Ejercicio 5. La fórmula cuadrática\nConsidera\n\\[\np(x)\n=\n(x-10^8)(x-10^{-8}).\n\\]\n\nExpande el polinomio e identifica \\(a,b,c\\).\nCalcula ambas raíces mediante la fórmula cuadrática usual.\nCalcula el error relativo de cada raíz.\nCalcula la raíz grande mediante la fórmula cuadrática y la pequeña usando\n\n\\[\nx_1x_2=\\frac ca.\n\\]\n\nCompara ambos procedimientos y explica el resultado utilizando los conceptos de cancelación sustractiva y estabilidad.",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
-    ]
-  },
-  {
-    "objectID": "sesiones/sesion04.html#fuente-principal",
-    "href": "sesiones/sesion04.html#fuente-principal",
-    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
-    "section": "15.1 Fuente principal",
-    "text": "15.1 Fuente principal\nEl material de esta sesión está basado principalmente en los apartados 1.2–1.5 de:\nTobin A. Driscoll y Richard J. Braun, Fundamentals of Numerical Computation, edición Julia.\nhttps://tobydriscoll.net/fnc-julia/home.html\n👉 Problemas de repaso del Capítulo1",
-    "crumbs": [
-      "Inicio",
-      "Sesiones",
-      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
-    ]
-  },
-  {
     "objectID": "sesiones/sesion06.html",
     "href": "sesiones/sesion06.html",
     "title": "Sesión 06 — Proyecciones, mínimos cuadrados y QR",
@@ -1519,11 +600,923 @@
     ]
   },
   {
-    "objectID": "sesiones/seiones07.html",
-    "href": "sesiones/seiones07.html",
-    "title": "Sesión 07 — Métodos iterativos para sistemas lineales",
+    "objectID": "sesiones/sesion04.html",
+    "href": "sesiones/sesion04.html",
+    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
     "section": "",
-    "text": "1 Prueba\n\nusing LinearAlgebra\nA = [4.0 -1.0; -1.0 4.0]\neigvals(A)\n\n2-element Vector{Float64}:\n 3.0\n 5.0"
+    "text": "En la sesión anterior vimos que los números de punto flotante representan sólo una parte finita de los números reales y que las operaciones realizadas por una computadora pueden introducir errores de redondeo.\nAhora aparecen dos preguntas fundamentales:\n\n¿El problema matemático es sensible a pequeñas perturbaciones en los datos?\n¿El algoritmo que elegimos amplifica innecesariamente los errores?\n\nEstas preguntas conducen a dos conceptos centrales del análisis numérico:\n\ncondicionamiento, que es una propiedad del problema;\nestabilidad, que es una propiedad del algoritmo.\n\n\nIdea guía. Un problema puede estar bien condicionado y, sin embargo, ser resuelto por un algoritmo inestable.\n\nDurante esta sesión seguiremos el esquema:\npredecir → ejecutar → observar → explicar.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion04.html#cancelación-sustractiva",
+    "href": "sesiones/sesion04.html#cancelación-sustractiva",
+    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
+    "section": "2.1 Cancelación sustractiva",
+    "text": "2.1 Cancelación sustractiva\nCuando se restan dos números cercanos, el resultado puede ser mucho menor que cualquiera de los operandos. En ese proceso pueden perderse cifras significativas.\nPor ejemplo,\n\\[\n1.0000-1.0012=-0.0012.\n\\]\nLos operandos tienen cinco cifras significativas, pero el resultado contiene mucha menos información útil.\nA este fenómeno se le llama cancelación sustractiva.\n\nLa cancelación sustractiva es una de las causas más frecuentes de pérdida importante de precisión en aritmética de punto flotante.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion04.html#experimento-1-una-resta-aparentemente-inocente",
+    "href": "sesiones/sesion04.html#experimento-1-una-resta-aparentemente-inocente",
+    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
+    "section": "2.2 Experimento 1: una resta aparentemente inocente",
+    "text": "2.2 Experimento 1: una resta aparentemente inocente\nAntes de ejecutar, predice qué debería ocurrir matemáticamente.\nx = 1.0\nfor k in 1:17\n    δ = 10.0^(-k)\n    y = (x + δ) - x\n    println(k, \"   \", δ, \"   \", y)\nend\nObserva cuándo el resultado deja de coincidir con \\(\\delta\\).\nPreguntas\n\n¿Por qué comienza a perderse información?\n¿Qué relación tiene esto con eps()?\n¿Es un error de Julia o una consecuencia de la representación finita?",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion04.html#interpretación",
+    "href": "sesiones/sesion04.html#interpretación",
+    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
+    "section": "3.1 Interpretación",
+    "text": "3.1 Interpretación\nAproximadamente,\n\\[\n\\frac{|\\Delta f|}{|f|}\n\\approx\n\\kappa_f(x)\n\\frac{|\\Delta x|}{|x|}.\n\\]\nPor tanto:\n\nsi \\(\\kappa_f(x)\\) es moderado, el problema está bien condicionado;\nsi \\(\\kappa_f(x)\\) es muy grande, el problema está mal condicionado.\n\nSi\n\\[\n\\kappa_f(x)\\approx 10^d,\n\\]\npodemos esperar perder aproximadamente \\(d\\) cifras decimales de precisión.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion04.html#algunos-ejemplos",
+    "href": "sesiones/sesion04.html#algunos-ejemplos",
+    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
+    "section": "3.2 Algunos ejemplos",
+    "text": "3.2 Algunos ejemplos\n\n3.2.1 Multiplicación por una constante\nSi\n\\[\nf(x)=cx,\n\\]\nentonces\n\\[\n\\kappa_f(x)\n=\n\\left|\\frac{x c}{cx}\\right|\n=1.\n\\]\nLa multiplicación por una constante no amplifica el error relativo.\n\n\n3.2.2 Suma o resta de una constante\nPara\n\\[\nf(x)=x-c,\n\\]\ntenemos\n\\[\n\\kappa_f(x)\n=\n\\left|\n\\frac{x}{x-c}\n\\right|.\n\\]\nCuando \\(x\\approx c\\), el denominador es pequeño y el número de condición puede ser enorme.\nEsto conecta directamente con la cancelación sustractiva.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion04.html#experimento-2-observar-el-condicionamiento",
+    "href": "sesiones/sesion04.html#experimento-2-observar-el-condicionamiento",
+    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
+    "section": "3.3 Experimento 2: observar el condicionamiento",
+    "text": "3.3 Experimento 2: observar el condicionamiento\nConsideremos\n\\[\nf(x)=x-1.\n\\]\nκ(x) = abs(x / (x - 1))\n\nfor k in 1:12\n    x = 1 + 10.0^(-k)\n    println(k, \"   x = \", x, \"   κ = \", κ(x))\nend\nAntes de ejecutarlo:\n¿qué esperas que ocurra con \\(\\kappa_f(x)\\) cuando \\(x\\to1\\)?",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion04.html#implementación-en-julia",
+    "href": "sesiones/sesion04.html#implementación-en-julia",
+    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
+    "section": "6.1 Implementación en Julia",
+    "text": "6.1 Implementación en Julia\nNo utilizaremos la biblioteca FNC. Escribiremos nuestro propio algoritmo.\nfunction horner(c, x)\n    n = length(c)\n    y = c[n]\n\n    for k in n-1:-1:1\n        y = x*y + c[k]\n    end\n\n    return y\nend\nProbemos con\n\\[\np(x)=(x-1)^3=x^3-3x^2+3x-1.\n\\]\nLos coeficientes se introducen en orden ascendente:\nc = [-1, 3, -3, 1]\n\nhorner(c, 1.6)",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion04.html#experimento-3-directo-contra-horner",
+    "href": "sesiones/sesion04.html#experimento-3-directo-contra-horner",
+    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
+    "section": "6.2 Experimento 3: directo contra Horner",
+    "text": "6.2 Experimento 3: directo contra Horner\np_directo(x) = 5*x^3 + 4*x^2 + 3*x + 2\np_horner(x)  = 2 + x*(3 + x*(4 + 5*x))\n\nx = 1.23456789\n\np_directo(x), p_horner(x)\nDiscusión\nLos dos algoritmos representan el mismo polinomio.\nPero:\n\n¿realizan las mismas operaciones?\n¿cuál necesita menos?\n¿ser matemáticamente equivalentes garantiza que se comporten igual en punto flotante?\n\nLa última pregunta nos conduce a la estabilidad.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion04.html#experimento-4-el-algoritmo-ingenuo",
+    "href": "sesiones/sesion04.html#experimento-4-el-algoritmo-ingenuo",
+    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
+    "section": "8.1 Experimento 4: el algoritmo ingenuo",
+    "text": "8.1 Experimento 4: el algoritmo ingenuo\nAntes de ejecutar: ambas raíces son conocidas exactamente. ¿Esperas obtenerlas con precisión comparable?\na = 1.0\nb = -(1e6 + 1e-6)\nc = 1.0\n\nx1 = (-b + sqrt(b^2 - 4*a*c)) / (2*a)\nx2 = (-b - sqrt(b^2 - 4*a*c)) / (2*a)\n\nprintln(\"x1 = \", x1)\nprintln(\"x2 = \", x2)\n\nerror1 = abs(x1 - 1e6) / 1e6\nerror2 = abs(x2 - 1e-6) / 1e-6\n\nprintln(\"error relativo x1 = \", error1)\nprintln(\"error relativo x2 = \", error2)\nUna raíz se obtiene con gran precisión y la otra pierde varias cifras.\n¿Dónde está el culpable?\nEn la raíz pequeña aparece una resta entre números casi iguales:\n\\[\n-b-\\sqrt{b^2-4ac}.\n\\]\nOtra vez encontramos cancelación sustractiva.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion04.html#experimento-5-evitar-la-cancelación",
+    "href": "sesiones/sesion04.html#experimento-5-evitar-la-cancelación",
+    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
+    "section": "9.1 Experimento 5: evitar la cancelación",
+    "text": "9.1 Experimento 5: evitar la cancelación\na = 1.0\nb = -(1e6 + 1e-6)\nc = 1.0\n\nx1 = (-b + sqrt(b^2 - 4*a*c)) / (2*a)\nx2 = c / (a*x1)\n\nprintln(\"x1 = \", x1)\nprintln(\"x2 = \", x2)\n\nerror2 = abs(x2 - 1e-6) / 1e-6\nprintln(\"error relativo x2 = \", error2)\nAhora compara el error de la raíz pequeña con el obtenido mediante la fórmula directa.\nTenemos dos algoritmos algebraicamente equivalentes en aritmética exacta, pero no necesariamente equivalentes en aritmética de punto flotante.\n\nLección: en análisis numérico importa no sólo qué fórmula usamos, sino también cómo la evaluamos.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion04.html#representación",
+    "href": "sesiones/sesion04.html#representación",
+    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
+    "section": "12.1 Representación",
+    "text": "12.1 Representación\nLos números reales deben aproximarse mediante números de punto flotante.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion04.html#problema",
+    "href": "sesiones/sesion04.html#problema",
+    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
+    "section": "12.2 Problema",
+    "text": "12.2 Problema\n\\[\ny=f(x)\n\\]\nEl condicionamiento describe la sensibilidad inherente del problema frente a perturbaciones en los datos.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion04.html#algoritmo",
+    "href": "sesiones/sesion04.html#algoritmo",
+    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
+    "section": "12.3 Algoritmo",
+    "text": "12.3 Algoritmo\n\\[\n\\widetilde y=\\widetilde f(x)\n\\]\nEs la secuencia concreta de operaciones utilizada para aproximar la solución.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion04.html#estabilidad-1",
+    "href": "sesiones/sesion04.html#estabilidad-1",
+    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
+    "section": "12.4 Estabilidad",
+    "text": "12.4 Estabilidad\nDescribe si el algoritmo introduce una amplificación de errores mayor de la que el propio problema exige.\nEn forma esquemática:\n\\[\n\\boxed{\\text{datos}}\n\\longrightarrow\n\\boxed{\\text{problema}}\n\\longrightarrow\n\\boxed{\\text{condicionamiento}}\n\\]\n\\[\n\\boxed{\\text{datos en punto flotante}}\n\\longrightarrow\n\\boxed{\\text{algoritmo}}\n\\longrightarrow\n\\boxed{\\text{estabilidad}}\n\\longrightarrow\n\\boxed{\\text{resultado calculado}}\n\\]\nÉsta será una distinción recurrente durante todo el curso.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion04.html#ejercicio-1.-número-de-condición",
+    "href": "sesiones/sesion04.html#ejercicio-1.-número-de-condición",
+    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
+    "section": "13.1 Ejercicio 1. Número de condición",
+    "text": "13.1 Ejercicio 1. Número de condición\nUtilizando\n\\[\n\\kappa_f(x)\n=\n\\left|\n\\frac{x f'(x)}{f(x)}\n\\right|,\n\\]\ncalcula el número de condición relativo de:\n\\[\n\\text{a) } f(x)=x^p,\n\\qquad\n\\text{b) } f(x)=e^x,\n\\qquad\n\\text{c) } f(x)=\\cos x.\n\\]\nIdentifica valores de \\(x\\) para los cuales el problema pueda estar mal condicionado.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion04.html#ejercicio-2.-condicionamiento-y-composición",
+    "href": "sesiones/sesion04.html#ejercicio-2.-condicionamiento-y-composición",
+    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
+    "section": "13.2 Ejercicio 2. Condicionamiento y composición",
+    "text": "13.2 Ejercicio 2. Condicionamiento y composición\nSean\n\\[\nh(x)=f(g(x)).\n\\]\nDemuestra, utilizando la regla de la cadena, que\n\\[\n\\kappa_h(x)\n=\n\\kappa_f(g(x))\\,\\kappa_g(x).\n\\]\nComprueba después la fórmula para\n\\[\nh(x)=\\sqrt{x+5}.\n\\]",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion04.html#ejercicio-3.-horner",
+    "href": "sesiones/sesion04.html#ejercicio-3.-horner",
+    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
+    "section": "13.3 Ejercicio 3. Horner",
+    "text": "13.3 Ejercicio 3. Horner\nEscribe en Julia una función que evalúe mediante el algoritmo de Horner\n\\[\np(x)=2x^4-3x^3+5x^2-x+7.\n\\]\nEvalúa el polinomio en\n\\[\nx=1.5.\n\\]\nDespués evalúalo directamente mediante potencias y compara los resultados y el número de multiplicaciones requeridas por cada método.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion04.html#ejercicio-4.-dos-fórmulas-equivalentes",
+    "href": "sesiones/sesion04.html#ejercicio-4.-dos-fórmulas-equivalentes",
+    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
+    "section": "13.4 Ejercicio 4. Dos fórmulas equivalentes",
+    "text": "13.4 Ejercicio 4. Dos fórmulas equivalentes\nLas expresiones\n\\[\nf(x)=\\frac{1-\\cos x}{\\sin x},\n\\qquad\ng(x)=\\frac{2\\sin^2(x/2)}{\\sin x}\n\\]\nson matemáticamente equivalentes.\nEn Julia, evalúa ambas para\n\\[\nx=10^{-2},10^{-4},10^{-6},10^{-8}.\n\\]\nConstruye una tabla con los resultados.\nExplica por qué una de las fórmulas puede perder precisión más rápidamente que la otra.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion04.html#ejercicio-5.-la-fórmula-cuadrática",
+    "href": "sesiones/sesion04.html#ejercicio-5.-la-fórmula-cuadrática",
+    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
+    "section": "13.5 Ejercicio 5. La fórmula cuadrática",
+    "text": "13.5 Ejercicio 5. La fórmula cuadrática\nConsidera\n\\[\np(x)\n=\n(x-10^8)(x-10^{-8}).\n\\]\n\nExpande el polinomio e identifica \\(a,b,c\\).\nCalcula ambas raíces mediante la fórmula cuadrática usual.\nCalcula el error relativo de cada raíz.\nCalcula la raíz grande mediante la fórmula cuadrática y la pequeña usando\n\n\\[\nx_1x_2=\\frac ca.\n\\]\n\nCompara ambos procedimientos y explica el resultado utilizando los conceptos de cancelación sustractiva y estabilidad.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion04.html#fuente-principal",
+    "href": "sesiones/sesion04.html#fuente-principal",
+    "title": "Sesión 04: Condicionamiento, algoritmos y estabilidad",
+    "section": "15.1 Fuente principal",
+    "text": "15.1 Fuente principal\nEl material de esta sesión está basado principalmente en los apartados 1.2–1.5 de:\nTobin A. Driscoll y Richard J. Braun, Fundamentals of Numerical Computation, edición Julia.\nhttps://tobydriscoll.net/fnc-julia/home.html\n👉 Problemas de repaso del Capítulo1",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 04: Condicionamiento, algoritmos y estabilidad"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion02.html",
+    "href": "sesiones/sesion02.html",
+    "title": "Sesión 2: La computadora también aproxima",
+    "section": "",
+    "text": "📄 Representación binaria y punto flotante",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 2: La computadora también aproxima"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion02.html#material-complementario",
+    "href": "sesiones/sesion02.html#material-complementario",
+    "title": "Sesión 2: La computadora también aproxima",
+    "section": "",
+    "text": "📄 Representación binaria y punto flotante",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 2: La computadora también aproxima"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion02.html#dos-minutos-en-pareja",
+    "href": "sesiones/sesion02.html#dos-minutos-en-pareja",
+    "title": "Sesión 2: La computadora también aproxima",
+    "section": "Dos minutos en pareja",
+    "text": "Dos minutos en pareja\n\n¿Cómo puede ocurrir esto en una suma tan sencilla?\n\nElaboren una explicación posible antes de continuar.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 2: La computadora también aproxima"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion02.html#experimento-en-parejas",
+    "href": "sesiones/sesion02.html#experimento-en-parejas",
+    "title": "Sesión 2: La computadora también aproxima",
+    "section": "Experimento en parejas",
+    "text": "Experimento en parejas\n\nfor x in [1.0, 10.0, 1000.0, 1.0e10]\n    println(x, \"   \", nextfloat(x)-x)\nend\n\n1.0   2.220446049250313e-16\n10.0   1.7763568394002505e-15\n1000.0   1.1368683772161603e-13\n1.0e10   1.9073486328125e-6\n\n\nPregunta: ¿los números de punto flotante están igualmente separados en toda la recta real?",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 2: La computadora también aproxima"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion02.html#votación-rápida",
+    "href": "sesiones/sesion02.html#votación-rápida",
+    "title": "Sesión 2: La computadora también aproxima",
+    "section": "Votación rápida",
+    "text": "Votación rápida\n¿Cuál aproximación considerarías mejor? Explica tu elección a tu compañero.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 2: La computadora también aproxima"
+    ]
+  },
+  {
+    "objectID": "sesiones/examen01.html",
+    "href": "sesiones/examen01.html",
+    "title": "Examen 1",
+    "section": "",
+    "text": "Primer examen de Análisis Numérico\nEste examen comprende los temas desarrollados en las sesiones 01 a 04.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Examen 1"
+    ]
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Análisis Numérico",
+    "section": "",
+    "text": "Este sitio reúne el material de trabajo del curso de Análisis Numérico.\nLa idea central del curso es aprender a construir, utilizar y analizar métodos numéricos para resolver problemas matemáticos con ayuda de la computadora.\nTrabajaremos con Julia como lenguaje principal.\n\n\nUsaremos un esquema de aula inversa. Antes de algunas clases habrá una lectura breve, una pregunta, un experimento o un pequeño fragmento de código.\nEn las sesiones presenciales dedicaremos la mayor parte del tiempo a:\n\ndiscutir ideas;\nresolver problemas;\nprogramar;\ncomparar métodos;\nanalizar errores;\ninterpretar resultados.\n\nNo se espera que el material previo sustituya la clase. Su propósito es llegar con una primera idea para aprovechar mejor el trabajo presencial.\n\n\n\n\n\n¿Qué significa calcular numéricamente?\nPresentación del curso, diagnóstico y primeras preguntas sobre aproximación y cálculo numérico.\nIr a la Sesión 1\n\n\n\nLa computadora también aproxima\nPunto flotante, representación finita, error absoluto y error relativo.\nIr a la Sesión 2\n\n\n\n\nPara las actividades computacionales utilizaremos principalmente:\n\nJulia;\nJupyter;\nun navegador web.\n\nEl material del curso estará disponible en este sitio. No es necesario instalar Quarto para consultar las notas.\n\n\n\n\nObtener un número es apenas el principio.\n¿Cuánto podemos confiar en ese número?",
+    "crumbs": [
+      "Inicio",
+      "Análisis Numérico"
+    ]
+  },
+  {
+    "objectID": "index.html#cómo-trabajaremos",
+    "href": "index.html#cómo-trabajaremos",
+    "title": "Análisis Numérico",
+    "section": "",
+    "text": "Usaremos un esquema de aula inversa. Antes de algunas clases habrá una lectura breve, una pregunta, un experimento o un pequeño fragmento de código.\nEn las sesiones presenciales dedicaremos la mayor parte del tiempo a:\n\ndiscutir ideas;\nresolver problemas;\nprogramar;\ncomparar métodos;\nanalizar errores;\ninterpretar resultados.\n\nNo se espera que el material previo sustituya la clase. Su propósito es llegar con una primera idea para aprovechar mejor el trabajo presencial.",
+    "crumbs": [
+      "Inicio",
+      "Análisis Numérico"
+    ]
+  },
+  {
+    "objectID": "index.html#sesiones",
+    "href": "index.html#sesiones",
+    "title": "Análisis Numérico",
+    "section": "",
+    "text": "¿Qué significa calcular numéricamente?\nPresentación del curso, diagnóstico y primeras preguntas sobre aproximación y cálculo numérico.\nIr a la Sesión 1\n\n\n\nLa computadora también aproxima\nPunto flotante, representación finita, error absoluto y error relativo.\nIr a la Sesión 2",
+    "crumbs": [
+      "Inicio",
+      "Análisis Numérico"
+    ]
+  },
+  {
+    "objectID": "index.html#herramientas",
+    "href": "index.html#herramientas",
+    "title": "Análisis Numérico",
+    "section": "",
+    "text": "Para las actividades computacionales utilizaremos principalmente:\n\nJulia;\nJupyter;\nun navegador web.\n\nEl material del curso estará disponible en este sitio. No es necesario instalar Quarto para consultar las notas.",
+    "crumbs": [
+      "Inicio",
+      "Análisis Numérico"
+    ]
+  },
+  {
+    "objectID": "index.html#una-pregunta-que-nos-acompañará-todo-el-semestre",
+    "href": "index.html#una-pregunta-que-nos-acompañará-todo-el-semestre",
+    "title": "Análisis Numérico",
+    "section": "",
+    "text": "Obtener un número es apenas el principio.\n¿Cuánto podemos confiar en ese número?",
+    "crumbs": [
+      "Inicio",
+      "Análisis Numérico"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion01.html",
+    "href": "sesiones/sesion01.html",
+    "title": "Sesión 1: ¿Qué significa calcular numéricamente?",
+    "section": "",
+    "text": "Esta primera sesión tiene dos objetivos:\n\nPresentar la dinámica general del curso y el esquema de aula inversa.\nHacer un diagnóstico breve de los conocimientos que utilizaremos durante el semestre.\n\nAdemás, comenzaremos con una idea fundamental del Análisis Numérico:\n\nUna computadora no trabaja con los números reales de manera exacta; trabaja con representaciones finitas y, por lo tanto, con aproximaciones.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 1: ¿Qué significa calcular numéricamente?"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion01.html#para-discutir",
+    "href": "sesiones/sesion01.html#para-discutir",
+    "title": "Sesión 1: ¿Qué significa calcular numéricamente?",
+    "section": "Para discutir",
+    "text": "Para discutir\nSin buscar todavía una explicación:\n\n¿Esperabas ese resultado?\n¿Está equivocada la computadora?\n¿Qué significa realmente escribir 0.1 dentro de una computadora?\n¿Mostrar muchas cifras decimales garantiza precisión?\n\nNo necesitamos responder todo hoy. Esta pequeña anomalía será la puerta de entrada a la aritmética de punto flotante.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 1: ¿Qué significa calcular numéricamente?"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion01.html#problema-1.-aproximación",
+    "href": "sesiones/sesion01.html#problema-1.-aproximación",
+    "title": "Sesión 1: ¿Qué significa calcular numéricamente?",
+    "section": "Problema 1. Aproximación",
+    "text": "Problema 1. Aproximación\nAproxima\n\\[\n\\sqrt{2}\n\\]\ncon cuatro cifras decimales.\nDespués responde:\n¿Qué significa decir que tu resultado es una aproximación?",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 1: ¿Qué significa calcular numéricamente?"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion01.html#problema-2.-sistemas-lineales",
+    "href": "sesiones/sesion01.html#problema-2.-sistemas-lineales",
+    "title": "Sesión 1: ¿Qué significa calcular numéricamente?",
+    "section": "Problema 2. Sistemas lineales",
+    "text": "Problema 2. Sistemas lineales\nSean\n\\[\nA=\n\\begin{pmatrix}\n2 & 1\\\\\n1 & 3\n\\end{pmatrix},\n\\qquad\nb=\n\\begin{pmatrix}\n1\\\\\n2\n\\end{pmatrix}.\n\\]\nResuelve el sistema\n\\[\nAx=b.\n\\]\nSi puedes, indica qué procedimiento utilizaste.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 1: ¿Qué significa calcular numéricamente?"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion01.html#problema-3.-raíces-de-funciones",
+    "href": "sesiones/sesion01.html#problema-3.-raíces-de-funciones",
+    "title": "Sesión 1: ¿Qué significa calcular numéricamente?",
+    "section": "Problema 3. Raíces de funciones",
+    "text": "Problema 3. Raíces de funciones\nConsidera\n\\[\nf(x)=x^2-2.\n\\]\nSupón que no puedes utilizar directamente una función para calcular \\(\\sqrt{2}\\).\n¿Cómo intentarías encontrar aproximadamente una raíz positiva de \\(f\\)?\nNo necesitas conocer ningún método numérico específico. Describe una estrategia.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 1: ¿Qué significa calcular numéricamente?"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion01.html#problema-4.-derivación",
+    "href": "sesiones/sesion01.html#problema-4.-derivación",
+    "title": "Sesión 1: ¿Qué significa calcular numéricamente?",
+    "section": "Problema 4. Derivación",
+    "text": "Problema 4. Derivación\nSea\n\\[\nf(x)=e^x.\n\\]\nSabemos que\n[ f’(0)=1. ]\nSi solamente pudieras evaluar la función (f), ¿cómo intentarías aproximar (f’(0))?",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 1: ¿Qué significa calcular numéricamente?"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion01.html#problema-5.-integración",
+    "href": "sesiones/sesion01.html#problema-5.-integración",
+    "title": "Sesión 1: ¿Qué significa calcular numéricamente?",
+    "section": "Problema 5. Integración",
+    "text": "Problema 5. Integración\nConsidera\n\\[\n\\int_0^1 e^{-x^2}\\,dx.\n\\]\nSupón que no conoces una antiderivada.\n¿Cómo intentarías obtener una aproximación numérica de esta integral?",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 1: ¿Qué significa calcular numéricamente?"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion01.html#problema-6.-ecuaciones-diferenciales",
+    "href": "sesiones/sesion01.html#problema-6.-ecuaciones-diferenciales",
+    "title": "Sesión 1: ¿Qué significa calcular numéricamente?",
+    "section": "Problema 6. Ecuaciones diferenciales",
+    "text": "Problema 6. Ecuaciones diferenciales\nConsidera el problema de valor inicial\n\\[\ny'(t)=y(t), \\qquad y(0)=1.\n\\]\nSupón que no conoces la solución exacta.\n¿Cómo intentarías aproximar \\(y(0.1)\\)?",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 1: ¿Qué significa calcular numéricamente?"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion01.html#pregunta",
+    "href": "sesiones/sesion01.html#pregunta",
+    "title": "Sesión 1: ¿Qué significa calcular numéricamente?",
+    "section": "Pregunta",
+    "text": "Pregunta\nSi el residuo es muy pequeño, ¿significa necesariamente que la solución calculada es exacta?\nGuardaremos esta pregunta para más adelante.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 1: ¿Qué significa calcular numéricamente?"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion03.html",
+    "href": "sesiones/sesion03.html",
+    "title": "Sesión 03: Números de punto flotante",
+    "section": "",
+    "text": "Esta sesión se trabaja con dos herramientas diferentes:\n\nQuarto es nuestro material de estudio.\nJupyter con Julia es nuestro laboratorio computacional.\n\nAntes de asistir a clase:\n\nLee con atención el material hasta la sección Epsilon de máquina.\nNo es necesario memorizar fórmulas.\nIntenta responder las preguntas marcadas como Antes de ejecutar.\nDurante la clase realizaremos los experimentos en un notebook de Jupyter.\n\n\nRegla del laboratorio: antes de ejecutar una celda, intenta predecir qué va a ocurrir.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 03: Números de punto flotante"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion03.html#material-complementario",
+    "href": "sesiones/sesion03.html#material-complementario",
+    "title": "Sesión 03: Números de punto flotante",
+    "section": "Material complementario",
+    "text": "Material complementario\nPara una explicación más detallada de la representación de los números de punto flotante, el espaciamiento entre números representables y el error de redondeo, consulta:\n📄 Nota sobre números de punto flotante",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 03: Números de punto flotante"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion03.html#pregunta",
+    "href": "sesiones/sesion03.html#pregunta",
+    "title": "Sesión 03: Números de punto flotante",
+    "section": "Pregunta",
+    "text": "Pregunta\n¿Dónde quedó, por ejemplo, \\(1.3\\)?\nEl número real existe, pero no pertenece a este conjunto de números representables. La computadora tendría que sustituirlo por alguno de sus vecinos.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 03: Números de punto flotante"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion03.html#antes-de-ejecutar",
+    "href": "sesiones/sesion03.html#antes-de-ejecutar",
+    "title": "Sesión 03: Números de punto flotante",
+    "section": "Antes de ejecutar",
+    "text": "Antes de ejecutar\n¿Crees que Julia considera del mismo tipo los números 1 y 1.0?\ntypeof(1)\ntypeof(1.0)\nAunque matemáticamente representan el mismo valor, 1 es normalmente Int64, mientras que 1.0 es Float64.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 03: Números de punto flotante"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion03.html#antes-de-ejecutar-1",
+    "href": "sesiones/sesion03.html#antes-de-ejecutar-1",
+    "title": "Sesión 03: Números de punto flotante",
+    "section": "Antes de ejecutar",
+    "text": "Antes de ejecutar\n¿Cuántos bits esperas encontrar en un Float64?\nbitstring(1.0)\nCompara:\nbitstring(1.0)\nbitstring(-1.0)\ny después:\nbitstring(1.0)\nbitstring(2.0)\nObserva qué bits cambian.\nEn IEEE 754 de doble precisión se utilizan 64 bits: 1 para el signo, 11 para el exponente y 52 para la parte fraccionaria del significando.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 03: Números de punto flotante"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion03.html#antes-de-ejecutar-2",
+    "href": "sesiones/sesion03.html#antes-de-ejecutar-2",
+    "title": "Sesión 03: Números de punto flotante",
+    "section": "Antes de ejecutar",
+    "text": "Antes de ejecutar\n¿Qué esperas obtener?\neps()\nComprueba además:\nlog2(eps())\nDeberías encontrar -52.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 03: Números de punto flotante"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion03.html#antes-de-ejecutar-3",
+    "href": "sesiones/sesion03.html#antes-de-ejecutar-3",
+    "title": "Sesión 03: Números de punto flotante",
+    "section": "Antes de ejecutar",
+    "text": "Antes de ejecutar\nCompara:\neps(1.618)\neps(161.8)\nAhora prueba:\nnextfloat(161.8)\nnextfloat(161.8) - 161.8",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 03: Números de punto flotante"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion03.html#pregunta-1",
+    "href": "sesiones/sesion03.html#pregunta-1",
+    "title": "Sesión 03: Números de punto flotante",
+    "section": "Pregunta",
+    "text": "Pregunta\n¿Por qué aumenta la separación cuando aumenta la magnitud?\nLa clave es que el punto flotante busca mantener aproximadamente constante la precisión relativa, no la precisión absoluta.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 03: Números de punto flotante"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion03.html#pregunta-2",
+    "href": "sesiones/sesion03.html#pregunta-2",
+    "title": "Sesión 03: Números de punto flotante",
+    "section": "Pregunta",
+    "text": "Pregunta\n¿Cuántos dígitos aproximadamente correctos tiene \\(22/7\\)?",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 03: Números de punto flotante"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion03.html#antes-de-ejecutar-4",
+    "href": "sesiones/sesion03.html#antes-de-ejecutar-4",
+    "title": "Sesión 03: Números de punto flotante",
+    "section": "Antes de ejecutar",
+    "text": "Antes de ejecutar\nPredice:\n(1.0 + e) - 1.0\nDespués prueba:\n1.0 + (e - 1.0)",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 03: Números de punto flotante"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion03.html#pregunta-3",
+    "href": "sesiones/sesion03.html#pregunta-3",
+    "title": "Sesión 03: Números de punto flotante",
+    "section": "Pregunta",
+    "text": "Pregunta\n¿Por qué dos expresiones matemáticamente equivalentes producen resultados diferentes?",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 03: Números de punto flotante"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion05.html",
+    "href": "sesiones/sesion05.html",
+    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
+    "section": "",
+    "text": "En el capítulo anterior aprendimos que trabajar con números de punto flotante obliga a distinguir entre el problema matemático y el algoritmo que usamos para resolverlo.\nAhora veremos esa distinción en uno de los problemas centrales del cálculo científico:\n\\[\nAx=b.\n\\]\nEste documento está pensado para tres clases de dos horas:\n\nClase 1: de la interpolación a la factorización LU.\nClase 2: eficiencia, pivoteo, normas y condicionamiento.\nClase 3: laboratorio de problemas y experimentos en Pluto.\n\nLa pregunta que atravesará las tres clases será:\n\nJulia produjo una respuesta. ¿Debemos confiar en ella?",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion05.html#aplicación-fuerzas-en-una-armadura",
+    "href": "sesiones/sesion05.html#aplicación-fuerzas-en-una-armadura",
+    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
+    "section": "2.1 Aplicación: fuerzas en una armadura",
+    "text": "2.1 Aplicación: fuerzas en una armadura\nAntes de estudiar cómo resolver sistemas lineales, veamos cómo uno de ellos aparece naturalmente a partir de un problema físico.\n\n\n\nArmadura triangular de tres barras.\n\n\nLos sistemas lineales no aparecen solamente como ejercicios de álgebra. Surgen de manera natural al modelar problemas físicos.\nConsideremos una armadura triangular formada por tres barras. Las fuerzas internas en las barras son\n\\[\nF_{12},\\qquad F_{13},\\qquad F_{23},\n\\]\ny las reacciones en los apoyos son\n\\[\nH_1,\\qquad V_1,\\qquad V_2.\n\\]\nEn el nodo superior actúa una carga vertical conocida (W_3).\nLa idea fundamental es sencilla:\n\nEn cada nodo, la suma de las fuerzas horizontales y verticales debe ser cero.\n\n\n2.1.1 Ecuaciones de equilibrio\nEn el nodo 1 tenemos\n\\[\nV_1 + F_{13}\\sin\\alpha = 0,\n\\]\n\\[\nH_1 + F_{12} + F_{13}\\cos\\alpha = 0.\n\\]\nEn el nodo 2,\n\\[\nV_2 + F_{23}\\sin\\beta = 0,\n\\]\n\\[\n-F_{12} - F_{23}\\cos\\beta = 0.\n\\]\nFinalmente, en el nodo 3,\n\\[\n-F_{13}\\sin\\alpha-F_{23}\\sin\\beta=W_3,\n\\]\n\\[\n-F_{13}\\cos\\alpha+F_{23}\\cos\\beta=0.\n\\]\nTenemos entonces seis ecuaciones lineales para las seis incógnitas\n\\[\nx=\n\\begin{pmatrix}\nV_1\\\\\nH_1\\\\\nV_2\\\\\nF_{12}\\\\\nF_{13}\\\\\nF_{23}\n\\end{pmatrix}.\n\\]\nEl sistema puede escribirse como\n\\[\nAx=b,\n\\]\ndonde\n\\[\nA=\n\\begin{pmatrix}\n1&0&0&0&\\sin\\alpha&0\\\\\n0&1&0&1&\\cos\\alpha&0\\\\\n0&0&1&0&0&\\sin\\beta\\\\\n0&0&0&-1&0&-\\cos\\beta\\\\\n0&0&0&0&-\\sin\\alpha&-\\sin\\beta\\\\\n0&0&0&0&-\\cos\\alpha&\\cos\\beta\n\\end{pmatrix},\n\\]\ny\n\\[\nb=\n\\begin{pmatrix}\n0\\\\\n0\\\\\n0\\\\\n0\\\\\nW_3\\\\\n0\n\\end{pmatrix}.\n\\]\n\n\n2.1.2 Un caso concreto\nTomemos\n\\[\n\\alpha=\\beta=45^\\circ,\n\\qquad\nW_3=1000\\;\\text{N}.\n\\]\nEn Julia:\n\nusing LinearAlgebra\n\nα = deg2rad(45.0)\nβ = deg2rad(45.0)\nW3 = 1000.0\n\nA_truss = [\n    1.0  0.0  0.0   0.0       sin(α)    0.0;\n    0.0  1.0  0.0   1.0       cos(α)    0.0;\n    0.0  0.0  1.0   0.0       0.0       sin(β);\n    0.0  0.0  0.0  -1.0       0.0      -cos(β);\n    0.0  0.0  0.0   0.0      -sin(α)   -sin(β);\n    0.0  0.0  0.0   0.0      -cos(α)    cos(β)\n]\n\nb_truss = [0.0, 0.0, 0.0, 0.0, W3, 0.0]\n\nx_truss = A_truss \\ b_truss\n\n6-element Vector{Float64}:\n  500.0\n    0.0\n  500.0\n  500.00000000000006\n -707.1067811865476\n -707.1067811865476\n\n\nLas componentes de x_truss corresponden, en este orden, a\n\\[\n(V_1,H_1,V_2,F_{12},F_{13},F_{23}).\n\\]\nPara este caso obtenemos aproximadamente\n\\[\nV_1=500\\;\\text{N},\n\\qquad\nH_1=0,\n\\qquad\nV_2=500\\;\\text{N},\n\\]\ny\n\\[\nF_{12}=500\\;\\text{N},\n\\qquad\nF_{13}\\approx-707.1\\;\\text{N},\n\\qquad\nF_{23}\\approx-707.1\\;\\text{N}.\n\\]\nEl signo de las fuerzas internas depende de la convención adoptada. Con la convención anterior, los valores negativos indican que la dirección real de la fuerza es opuesta a la que supusimos inicialmente.\n\n\n2.1.3 ¿Qué queremos observar?\nEl punto importante no es solamente obtener seis números.\nEl proceso fue\n\\[\n\\text{estructura física}\n\\longrightarrow\n\\text{equilibrio de fuerzas}\n\\longrightarrow\n\\text{ecuaciones lineales}\n\\longrightarrow\nAx=bahi cabron ya\n\\longrightarrow\n\\text{solución numérica}.\n\\]\n\nPregunta para la clase:\n¿Qué información física está contenida en la matriz (A), qué información está contenida en (b), y qué representan las componentes de (x)?\n\nEste ejemplo está basado en el tratamiento de fuerzas en una armadura presentado por Laurene V. Fausett en Applied Numerical Analysis Using MATLAB.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion05.html#interpolación-polinomial",
+    "href": "sesiones/sesion05.html#interpolación-polinomial",
+    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
+    "section": "2.2 Interpolación polinomial",
+    "text": "2.2 Interpolación polinomial\nDados \\(n\\) puntos \\((t_i,y_i)\\) buscamos un polinomio de grado menor que \\(n\\),\n\\[\np(t)=c_1+c_2t+\\cdots+c_nt^{n-1},\n\\]\ntal que \\(p(t_i)=y_i\\). Estas condiciones producen\n\\[\n\\begin{bmatrix}\n1&t_1&\\cdots&t_1^{n-1}\\\\\n1&t_2&\\cdots&t_2^{n-1}\\\\\n\\vdots&\\vdots&&\\vdots\\\\\n1&t_n&\\cdots&t_n^{n-1}\n\\end{bmatrix}c=y.\n\\]\nLa matriz es una matriz de Vandermonde. Así, un problema de interpolación nos conduce naturalmente a\n\\[\nVc=y.\n\\]\n\nMuchos problemas que aparentemente no tienen nada que ver con álgebra lineal terminan convertidos en un sistema lineal.\n\n\n2.2.1 Experimento Pluto\nt = [0.0,1.0,2.0,3.0]\ny = [1.0,2.0,0.0,5.0]\nV = [t[i]^j for i in 1:length(t), j in 0:length(t)-1]\nc = V \\ y\nV*c - y\nPredice antes de ejecutar: ¿qué representa c? ¿Por qué el residuo no tiene que ser exactamente cero?",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion05.html#matrices-en-julia",
+    "href": "sesiones/sesion05.html#matrices-en-julia",
+    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
+    "section": "2.3 Matrices en Julia",
+    "text": "2.3 Matrices en Julia\nusing LinearAlgebra\n\nA = [1.0 2.0 3.0;\n     4.0 5.0 6.0;\n     7.0 8.0 10.0]\n\nb = [1.0,2.0,3.0]\n\nsize(A)\nA'\nA*b\nUna matriz no es solamente una tabla de números. Numéricamente conviene pensarla como una transformación lineal.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion05.html#el-problema-central-axb",
+    "href": "sesiones/sesion05.html#el-problema-central-axb",
+    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
+    "section": "2.4 El problema central: \\(Ax=b\\)",
+    "text": "2.4 El problema central: \\(Ax=b\\)\nSi \\(A\\) es invertible, matemáticamente\n\\[\nx=A^{-1}b.\n\\]\nPero eso no significa que debamos calcular la inversa.\nEn Julia usamos\nx = A \\ b\ny no\nx = inv(A)*b\n\nRegla práctica: no calcule la inversa de una matriz para resolver un sistema lineal.\n\nLa expresión matemática y el algoritmo numérico no son la misma cosa.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion05.html#el-residuo",
+    "href": "sesiones/sesion05.html#el-residuo",
+    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
+    "section": "2.5 El residuo",
+    "text": "2.5 El residuo\nSi Julia produce \\(\\tilde{x}\\), podemos calcular\n\\[\nr=b-A\\tilde{x}.\n\\]\nx = A \\ b\nr = b - A*x\nnorm(r)\nGuardemos una pregunta para más adelante:\n\n¿Un residuo pequeño garantiza que \\(\\tilde{x}\\) está cerca de la solución verdadera?\n\n\n2.5.1 Laboratorio: un circuito eléctrico como sistema lineal\nLas leyes de Ohm y Kirchhoff conducen a un sistema lineal para las corrientes de un circuito. En el siguiente laboratorio podrás modificar los voltajes, resolver el sistema y observar también su residuo y condicionamiento.\n👉 Explorar el circuito de tres mallas en Pluto\nPara utilizar las regletas interactivas, descarga el archivo y ábrelo desde Pluto.\n\nPredice → mueve → observa → explica.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion05.html#sistemas-triangulares",
+    "href": "sesiones/sesion05.html#sistemas-triangulares",
+    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
+    "section": "2.6 Sistemas triangulares",
+    "text": "2.6 Sistemas triangulares\nSi \\(L\\) es triangular inferior, \\(Lx=b\\) se resuelve desde la primera ecuación hacia la última: sustitución hacia adelante.\nSi \\(U\\) es triangular superior, usamos sustitución hacia atrás.\nfunction forwardsub(L,b)\n    n = length(b)\n    x = zeros(Float64,n)\n    x[1] = b[1]/L[1,1]\n    for i in 2:n\n        s = sum(L[i,j]*x[j] for j in 1:i-1)\n        x[i] = (b[i]-s)/L[i,i]\n    end\n    return x\nend\nAquí no queremos que un paquete esconda el algoritmo. Queremos verlo respirar.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion05.html#factorización-lu",
+    "href": "sesiones/sesion05.html#factorización-lu",
+    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
+    "section": "2.7 Factorización LU",
+    "text": "2.7 Factorización LU\nBuscamos\n\\[\nA=LU.\n\\]\nEntonces\n\\[\nAx=b\n\\quad\\Longrightarrow\\quad\nLUx=b.\n\\]\nDefiniendo \\(z=Ux\\), resolvemos\n\\[\nLz=b,\\qquad Ux=z.\n\\]\n👉 Factorización LU de una matriz 4×4: ejemplo paso a paso y ejercicio\nPor tanto:\n\nFactorizar \\(A=LU\\).\nResolver \\(Lz=b\\).\nResolver \\(Ux=z\\).\n\nSi tenemos muchos lados derechos \\(b_1,b_2,\\ldots\\), la factorización de \\(A\\) se hace una sola vez.\nF = lu(A)\nx1 = F \\ b1\nx2 = F \\ b2\n\n2.7.1 Laboratorio: nuestro solucionador LU\nAntes de estudiar el pivoteo, trabajaremos con nuestra propia implementación de la factorización LU y las sustituciones hacia adelante y hacia atrás.\n👉 Abrir laboratorio LU en Pluto\nEn este cuaderno resolveremos sistemas lineales sin utilizar A \\ b ni la factorización LU de LinearAlgebra.\n\nExperimento: predice → ejecuta → observa → explica.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion05.html#cierre-de-la-primera-clase",
+    "href": "sesiones/sesion05.html#cierre-de-la-primera-clase",
+    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
+    "section": "2.8 7. Cierre de la primera clase",
+    "text": "2.8 7. Cierre de la primera clase\n\\[\n\\text{interpolación}\\to Ax=b\\to\\text{sistemas triangulares}\\to A=LU.\n\\]\nQuedan dos preguntas:\n\n¿Cuánto cuesta el algoritmo?\n\n\n¿Siempre funciona bien?",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion05.html#eficiencia-y-notación-asintótica",
+    "href": "sesiones/sesion05.html#eficiencia-y-notación-asintótica",
+    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
+    "section": "3.1 Eficiencia y notación asintótica",
+    "text": "3.1 Eficiencia y notación asintótica\nNos interesa cómo crece el trabajo con el tamaño \\(n\\).\n\\[\nn^2+3n+7=O(n^2),\\qquad\n4n^3+2n^2=O(n^3).\n\\]\nUn flop es una operación aritmética de punto flotante.\nEl producto matriz-vector requiere aproximadamente\n\\[\n2n^2\n\\]\nflops, mientras que LU requiere aproximadamente\n\\[\n\\frac{2}{3}n^3.\n\\]\nLa factorización es la parte cara.\n\n3.1.1 Experimento Pluto: ver aparecer \\(n^2\\)\nfunction tiempo_mv(n)\n    A = randn(n,n)\n    x = randn(n)\n    A*x\n    @elapsed A*x\nend\n\nt1 = tiempo_mv(1000)\nt2 = tiempo_mv(2000)\nt2/t1\nPredice: si el trabajo es \\(O(n^2)\\), ¿qué razón esperamos aproximadamente al duplicar \\(n\\)?",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion05.html#el-problema-del-pivote",
+    "href": "sesiones/sesion05.html#el-problema-del-pivote",
+    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
+    "section": "3.2 El problema del pivote",
+    "text": "3.2 El problema del pivote\nLU sin intercambiar filas puede fallar aunque \\(A\\) sea invertible:\n\\[\nA=\n\\begin{bmatrix}\n0&1\\\\\n1&1\n\\end{bmatrix}.\n\\]\nEl primer pivote es cero, pero \\(\\det(A)=-1\\).\nLa eliminación necesita intercambiar filas.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion05.html#pivoteo-parcial-y-estabilidad",
+    "href": "sesiones/sesion05.html#pivoteo-parcial-y-estabilidad",
+    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
+    "section": "3.3 Pivoteo parcial y estabilidad",
+    "text": "3.3 Pivoteo parcial y estabilidad\nAl trabajar en una columna elegimos como pivote el elemento disponible de mayor valor absoluto.\nNo se hace sólo para evitar dividir entre cero. También importa la estabilidad.\nConsidere\n\\[\nA(\\varepsilon)=\n\\begin{bmatrix}\n-\\varepsilon&1\\\\\n1&-1\n\\end{bmatrix}.\n\\]\nSi \\(\\varepsilon\\) es diminuto, usarlo como pivote produce números enormes durante la eliminación.\ne = 1e-12\nA = [-e 1.0; 1.0 -1.0]\nx_exacta = [1.0, 1.0] b = A * x_exacta\nx_nuestra = resolver_LU(A, b)\nA, b, x_nuestra\n\nUn problema bien condicionado puede producir una mala respuesta si usamos un algoritmo inestable. ## Factorización LU con pivoteo parcial\n\nEl pivoteo parcial puede incorporarse directamente al proceso de eliminación. En cada etapa (k), antes de eliminar los elementos situados debajo del pivote, buscamos en la columna (k) el elemento de mayor magnitud entre las filas (k,,n).\nSi este elemento se encuentra en una fila distinta de (k), intercambiamos las dos filas y continuamos la eliminación.\nLos intercambios realizados pueden representarse mediante una matriz de permutación (P). Por esta razón, la factorización obtenida ya no tiene la forma\n\\[\nA=LU,\n\\]\nsino\n\\[\n\\boxed{PA=LU}.\n\\]\n\n3.3.1 Algoritmo\nEn forma esquemática, para (k=1,,n-1):\n\nBuscar\n\\[\np=\\mathop{\\mathrm{arg\\,max}}_{i=k,\\ldots,n}|u_{ik}|.\n\\]\nIntercambiar las filas (k) y (p) de (U).\nRegistrar el mismo intercambio en la matriz de permutación (P).\nSi ya se han calculado multiplicadores en etapas anteriores, intercambiar también las entradas correspondientes de (L).\nPara (i=k+1,,n), calcular\n\\[\nm_{ik}=\\frac{u_{ik}}{u_{kk}},\n\\]\nguardar (m_{ik}) en (L) y efectuar\n\\[\nR_i\\leftarrow R_i-m_{ik}R_k.\n\\]\n\nAl terminar, (L) es triangular inferior, (U) es triangular superior y se cumple\n\\[\nPA=LU.\n\\]\n\n\n3.3.2 Nuestra implementación en Julia\nConstruiremos nuestra propia función\nmi_LU_pivoteo(A)\nque devolverá las tres matrices\nP, L, U\nsin utilizar una factorización LU proporcionada por LinearAlgebra.\nUna vez obtenida la factorización, para resolver\n\\[\nAx=b\n\\]\nusaremos\n\\[\nPAx=Pb,\n\\]\ny como (PA=LU),\n\\[\nLUx=Pb.\n\\]\nPor tanto, resolveremos sucesivamente\n\\[\nLy=Pb\n\\]\nmediante sustitución hacia adelante, y\n\\[\nUx=y\n\\]\nmediante sustitución hacia atrás.\nEn el laboratorio de Pluto construiremos primero una factorización (PA=LU) a mano para una matriz (3). Después haremos que mi_LU_pivoteo(A) realice automáticamente el mismo trabajo. 👉 Explorar la factorización LU con pivoteo en Pluto",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion05.html#normas",
+    "href": "sesiones/sesion05.html#normas",
+    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
+    "section": "3.4 Normas",
+    "text": "3.4 Normas\nNecesitamos medir tamaños y perturbaciones:\n\\[\n\\|x\\|_1=\\sum_i|x_i|,\n\\qquad\n\\|x\\|_2=\\left(\\sum_i|x_i|^2\\right)^{1/2},\n\\qquad\n\\|x\\|_\\infty=\\max_i|x_i|.\n\\]\nx = [2.0,-3.0,1.0,-1.0]\nnorm(x,1)\nnorm(x,2)\nnorm(x,Inf)\nPara una norma matricial inducida,\n\\[\n\\|A\\|=\\max_{x\\ne0}\\frac{\\|Ax\\|}{\\|x\\|},\n\\]\ny por tanto\n\\[\n\\|Ax\\|\\leq\\|A\\|\\|x\\|.\n\\]",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion05.html#condicionamiento-de-axb",
+    "href": "sesiones/sesion05.html#condicionamiento-de-axb",
+    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
+    "section": "3.5 Condicionamiento de \\(Ax=b\\)",
+    "text": "3.5 Condicionamiento de \\(Ax=b\\)\nSi\n\\[\nAx=b\n\\]\ny perturbamos \\(b\\),\n\\[\nA(x+\\Delta x)=b+\\Delta b,\n\\]\nentonces\n\\[\n\\Delta x=A^{-1}\\Delta b.\n\\]\nUsando las desigualdades de las normas obtenemos\n\\[\n\\frac{\\|\\Delta x\\|}{\\|x\\|}\n\\leq\n\\|A\\|\\|A^{-1}\\|\n\\frac{\\|\\Delta b\\|}{\\|b\\|}.\n\\]\nEsto motiva\n\\[\n\\boxed{\\kappa(A)=\\|A\\|\\|A^{-1}\\|}.\n\\]\nSiempre \\(\\kappa(A)\\ge1\\). Si \\(\\kappa(A)\\approx10^t\\), pueden perderse aproximadamente \\(t\\) cifras decimales de precisión.\ncond(A)",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion05.html#el-gran-experimento-pluto-hilbert",
+    "href": "sesiones/sesion05.html#el-gran-experimento-pluto-hilbert",
+    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
+    "section": "3.6 El gran experimento Pluto: Hilbert",
+    "text": "3.6 El gran experimento Pluto: Hilbert\n\\[\nH_{ij}=\\frac{1}{i+j-1}.\n\\]\nhilbert(n) = [1.0/(i+j-1) for i in 1:n, j in 1:n]\n\nn = 6\nH = hilbert(n)\n\nx_exacta = ones(n)\nb = H*x_exacta\nx_calculada = H \\ b\n\nκ = cond(H)\nerror_relativo = norm(x_calculada-x_exacta)/norm(x_exacta)\nresiduo_relativo = norm(b-H*x_calculada)/norm(b)\n\nκ, error_relativo, residuo_relativo\nDespués pruebe n = 10 y n = 14.\nLa pregunta incómoda:\n\n¿Podemos obtener simultáneamente un residuo muy pequeño y una respuesta muy inexacta?\n\nSí. Un residuo pequeño no garantiza un error pequeño cuando el problema está mal condicionado. ### Cuaderno interactivo\n👉 Explorar matrices de Hilbert en Pluto\nEn este cuaderno, una regleta permite variar la dimensión (n) y observar simultáneamente cómo cambian el número de condición, el error relativo y el residuo relativo. Para utilizar las regletas interactivas, descarga el archivo y ábrelo desde Pluto.\n\nRegla del experimento: predice → mueve → observa → explica.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion05.html#error-hacia-adelante-y-hacia-atrás",
+    "href": "sesiones/sesion05.html#error-hacia-adelante-y-hacia-atrás",
+    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
+    "section": "3.7 Error hacia adelante y hacia atrás",
+    "text": "3.7 Error hacia adelante y hacia atrás\nEl residuo\n\\[\nr=b-A\\tilde{x}\n\\]\nimplica\n\\[\nA\\tilde{x}=b-r.\n\\]\nPor tanto, \\(\\tilde{x}\\) es la solución exacta de un problema ligeramente perturbado. Ésta es la idea del error hacia atrás.\nEl condicionamiento conecta ambos mundos:\n\\[\n\\frac{\\|x-\\tilde{x}\\|}{\\|x\\|}\n\\lesssim\n\\kappa(A)\\frac{\\|r\\|}{\\|b\\|}.\n\\]\nComo brújula conceptual:\n\\[\n\\boxed{\n\\text{error final}\n\\approx\n\\text{condicionamiento del problema}\n\\times\n\\text{error del algoritmo}\n}\n\\]",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion05.html#la-estructura-también-es-información",
+    "href": "sesiones/sesion05.html#la-estructura-también-es-información",
+    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
+    "section": "3.8 La estructura también es información",
+    "text": "3.8 La estructura también es información\nUna matriz puede ser triangular, tridiagonal, de banda, dispersa, simétrica o definida positiva.\nEsa información puede cambiar el algoritmo y el costo.\n\n3.8.1 Tridiagonal\nn = 1000\nA = Tridiagonal(-ones(n-1), 2ones(n), -ones(n-1))\nb = ones(n)\nx = A \\ b\n\n\n3.8.2 Simétrica definida positiva\nPara una matriz SPD podemos usar Cholesky,\n\\[\nA=R^TR,\n\\]\ncon costo aproximado\n\\[\n\\frac13n^3\n\\]\nen vez de \\(\\frac23n^3\\) de LU general.\nA = randn(5,5)\nB = A'*A + I\nF = cholesky(B)\n\nAntes de escoger un algoritmo, pregunte qué sabe acerca de la matriz.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion05.html#regla-del-laboratorio",
+    "href": "sesiones/sesion05.html#regla-del-laboratorio",
+    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
+    "section": "4.1 Regla del laboratorio",
+    "text": "4.1 Regla del laboratorio\nPara cada experimento:\n\nPredice.\nEjecuta.\nObserva.\nExplica.\n\nNo queremos saber solamente qué comando escribir. Queremos saber qué pregunta hacerle al resultado.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion05.html#problema-1-inversa-o-sistema",
+    "href": "sesiones/sesion05.html#problema-1-inversa-o-sistema",
+    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
+    "section": "4.2 Problema 1 — ¿Inversa o sistema?",
+    "text": "4.2 Problema 1 — ¿Inversa o sistema?\nA = randn(500,500)\nb = randn(500)\n\n@elapsed A\\b\n@elapsed inv(A)*b\nRepita varias veces.\nDiscuta: ¿cuál es conceptualmente apropiado?, ¿cuál es más rápido?, ¿por qué calcular información que no necesitamos?",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion05.html#problema-2-el-residuo-puede-engañar",
+    "href": "sesiones/sesion05.html#problema-2-el-residuo-puede-engañar",
+    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
+    "section": "4.3 Problema 2 — El residuo puede engañar",
+    "text": "4.3 Problema 2 — El residuo puede engañar\nH = hilbert(12)\nx_exacta = ones(12)\nb = H*x_exacta\nx = H\\b\n\nnorm(b-H*x)/norm(b)\nnorm(x-x_exacta)/norm(x_exacta)\ncond(H)\nJulia produjo una respuesta con residuo pequeño.\n\n¿Debemos confiar en ella?",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion05.html#problema-3-perturbar-los-datos",
+    "href": "sesiones/sesion05.html#problema-3-perturbar-los-datos",
+    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
+    "section": "4.4 Problema 3 — Perturbar los datos",
+    "text": "4.4 Problema 3 — Perturbar los datos\nA = [1.0 1.0; 1.0 1.000001]\nx_exacta = [1.0,1.0]\nb = A*x_exacta\n\ncond(A)\n\nδb = [1e-8,-1e-8]\nx1 = A\\b\nx2 = A\\(b+δb)\n\nnorm(δb)/norm(b)\nnorm(x2-x1)/norm(x1)\nExplique cómo una perturbación diminuta puede producir un cambio mucho mayor en la solución.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion05.html#problema-4-el-pivote-rebelde",
+    "href": "sesiones/sesion05.html#problema-4-el-pivote-rebelde",
+    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
+    "section": "4.5 Problema 4 — El pivote rebelde",
+    "text": "4.5 Problema 4 — El pivote rebelde\nUse\n\\[\nA(\\varepsilon)=\n\\begin{bmatrix}\n-\\varepsilon&1\\\\\n1&-1\n\\end{bmatrix}\n\\]\npara \\(\\varepsilon=10^{-2},10^{-6},10^{-12}\\).\nCalcule cond(A) y resuelva con A\\b.\nSi el condicionamiento no explica una pérdida catastrófica pero una eliminación sin pivoteo sí puede producirla:\n\n¿el problema está en el problema matemático o en el algoritmo?",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion05.html#problema-5-el-costo-tiene-pendiente",
+    "href": "sesiones/sesion05.html#problema-5-el-costo-tiene-pendiente",
+    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
+    "section": "4.6 21. Problema 5: El costo tiene pendiente",
+    "text": "4.6 21. Problema 5: El costo tiene pendiente\nQueremos estudiar experimentalmente cómo crece el tiempo de ejecución de la multiplicación de una matriz por un vector cuando aumenta el tamaño del problema.\nUsaremos la siguiente implementación:\nfunction matporvec(A, x)\n    n, m = size(A)\n    length(x) == m || error(\"Dimensiones incompatibles.\")\n\n    z = zeros(Float64, n)\n\n    for i in 1:n\n        for j in 1:m\n            z[i] += A[i,j] * x[j]\n        end\n    end\n\n    return z\nend\nAhora realice el experimento para\nns = [250, 500, 1000, 2000]\nPara cada valor de \\(n\\):\n\nGenere una matriz aleatoria \\(A\\) de tamaño \\(n\\times n\\) y un vector aleatorio \\(x\\) de longitud \\(n\\).\nMida el tiempo de ejecución de\nmatporvec(A,x)\nRegistre los tiempos obtenidos.\nPara cada par de tamaños consecutivos, calcule\n\\[\np\\approx\n\\frac{\\log(t_2/t_1)}\n     {\\log(n_2/n_1)}.\n\\]\n\nCompare los valores obtenidos de \\(p\\).\n\n¿Se acercan a \\(2\\)?\n¿Por qué esperaríamos un valor cercano a \\(2\\) al observar el código de matporvec?\n¿Por qué los valores experimentales no tienen que ser exactamente iguales a \\(2\\)?",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion05.html#problema-6-la-estructura-vale-dinero",
+    "href": "sesiones/sesion05.html#problema-6-la-estructura-vale-dinero",
+    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
+    "section": "4.7 Problema 6 — La estructura vale dinero",
+    "text": "4.7 Problema 6 — La estructura vale dinero\nn = 2000\n\nA_densa = diagm(\n    -1 =&gt; -ones(n-1),\n     0 =&gt;  2ones(n),\n     1 =&gt; -ones(n-1)\n)\n\nA_tri = Tridiagonal(\n    -ones(n-1),\n     2ones(n),\n    -ones(n-1)\n)\nResuelva ambos sistemas con el mismo \\(b\\) y compare tiempo y memoria.\nLas matrices representan el mismo operador.\n\n¿Por qué no representan el mismo problema computacional?",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion05.html#problema-7-vandermonde-regresa-por-la-puerta-trasera",
+    "href": "sesiones/sesion05.html#problema-7-vandermonde-regresa-por-la-puerta-trasera",
+    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
+    "section": "4.8 Problema 7 — Vandermonde regresa por la puerta trasera",
+    "text": "4.8 Problema 7 — Vandermonde regresa por la puerta trasera\nPara\n\\[\nt_i=\\frac{i}{n},\\qquad i=0,\\ldots,n,\n\\]\nconstruya matrices de Vandermonde para distintos \\(n\\) y calcule cond(V).\nLa interpolación fue nuestra puerta de entrada al capítulo.\n\nAhora que conocemos condicionamiento, ¿qué descubrimos sobre esa puerta?",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
+    ]
+  },
+  {
+    "objectID": "sesiones/sesion05.html#problema-final-diagnóstico-numérico",
+    "href": "sesiones/sesion05.html#problema-final-diagnóstico-numérico",
+    "title": "Sesión 05 — Sistemas lineales: del problema al algoritmo",
+    "section": "4.9 Problema final — Diagnóstico numérico",
+    "text": "4.9 Problema final — Diagnóstico numérico\nUn compañero afirma:\n\n“El residuo es de orden \\(10^{-14}\\), así que la solución tiene unas catorce cifras correctas.”\n\n¿Está de acuerdo?\nLa respuesta debe usar:\n\nresiduo,\nerror hacia atrás,\nnúmero de condición,\nerror hacia adelante.\n\nNo basta contestar sí o no.",
+    "crumbs": [
+      "Inicio",
+      "Sesiones",
+      "Sesión 05 — Sistemas lineales: del problema al algoritmo"
+    ]
   },
   {
     "objectID": "sesiones/sesion07.html",
@@ -1629,110 +1622,5 @@
     "title": "Sesión 07 — Métodos iterativos para sistemas lineales",
     "section": "25.7 Ejercicio 7",
     "text": "25.7 Ejercicio 7\nPara el sistema cíclico con \\(n=20\\), compare:\n\nGauss–Seidel con \\(\\omega=1\\);\nGauss–Seidel con \\(\\omega\\) estimado automáticamente."
-  },
-  {
-    "objectID": "sesiones/sesion07_actualizada.html",
-    "href": "sesiones/sesion07_actualizada.html",
-    "title": "Sesión 07 — Métodos iterativos para sistemas lineales",
-    "section": "",
-    "text": "Al final de esta sesión queremos entender por qué, para ciertos sistemas lineales grandes y dispersos, puede ser más conveniente iterar que aplicar directamente eliminación de Gauss.\nLa ruta será\n\\[\n\\boxed{\n\\text{problema físico}\n\\longrightarrow\n\\text{matriz dispersa}\n\\longrightarrow\n\\text{Jacobi}\n\\longrightarrow\n\\text{Gauss--Seidel}\n\\longrightarrow\n\\text{SOR}\n}\n\\]\ny todo lo implementaremos en Julia."
-  },
-  {
-    "objectID": "sesiones/sesion07_actualizada.html#qué-tiene-que-ver-esto-con-sistemas-lineales",
-    "href": "sesiones/sesion07_actualizada.html#qué-tiene-que-ver-esto-con-sistemas-lineales",
-    "title": "Sesión 07 — Métodos iterativos para sistemas lineales",
-    "section": "4.1 ¿Qué tiene que ver esto con sistemas lineales?",
-    "text": "4.1 ¿Qué tiene que ver esto con sistemas lineales?\nSi numeramos los nodos interiores, las ecuaciones de diferencias finitas producen un sistema\n\\[\nAT=b.\n\\]\nPara una malla de (3) nodos interiores obtenemos nueve incógnitas. Cada ecuación sólo conecta un nodo con sus vecinos, por lo que la matriz contiene muchos ceros.\nÉsta es la primera idea importante:\n\\[\n\\boxed{\\text{la matriz es dispersa y tiene estructura}}\n\\]\nCuando la malla crece, también crece el número de incógnitas, pero cada fila sigue teniendo muy pocos elementos distintos de cero."
-  },
-  {
-    "objectID": "sesiones/sesion07_actualizada.html#ejemplo",
-    "href": "sesiones/sesion07_actualizada.html#ejemplo",
-    "title": "Sesión 07 — Métodos iterativos para sistemas lineales",
-    "section": "7.1 Ejemplo",
-    "text": "7.1 Ejemplo\nConsideremos el sistema\n\\[\n\\begin{aligned}\n4x_1-x_2+x_3 &=12,\\\\\n-x_1+4x_2-2x_3 &=-1,\\\\\nx_1-2x_2+4x_3 &=5.\n\\end{aligned}\n\\]\nDespejando:\n\\[\nx_1=\\frac14(12+x_2-x_3),\n\\]\n\\[\nx_2=\\frac14(-1+x_1+2x_3),\n\\]\n\\[\nx_3=\\frac14(5-x_1+2x_2).\n\\]\nTomemos\n\\[\nx^{(0)}=(0,0,0)^T.\n\\]\nLa primera iteración de Jacobi es\n\\[\nx_1^{(1)}=3,\n\\qquad\nx_2^{(1)}=-0.25,\n\\qquad\nx_3^{(1)}=1.25.\n\\]\nObsérvese que los tres valores fueron calculados usando exclusivamente (x^{(0)})."
-  },
-  {
-    "objectID": "sesiones/sesion07_actualizada.html#tres-casos",
-    "href": "sesiones/sesion07_actualizada.html#tres-casos",
-    "title": "Sesión 07 — Métodos iterativos para sistemas lineales",
-    "section": "13.1 Tres casos",
-    "text": "13.1 Tres casos\nSi\n\\[\n\\omega=1,\n\\]\nobtenemos Gauss–Seidel.\nSi\n\\[\n0&lt;\\omega&lt;1,\n\\]\ntenemos subrelajación.\nSi\n\\[\n1&lt;\\omega&lt;2,\n\\]\ntenemos sobrerrelajación.\nEl método de sobrerrelajación sucesiva se conoce como\n\\[\n\\boxed{\\text{SOR}}\n\\]\npor Successive Over-Relaxation."
-  },
-  {
-    "objectID": "sesiones/sesion07_actualizada.html#la-estructura-importa",
-    "href": "sesiones/sesion07_actualizada.html#la-estructura-importa",
-    "title": "Sesión 07 — Métodos iterativos para sistemas lineales",
-    "section": "24.1 La estructura importa",
-    "text": "24.1 La estructura importa\nLos sistemas provenientes de discretizaciones suelen ser grandes y dispersos."
-  },
-  {
-    "objectID": "sesiones/sesion07_actualizada.html#jacobi",
-    "href": "sesiones/sesion07_actualizada.html#jacobi",
-    "title": "Sesión 07 — Métodos iterativos para sistemas lineales",
-    "section": "24.2 Jacobi",
-    "text": "24.2 Jacobi\nUsa solamente valores de la iteración anterior."
-  },
-  {
-    "objectID": "sesiones/sesion07_actualizada.html#gaussseidel",
-    "href": "sesiones/sesion07_actualizada.html#gaussseidel",
-    "title": "Sesión 07 — Métodos iterativos para sistemas lineales",
-    "section": "24.3 Gauss–Seidel",
-    "text": "24.3 Gauss–Seidel\nUsa inmediatamente la información recién calculada."
-  },
-  {
-    "objectID": "sesiones/sesion07_actualizada.html#sor",
-    "href": "sesiones/sesion07_actualizada.html#sor",
-    "title": "Sesión 07 — Métodos iterativos para sistemas lineales",
-    "section": "24.4 SOR",
-    "text": "24.4 SOR\nIntroduce un factor de relajación\n\\[\n\\omega\n\\]\npara intentar acelerar la convergencia."
-  },
-  {
-    "objectID": "sesiones/sesion07_actualizada.html#ejercicio-1",
-    "href": "sesiones/sesion07_actualizada.html#ejercicio-1",
-    "title": "Sesión 07 — Métodos iterativos para sistemas lineales",
-    "section": "25.1 Ejercicio 1",
-    "text": "25.1 Ejercicio 1\nRealice dos iteraciones de Jacobi para\n\\[\n\\begin{pmatrix}\n4&-1&0\\\\\n-1&4&-1\\\\\n0&-1&4\n\\end{pmatrix}\nx\n=\n\\begin{pmatrix}\n3\\\\2\\\\3\n\\end{pmatrix}\n\\]\npartiendo de\n\\[\nx^{(0)}=0.\n\\]"
-  },
-  {
-    "objectID": "sesiones/sesion07_actualizada.html#ejercicio-2",
-    "href": "sesiones/sesion07_actualizada.html#ejercicio-2",
-    "title": "Sesión 07 — Métodos iterativos para sistemas lineales",
-    "section": "25.2 Ejercicio 2",
-    "text": "25.2 Ejercicio 2\nRepita el ejercicio anterior con Gauss–Seidel.\nCompare ambas aproximaciones."
-  },
-  {
-    "objectID": "sesiones/sesion07_actualizada.html#ejercicio-3",
-    "href": "sesiones/sesion07_actualizada.html#ejercicio-3",
-    "title": "Sesión 07 — Métodos iterativos para sistemas lineales",
-    "section": "25.3 Ejercicio 3",
-    "text": "25.3 Ejercicio 3\nUse Julia para comparar Jacobi y Gauss–Seidel mediante\n\\[\n\\|b-Ax^{(k)}\\|_2.\n\\]"
-  },
-  {
-    "objectID": "sesiones/sesion07_actualizada.html#ejercicio-4",
-    "href": "sesiones/sesion07_actualizada.html#ejercicio-4",
-    "title": "Sesión 07 — Métodos iterativos para sistemas lineales",
-    "section": "25.4 Ejercicio 4",
-    "text": "25.4 Ejercicio 4\nPara el mismo sistema pruebe SOR con\n\\[\n\\omega=0.8,\\quad 1.0,\\quad 1.2,\\quad 1.5.\n\\]\nCompare el número de iteraciones."
-  },
-  {
-    "objectID": "sesiones/sesion07_actualizada.html#ejercicio-5",
-    "href": "sesiones/sesion07_actualizada.html#ejercicio-5",
-    "title": "Sesión 07 — Métodos iterativos para sistemas lineales",
-    "section": "25.5 Ejercicio 5",
-    "text": "25.5 Ejercicio 5\nModifique el tamaño de la placa:\n\\[\nn=10,\\quad 20,\\quad 40.\n\\]\nObserve cómo cambia el número de iteraciones."
-  },
-  {
-    "objectID": "sesiones/sesion07_actualizada.html#ejercicio-6",
-    "href": "sesiones/sesion07_actualizada.html#ejercicio-6",
-    "title": "Sesión 07 — Métodos iterativos para sistemas lineales",
-    "section": "25.6 Ejercicio 6",
-    "text": "25.6 Ejercicio 6\nExplique por qué en el problema de la placa no es indispensable formar explícitamente la matriz (A)."
-  },
-  {
-    "objectID": "sesiones/sesion07_actualizada.html#ejercicio-7",
-    "href": "sesiones/sesion07_actualizada.html#ejercicio-7",
-    "title": "Sesión 07 — Métodos iterativos para sistemas lineales",
-    "section": "25.7 Ejercicio 7",
-    "text": "25.7 Ejercicio 7\nPara el sistema cíclico con (n=20), compare:\n\nGauss–Seidel con ();\nGauss–Seidel con () estimado automáticamente."
   }
 ]
