@@ -192,8 +192,20 @@ window.Quarto = {
 <span class="menu-text">Sesión 5</span></a>
   </li>  
   <li class="nav-item">
+    <a class="nav-link" href="../sesiones/examen02.html"> 
+<span class="menu-text">Examen 2</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../sesiones/soluciones_examen02.html"> 
+<span class="menu-text">Soluciones Examen 2</span></a>
+  </li>  
+  <li class="nav-item">
     <a class="nav-link" href="../sesiones/sesion06.html"> 
 <span class="menu-text">Sesión 6</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../sesiones/sesion07.html"> 
+<span class="menu-text">Sesión 07</span></a>
   </li>  
 </ul>
           </div> <!-- /navcollapse -->
@@ -285,8 +297,26 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../sesiones/examen02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Examen 2</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../sesiones/soluciones_examen02.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Soluciones del Examen 2</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../sesiones/sesion06.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Sesión 06 — Proyecciones, mínimos cuadrados y QR</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../sesiones/sesion07.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Sesión 07 — Métodos iterativos para sistemas lineales</span></a>
   </div>
 </li>
       </ul>
@@ -360,7 +390,10 @@ window.Quarto = {
   </ul></li>
   <li><a href="#clase-4-de-vectores-a-funciones-un-guiño-al-análisis-funcional" id="toc-clase-4-de-vectores-a-funciones-un-guiño-al-análisis-funcional" class="nav-link" data-scroll-target="#clase-4-de-vectores-a-funciones-un-guiño-al-análisis-funcional"><span class="header-section-number">4</span> Clase 4 — De vectores a funciones: un guiño al análisis funcional</a>
   <ul class="collapse">
-  <li><a href="#quién-dijo-que-un-vector-tiene-que-ser-una-lista" id="toc-quién-dijo-que-un-vector-tiene-que-ser-una-lista" class="nav-link" data-scroll-target="#quién-dijo-que-un-vector-tiene-que-ser-una-lista"><span class="header-section-number">4.1</span> ¿Quién dijo que un vector tiene que ser una lista?</a></li>
+  <li><a href="#quién-dijo-que-un-vector-tiene-que-ser-una-lista" id="toc-quién-dijo-que-un-vector-tiene-que-ser-una-lista" class="nav-link" data-scroll-target="#quién-dijo-que-un-vector-tiene-que-ser-una-lista"><span class="header-section-number">4.1</span> ¿Quién dijo que un vector tiene que ser una lista?</a>
+  <ul class="collapse">
+  <li><a href="#cuaderno-pluto-aproximación-de-sinx" id="toc-cuaderno-pluto-aproximación-de-sinx" class="nav-link" data-scroll-target="#cuaderno-pluto-aproximación-de-sinx"><span class="header-section-number">4.1.1</span> Cuaderno Pluto: aproximación de <span class="math inline">\(\sin(x)\)</span></a></li>
+  </ul></li>
   <li><a href="#ortogonalidad-de-funciones" id="toc-ortogonalidad-de-funciones" class="nav-link" data-scroll-target="#ortogonalidad-de-funciones"><span class="header-section-number">4.2</span> Ortogonalidad de funciones</a></li>
   <li><a href="#proyección-sobre-una-función" id="toc-proyección-sobre-una-función" class="nav-link" data-scroll-target="#proyección-sobre-una-función"><span class="header-section-number">4.3</span> Proyección sobre una función</a></li>
   <li><a href="#proyección-sobre-un-subespacio-de-funciones" id="toc-proyección-sobre-un-subespacio-de-funciones" class="nav-link" data-scroll-target="#proyección-sobre-un-subespacio-de-funciones"><span class="header-section-number">4.4</span> Proyección sobre un subespacio de funciones</a></li>
@@ -1616,6 +1649,11 @@ x=(x_1,\ldots,x_n).
 \]</span></p>
 <p>Ahora podemos volver a hablar de longitud, distancia, ortogonalidad y proyección.</p>
 <p>La geometría de <span class="math inline">\(\mathbb R^n\)</span> comienza a sobrevivir en espacios de funciones.</p>
+<section id="cuaderno-pluto-aproximación-de-sinx" class="level3" data-number="4.1.1">
+<h3 data-number="4.1.1" class="anchored" data-anchor-id="cuaderno-pluto-aproximación-de-sinx"><span class="header-section-number">4.1.1</span> Cuaderno Pluto: aproximación de <span class="math inline">\(\sin(x)\)</span></h3>
+<p>En este cuaderno se desarrolla la aproximación de <span class="math inline">\(\sin(x)\)</span> en <span class="math inline">\([0,\pi]\)</span> mediante un polinomio cúbico por mínimos cuadrados.</p>
+<p><a href="proyeccionseno.jl" download=""> Descargar cuaderno Pluto: aproximación de sin(x) </a></p>
+</section>
 </section>
 <section id="ortogonalidad-de-funciones" class="level2" data-number="4.2">
 <h2 data-number="4.2" class="anchored" data-anchor-id="ortogonalidad-de-funciones"><span class="header-section-number">4.2</span> Ortogonalidad de funciones</h2>

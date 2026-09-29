@@ -1555,6 +1555,15 @@ Ahora podemos volver a hablar de longitud, distancia, ortogonalidad y proyecció
 
 La geometría de $\mathbb R^n$ comienza a sobrevivir en espacios de funciones.
 
+### Cuaderno Pluto: aproximación de $\sin(x)$
+
+En este cuaderno se desarrolla la aproximación de $\sin(x)$ en
+$[0,\pi]$ mediante un polinomio cúbico por mínimos cuadrados.
+
+<a href="proyeccionseno.jl" download>
+  Descargar cuaderno Pluto: aproximación de sin(x)
+</a>
+
 ## Ortogonalidad de funciones
 
 Decimos que $f$ y $g$ son ortogonales si

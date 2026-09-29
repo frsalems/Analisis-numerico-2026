@@ -8,7 +8,7 @@
 
 <meta name="author" content="Francisco Sergio Salem Silva">
 
-<title>Soluciones del Examen 1 – Análisis Numérico</title>
+<title>Soluciones del Examen 2 – Análisis Numérico</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -26,6 +26,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -183,7 +218,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../sesiones/sesion01.html">Sesiones</a></li><li class="breadcrumb-item"><a href="../sesiones/soluciones_examen01.html">Soluciones del Examen 1</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../sesiones/sesion01.html">Sesiones</a></li><li class="breadcrumb-item"><a href="../sesiones/soluciones_examen02.html">Soluciones del Examen 2</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -250,7 +285,7 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../sesiones/soluciones_examen01.html" class="sidebar-item-text sidebar-link active">
+  <a href="../sesiones/soluciones_examen01.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Soluciones del Examen 1</span></a>
   </div>
 </li>
@@ -268,7 +303,7 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../sesiones/soluciones_examen02.html" class="sidebar-item-text sidebar-link">
+  <a href="../sesiones/soluciones_examen02.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Soluciones del Examen 2</span></a>
   </div>
 </li>
@@ -295,34 +330,25 @@ window.Quarto = {
         <nav id="TOC" role="doc-toc" class="toc-active">
     <h2 id="toc-title">On this page</h2>
    
+  <ul>
+  <li><a href="#problema-1.-lu-y-solución-de-un-sistema" id="toc-problema-1.-lu-y-solución-de-un-sistema" class="nav-link active" data-scroll-target="#problema-1.-lu-y-solución-de-un-sistema">Problema 1. LU y solución de un sistema</a>
   <ul class="collapse">
-  <li><a href="#nota" id="toc-nota" class="nav-link active" data-scroll-target="#nota"><span class="header-section-number">1</span> Nota</a></li>
-  <li><a href="#problema-1-aproximación-y-error" id="toc-problema-1-aproximación-y-error" class="nav-link" data-scroll-target="#problema-1-aproximación-y-error"><span class="header-section-number">2</span> Problema 1 — Aproximación y error</a></li>
-  <li><a href="#problema-2-sistema-de-punto-flotante-simplificado" id="toc-problema-2-sistema-de-punto-flotante-simplificado" class="nav-link" data-scroll-target="#problema-2-sistema-de-punto-flotante-simplificado"><span class="header-section-number">3</span> Problema 2 — Sistema de punto flotante simplificado</a>
-  <ul class="collapse">
-  <li><a href="#en-el-intervalo-12" id="toc-en-el-intervalo-12" class="nav-link" data-scroll-target="#en-el-intervalo-12"><span class="header-section-number">3.1</span> En el intervalo <span class="math inline">\([1,2)\)</span></a></li>
-  <li><a href="#en-el-intervalo-48" id="toc-en-el-intervalo-48" class="nav-link" data-scroll-target="#en-el-intervalo-48"><span class="header-section-number">3.2</span> En el intervalo <span class="math inline">\([4,8)\)</span></a></li>
+  <li><a href="#sustitución-hacia-adelante" id="toc-sustitución-hacia-adelante" class="nav-link" data-scroll-target="#sustitución-hacia-adelante">Sustitución hacia adelante</a></li>
+  <li><a href="#sustitución-hacia-atrás" id="toc-sustitución-hacia-atrás" class="nav-link" data-scroll-target="#sustitución-hacia-atrás">Sustitución hacia atrás</a></li>
   </ul></li>
-  <li><a href="#problema-3-número-de-condición" id="toc-problema-3-número-de-condición" class="nav-link" data-scroll-target="#problema-3-número-de-condición"><span class="header-section-number">4</span> Problema 3 — Número de condición</a>
-  <ul class="collapse">
-  <li><a href="#a-fxx5" id="toc-a-fxx5" class="nav-link" data-scroll-target="#a-fxx5"><span class="header-section-number">4.1</span> a) <span class="math inline">\(f(x)=x^5\)</span></a></li>
-  <li><a href="#b-fxln-x" id="toc-b-fxln-x" class="nav-link" data-scroll-target="#b-fxln-x"><span class="header-section-number">4.2</span> b) <span class="math inline">\(f(x)=\ln x\)</span></a></li>
-  <li><a href="#c-fxx-2" id="toc-c-fxx-2" class="nav-link" data-scroll-target="#c-fxx-2"><span class="header-section-number">4.3</span> c) <span class="math inline">\(f(x)=x-2\)</span></a></li>
-  </ul></li>
-  <li><a href="#problema-4-método-de-horner" id="toc-problema-4-método-de-horner" class="nav-link" data-scroll-target="#problema-4-método-de-horner"><span class="header-section-number">5</span> Problema 4 — Método de Horner</a></li>
-  <li><a href="#problema-5-dos-fórmulas-matemáticamente-equivalentes" id="toc-problema-5-dos-fórmulas-matemáticamente-equivalentes" class="nav-link" data-scroll-target="#problema-5-dos-fórmulas-matemáticamente-equivalentes"><span class="header-section-number">6</span> Problema 5 — Dos fórmulas matemáticamente equivalentes</a></li>
-  <li><a href="#problema-6-fórmula-cuadrática-y-estabilidad" id="toc-problema-6-fórmula-cuadrática-y-estabilidad" class="nav-link" data-scroll-target="#problema-6-fórmula-cuadrática-y-estabilidad"><span class="header-section-number">7</span> Problema 6 — Fórmula cuadrática y estabilidad</a></li>
-  <li><a href="#síntesis" id="toc-síntesis" class="nav-link" data-scroll-target="#síntesis"><span class="header-section-number">8</span> Síntesis</a></li>
+  <li><a href="#problema-2.-número-de-condición-y-sensibilidad" id="toc-problema-2.-número-de-condición-y-sensibilidad" class="nav-link" data-scroll-target="#problema-2.-número-de-condición-y-sensibilidad">Problema 2. Número de condición y sensibilidad</a></li>
+  <li><a href="#problema-3.-cuando-lu-necesita-ayuda" id="toc-problema-3.-cuando-lu-necesita-ayuda" class="nav-link" data-scroll-target="#problema-3.-cuando-lu-necesita-ayuda">Problema 3. Cuando LU necesita ayuda</a></li>
+  <li><a href="#para-recordar" id="toc-para-recordar" class="nav-link" data-scroll-target="#para-recordar">Para recordar</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../sesiones/sesion01.html">Sesiones</a></li><li class="breadcrumb-item"><a href="../sesiones/soluciones_examen01.html">Soluciones del Examen 1</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../sesiones/sesion01.html">Sesiones</a></li><li class="breadcrumb-item"><a href="../sesiones/soluciones_examen02.html">Soluciones del Examen 2</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Soluciones del Examen 1</h1>
-<p class="subtitle lead">Sesiones 01–04</p>
+<h1 class="title">Soluciones del Examen 2</h1>
+<p class="subtitle lead">Análisis Numérico</p>
 </div>
 
 
@@ -345,340 +371,286 @@ window.Quarto = {
 </header>
 
 
-<section id="nota" class="level1" data-number="1">
-<h1 data-number="1"><span class="header-section-number">1</span> Nota</h1>
-<p>Este documento contiene soluciones desarrolladas del <strong>Examen 1</strong>.<br>
-Conviene mantenerlo fuera del menú público del curso mientras el examen esté vigente.</p>
-</section>
-<section id="problema-1-aproximación-y-error" class="level1" data-number="2">
-<h1 data-number="2"><span class="header-section-number">2</span> Problema 1 — Aproximación y error</h1>
-<p>Se quiere comparar las aproximaciones</p>
+<section id="problema-1.-lu-y-solución-de-un-sistema" class="level1">
+<h1>Problema 1. LU y solución de un sistema</h1>
+<p>Consideramos</p>
 <p><span class="math display">\[
-1.732
-\qquad\text{y}\qquad
-\frac{97}{56}
-\]</span></p>
-<p>con el valor exacto</p>
-<p><span class="math display">\[
-\sqrt{3}\approx 1.732050807568877.
-\]</span></p>
-<p>Usamos</p>
-<p><span class="math display">\[
-E_a=|x-\widetilde x|,
+A=
+\begin{bmatrix}
+2&amp;1&amp;0&amp;1\\
+2&amp;4&amp;1&amp;1\\
+0&amp;3&amp;5&amp;2\\
+2&amp;1&amp;4&amp;8
+\end{bmatrix},
 \qquad
-E_r=\frac{|x-\widetilde x|}{|x|},
+b=
+\begin{bmatrix}
+5\\
+10\\
+3\\
+8
+\end{bmatrix}.
 \]</span></p>
-<p>y como medida de cifras significativamente correctas,</p>
+<p>La factorización sin pivoteo es</p>
 <p><span class="math display">\[
--\log_{10}(E_r).
+A=LU,
 \]</span></p>
-<p>Para <span class="math inline">\(1.732\)</span>:</p>
+<p>con</p>
 <p><span class="math display">\[
-E_a\approx 5.08075689e-05,
-\]</span></p>
-<p><span class="math display">\[
-E_r\approx 2.93337636e-05,
+L=
+\begin{bmatrix}
+1&amp;0&amp;0&amp;0\\
+1&amp;1&amp;0&amp;0\\
+0&amp;1&amp;1&amp;0\\
+1&amp;0&amp;1&amp;1
+\end{bmatrix}
 \]</span></p>
 <p>y</p>
 <p><span class="math display">\[
--\log_{10}(E_r)\approx 4.533.
+U=
+\begin{bmatrix}
+2&amp;1&amp;0&amp;1\\
+0&amp;3&amp;1&amp;0\\
+0&amp;0&amp;4&amp;2\\
+0&amp;0&amp;0&amp;5
+\end{bmatrix}.
 \]</span></p>
-<p>Para</p>
+<section id="sustitución-hacia-adelante" class="level2">
+<h2 class="anchored" data-anchor-id="sustitución-hacia-adelante">Sustitución hacia adelante</h2>
+<p>Resolvemos</p>
 <p><span class="math display">\[
-\frac{97}{56}\approx 1.732142857142857,
+Ly=b.
 \]</span></p>
-<p>obtenemos</p>
+<p>Esto produce</p>
 <p><span class="math display">\[
-E_a\approx 9.20495740e-05,
+y=
+\begin{bmatrix}
+5\\
+5\\
+-2\\
+5
+\end{bmatrix}.
 \]</span></p>
+</section>
+<section id="sustitución-hacia-atrás" class="level2">
+<h2 class="anchored" data-anchor-id="sustitución-hacia-atrás">Sustitución hacia atrás</h2>
+<p>Ahora resolvemos</p>
 <p><span class="math display">\[
-E_r\approx 5.31448463e-05,
+Ux=y.
+\]</span></p>
+<p>De la última ecuación,</p>
+<p><span class="math display">\[
+5x_4=5,
+\]</span></p>
+<p>por lo que</p>
+<p><span class="math display">\[
+x_4=1.
+\]</span></p>
+<p>De la tercera,</p>
+<p><span class="math display">\[
+4x_3+2x_4=-2,
+\]</span></p>
+<p>y entonces</p>
+<p><span class="math display">\[
+x_3=-1.
+\]</span></p>
+<p>De la segunda,</p>
+<p><span class="math display">\[
+3x_2+x_3=5,
+\]</span></p>
+<p>de donde</p>
+<p><span class="math display">\[
+x_2=2.
+\]</span></p>
+<p>Finalmente,</p>
+<p><span class="math display">\[
+2x_1+x_2+x_4=5,
+\]</span></p>
+<p>por lo que</p>
+<p><span class="math display">\[
+x_1=1.
+\]</span></p>
+<p>Así,</p>
+<p><span class="math display">\[
+\boxed{
+x=
+\begin{bmatrix}
+1\\
+2\\
+-1\\
+1
+\end{bmatrix}.
+}
+\]</span></p>
+<p>El residuo es</p>
+<p><span class="math display">\[
+r=b-Ax=0,
+\]</span></p>
+<p>salvo errores de redondeo numérico.</p>
+<p>Por tanto,</p>
+<p><span class="math display">\[
+\boxed{
+\|r\|_2\approx0.
+}
+\]</span></p>
+<p>En Julia puede comprobarse con</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>A <span class="op">\</span> b</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>y debe obtenerse la misma solución.</p>
+<hr>
+</section>
+</section>
+<section id="problema-2.-número-de-condición-y-sensibilidad" class="level1">
+<h1>Problema 2. Número de condición y sensibilidad</h1>
+<p>Tenemos</p>
+<p><span class="math display">\[
+A=
+\begin{bmatrix}
+1&amp;1\\
+1&amp;1.0001
+\end{bmatrix},
+\qquad
+b=
+\begin{bmatrix}
+1\\
+0.9999
+\end{bmatrix}.
+\]</span></p>
+<p>Además,</p>
+<p><span class="math display">\[
+\widetilde b=
+\begin{bmatrix}
+1\\
+0.99991
+\end{bmatrix}.
+\]</span></p>
+<p>Resolvemos</p>
+<p><span class="math display">\[
+Ax=b
 \]</span></p>
 <p>y</p>
 <p><span class="math display">\[
--\log_{10}(E_r)\approx 4.275.
+A\widetilde x=\widetilde b.
 \]</span></p>
-<p>Por tanto, entre estas dos aproximaciones,</p>
+<p>En Julia:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">LinearAlgebra</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> [<span class="fl">1.0</span> <span class="fl">1.0</span>;</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>     <span class="fl">1.0</span> <span class="fl">1.0001</span>]</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> [<span class="fl">1.0</span>, <span class="fl">0.9999</span>]</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>btilde <span class="op">=</span> b <span class="op">+</span> [<span class="fl">0.0</span>, <span class="fl">1e-5</span>]</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> A <span class="op">\</span> b</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>xtilde <span class="op">=</span> A <span class="op">\</span> btilde</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>La solución original es aproximadamente</p>
 <p><span class="math display">\[
-\boxed{1.732}
+x=
+\begin{bmatrix}
+2\\
+-1
+\end{bmatrix}.
 \]</span></p>
-<p>es ligeramente mejor.</p>
-</section>
-<section id="problema-2-sistema-de-punto-flotante-simplificado" class="level1" data-number="3">
-<h1 data-number="3"><span class="header-section-number">3</span> Problema 2 — Sistema de punto flotante simplificado</h1>
-<p>Consideremos el sistema binario normalizado de <strong>tres bits significativos</strong>.</p>
-<p>Un número de la forma</p>
+<p>La solución perturbada es aproximadamente</p>
 <p><span class="math display">\[
-1.b_1b_2\times 2^e
+\widetilde x=
+\begin{bmatrix}
+1.9\\
+-0.9
+\end{bmatrix}.
 \]</span></p>
-<p>tiene tres bits significativos contando el primer <span class="math inline">\(1\)</span>.</p>
-<section id="en-el-intervalo-12" class="level2" data-number="3.1">
-<h2 data-number="3.1" class="anchored" data-anchor-id="en-el-intervalo-12"><span class="header-section-number">3.1</span> En el intervalo <span class="math inline">\([1,2)\)</span></h2>
-<p>Los flotantes son</p>
-<p><span class="math display">\[
-1.00_2,\quad
-1.01_2,\quad
-1.10_2,\quad
-1.11_2.
-\]</span></p>
-<p>En decimal:</p>
-<p><span class="math display">\[
-\boxed{1,\;1.25,\;1.5,\;1.75}.
-\]</span></p>
-<p>La separación es</p>
-<p><span class="math display">\[
-\Delta = 2^{-2}=0.25.
-\]</span></p>
-</section>
-<section id="en-el-intervalo-48" class="level2" data-number="3.2">
-<h2 data-number="3.2" class="anchored" data-anchor-id="en-el-intervalo-48"><span class="header-section-number">3.2</span> En el intervalo <span class="math inline">\([4,8)\)</span></h2>
-<p>Aquí el exponente es <span class="math inline">\(e=2\)</span>, de modo que</p>
-<p><span class="math display">\[
-1.00_2\,2^2,\quad
-1.01_2\,2^2,\quad
-1.10_2\,2^2,\quad
-1.11_2\,2^2.
-\]</span></p>
-<p>En decimal:</p>
-<p><span class="math display">\[
-\boxed{4,\;5,\;6,\;7}.
-\]</span></p>
-<p>La separación ahora es</p>
-<p><span class="math display">\[
-\Delta=1.
-\]</span></p>
-<p>Por tanto, los dos flotantes vecinos de <span class="math inline">\(5.3\)</span> son</p>
-<p><span class="math display">\[
-\boxed{5\quad\text{y}\quad6}.
-\]</span></p>
-<p>Este ejemplo muestra que el espaciamiento entre flotantes aumenta cuando crece la magnitud del número.</p>
-</section>
-</section>
-<section id="problema-3-número-de-condición" class="level1" data-number="4">
-<h1 data-number="4"><span class="header-section-number">4</span> Problema 3 — Número de condición</h1>
-<p>Para una función escalar diferenciable,</p>
-<p><span class="math display">\[
-\kappa_f(x)
-=
-\left|
-\frac{x f'(x)}{f(x)}
-\right|.
-\]</span></p>
-<section id="a-fxx5" class="level2" data-number="4.1">
-<h2 data-number="4.1" class="anchored" data-anchor-id="a-fxx5"><span class="header-section-number">4.1</span> a) <span class="math inline">\(f(x)=x^5\)</span></h2>
-<p>Como</p>
-<p><span class="math display">\[
-f'(x)=5x^4,
-\]</span></p>
-<p>tenemos</p>
-<p><span class="math display">\[
-\kappa_f(x)
-=
-\left|
-\frac{x(5x^4)}{x^5}
-\right|
-=
-\boxed{5},
-\]</span></p>
-<p>para <span class="math inline">\(x\neq0\)</span>.</p>
-<p>El problema tiene condicionamiento relativo constante.</p>
-</section>
-<section id="b-fxln-x" class="level2" data-number="4.2">
-<h2 data-number="4.2" class="anchored" data-anchor-id="b-fxln-x"><span class="header-section-number">4.2</span> b) <span class="math inline">\(f(x)=\ln x\)</span></h2>
-<p>Como</p>
-<p><span class="math display">\[
-f'(x)=\frac1x,
-\]</span></p>
-<p>entonces</p>
-<p><span class="math display">\[
-\kappa_f(x)
-=
-\left|
-\frac{x(1/x)}{\ln x}
-\right|
-=
-\boxed{\frac1{|\ln x|}}.
-\]</span></p>
-<p>Cuando <span class="math inline">\(x\to1\)</span>,</p>
-<p><span class="math display">\[
-\ln x\to0,
-\]</span></p>
-<p>y por tanto</p>
-<p><span class="math display">\[
-\kappa_f(x)\to\infty.
-\]</span></p>
-<p>Así, evaluar <span class="math inline">\(\ln x\)</span> cerca de <span class="math inline">\(1\)</span> es un problema relativamente mal condicionado.</p>
-</section>
-<section id="c-fxx-2" class="level2" data-number="4.3">
-<h2 data-number="4.3" class="anchored" data-anchor-id="c-fxx-2"><span class="header-section-number">4.3</span> c) <span class="math inline">\(f(x)=x-2\)</span></h2>
-<p>Tenemos <span class="math inline">\(f'(x)=1\)</span>, por lo que</p>
+<p>El número de condición en norma 2 es</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cond</span>(A,<span class="fl">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>y resulta aproximadamente</p>
 <p><span class="math display">\[
 \boxed{
-\kappa_f(x)
-=
-\left|
-\frac{x}{x-2}
-\right|
-}.
-\]</span></p>
-<p>Cuando <span class="math inline">\(x\to2\)</span>, el número de condición crece sin límite.</p>
-</section>
-</section>
-<section id="problema-4-método-de-horner" class="level1" data-number="5">
-<h1 data-number="5"><span class="header-section-number">5</span> Problema 4 — Método de Horner</h1>
-<p>Sea</p>
-<p><span class="math display">\[
-p(x)=3x^4-5x^3+2x^2+4x-6.
-\]</span></p>
-<p>La forma de Horner es</p>
-<p><span class="math display">\[
-\boxed{
-p(x)=(((3x-5)x+2)x+4)x-6.
+\kappa_2(A)\approx 4.0\times10^4.
 }
 \]</span></p>
-<p>Para <span class="math inline">\(x=1.7\)</span>:</p>
+<p>El cambio relativo en los datos es</p>
 <p><span class="math display">\[
-p(1.7)
-=
-7.0713.
+\frac{\|\widetilde b-b\|_2}{\|b\|_2}.
 \]</span></p>
-<p>Por tanto,</p>
+<p>En Julia:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>cambio_b <span class="op">=</span> <span class="fu">norm</span>(btilde<span class="op">-</span>b)<span class="op">/</span><span class="fu">norm</span>(b)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>El cambio relativo en la solución es</p>
 <p><span class="math display">\[
-\boxed{p(1.7)\approx 7.0713}.
+\frac{\|\widetilde x-x\|_2}{\|x\|_2}.
 \]</span></p>
-<p>La forma de Horner utiliza solamente <strong>cuatro multiplicaciones</strong> para un polinomio de grado cuatro.</p>
-<p>Además reduce el número de operaciones intermedias y evita calcular explícitamente</p>
+<p>En Julia:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>cambio_x <span class="op">=</span> <span class="fu">norm</span>(xtilde<span class="op">-</span>x)<span class="op">/</span><span class="fu">norm</span>(x)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>La estimación basada en el número de condición es</p>
 <p><span class="math display">\[
-x^2,\;x^3,\;x^4.
+\kappa_2(A)
+\frac{\|\widetilde b-b\|_2}{\|b\|_2}.
 \]</span></p>
+<p>El valor grande de <span class="math inline">\(\kappa_2(A)\)</span> indica que el problema es sensible: pequeñas perturbaciones relativas en los datos pueden producir cambios relativos mucho mayores en la solución.</p>
+<hr>
 </section>
-<section id="problema-5-dos-fórmulas-matemáticamente-equivalentes" class="level1" data-number="6">
-<h1 data-number="6"><span class="header-section-number">6</span> Problema 5 — Dos fórmulas matemáticamente equivalentes</h1>
-<p>Consideremos</p>
+<section id="problema-3.-cuando-lu-necesita-ayuda" class="level1">
+<h1>Problema 3. Cuando LU necesita ayuda</h1>
+<p>Consideramos</p>
 <p><span class="math display">\[
-f_1(x)=\sqrt{1+x}-1
+A=
+\begin{bmatrix}
+0&amp;2&amp;1\\
+1&amp;-2&amp;-3\\
+2&amp;3&amp;1
+\end{bmatrix},
+\qquad
+b=
+\begin{bmatrix}
+3\\
+0\\
+7
+\end{bmatrix}.
 \]</span></p>
-<p>y la expresión racionalizada</p>
+<p>El primer pivote es</p>
 <p><span class="math display">\[
-f_2(x)=\frac{x}{\sqrt{1+x}+1}.
+a_{11}=0.
 \]</span></p>
-<p>Matemáticamente son equivalentes porque</p>
+<p>Por tanto, la eliminación gaussiana sin pivoteo no puede comenzar, ya que requeriría dividir entre cero.</p>
+<p>Intercambiamos, por ejemplo, la primera y la tercera fila:</p>
 <p><span class="math display">\[
-\sqrt{1+x}-1
-=
-\frac{(\sqrt{1+x}-1)(\sqrt{1+x}+1)}{\sqrt{1+x}+1}
-=
-\frac{x}{\sqrt{1+x}+1}.
+P A=
+\begin{bmatrix}
+2&amp;3&amp;1\\
+1&amp;-2&amp;-3\\
+0&amp;2&amp;1
+\end{bmatrix},
 \]</span></p>
-<p>En aritmética <code>Float64</code> se obtienen aproximadamente:</p>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th style="text-align: right;"><span class="math inline">\(x\)</span></th>
-<th style="text-align: right;"><span class="math inline">\(\sqrt{1+x}-1\)</span></th>
-<th style="text-align: right;"><span class="math inline">\(x/(\sqrt{1+x}+1)\)</span></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: right;"><code>1e-02</code></td>
-<td style="text-align: right;"><code>4.9875621120889502e-03</code></td>
-<td style="text-align: right;"><code>4.9875621120890265e-03</code></td>
-</tr>
-<tr class="even">
-<td style="text-align: right;"><code>1e-04</code></td>
-<td style="text-align: right;"><code>4.9998750062396624e-05</code></td>
-<td style="text-align: right;"><code>4.9998750062496100e-05</code></td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;"><code>1e-08</code></td>
-<td style="text-align: right;"><code>4.9999999696126451e-09</code></td>
-<td style="text-align: right;"><code>4.9999999874999999e-09</code></td>
-</tr>
-<tr class="even">
-<td style="text-align: right;"><code>1e-12</code></td>
-<td style="text-align: right;"><code>5.0004445029117051e-13</code></td>
-<td style="text-align: right;"><code>4.9999999999987498e-13</code></td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;"><code>1e-16</code></td>
-<td style="text-align: right;"><code>0.0000000000000000e+00</code></td>
-<td style="text-align: right;"><code>4.9999999999999999e-17</code></td>
-</tr>
-</tbody>
-</table>
-<p>Para valores moderados de (x), ambas expresiones producen resultados muy parecidos.</p>
-<p>Sin embargo, cuando (x) es muy pequeño,</p>
-<p>[ , ]</p>
-<p>y en</p>
-<p>[ -1 ]</p>
-<p>se restan dos números casi iguales. Aparece <strong>cancelación sustractiva</strong>.</p>
-<p>En particular, para</p>
-<p>[ x=10^{-16}, ]</p>
-<p>la primera expresión puede producir</p>
-<p>[ 0, ]</p>
-<p>mientras que la forma racionalizada produce aproximadamente</p>
-<p>[ 5^{-17}. ]</p>
-<p>Por ello, la forma</p>
-<p>[ ]</p>
-<p>es numéricamente más estable para (x) pequeño.</p>
-</section>
-<section id="problema-6-fórmula-cuadrática-y-estabilidad" class="level1" data-number="7">
-<h1 data-number="7"><span class="header-section-number">7</span> Problema 6 — Fórmula cuadrática y estabilidad</h1>
-<p>Consideremos</p>
-<p>[ (x-10<sup>7)(x-10</sup>{-7})=0. ]</p>
-<p>Al expandir,</p>
-<p>[ x<sup>2-(10</sup>7+10^{-7})x+1=0. ]</p>
-<p>Las raíces exactas son</p>
-<p>[ ]</p>
-<p>Con la fórmula cuadrática habitual,</p>
-<p>[ x_{1,2} = , ]</p>
-<p>la raíz grande se calcula sin dificultad. En <code>Float64</code> se obtiene aproximadamente</p>
+<p>y</p>
 <p><span class="math display">\[
-x_1\approx 10000000.
+P b=
+\begin{bmatrix}
+7\\
+0\\
+3
+\end{bmatrix}.
 \]</span></p>
-<p>Para la raíz pequeña, la resta</p>
-<p><span class="math display">\[
--b-\sqrt{b^2-4ac}
-\]</span></p>
-<p>involucra dos números casi iguales. Numéricamente puede obtenerse</p>
-<p><span class="math display">\[
-x_2\approx 9.9651515483856201e-08,
-\]</span></p>
-<p>en lugar de <span class="math inline">\(10^{-7}\)</span>.</p>
-<p>La forma estable consiste en calcular primero la raíz grande y usar el producto de las raíces:</p>
-<p><span class="math display">\[
-x_1x_2=\frac{c}{a}=1.
-\]</span></p>
-<p>Por tanto,</p>
-<p><span class="math display">\[
-x_2=\frac1{x_1},
-\]</span></p>
-<p>y obtenemos</p>
+<p>A partir de aquí puede aplicarse eliminación LU.</p>
+<p>La solución del sistema original es</p>
 <p><span class="math display">\[
 \boxed{
-x_2\approx 9.9999999999999995e-08
-}.
-\]</span></p>
-<p>Así evitamos la cancelación sustractiva.</p>
-</section>
-<section id="síntesis" class="level1" data-number="8">
-<h1 data-number="8"><span class="header-section-number">8</span> Síntesis</h1>
-<p>Los seis problemas tienen una misma idea de fondo:</p>
-<p><span class="math display">\[
-\boxed{
-\text{una fórmula correcta no garantiza un cálculo numéricamente confiable}
+x=
+\begin{bmatrix}
+1\\
+2\\
+-1
+\end{bmatrix}.
 }
 \]</span></p>
-<p>En particular:</p>
-<ul>
-<li>el error absoluto y relativo permiten comparar aproximaciones;</li>
-<li>el espaciamiento de los flotantes depende de la magnitud;</li>
-<li>el número de condición pertenece al <strong>problema</strong>;</li>
-<li>Horner cambia el algoritmo sin cambiar el polinomio;</li>
-<li>expresiones algebraicamente equivalentes pueden comportarse de manera muy distinta en punto flotante;</li>
-<li>una reformulación estable puede recuperar cifras que la fórmula ingenua pierde.</li>
-</ul>
+<p>La comprobación debe dar</p>
+<p><span class="math display">\[
+\|b-Ax\|_2\approx0.
+\]</span></p>
+<p>El pivoteo permite evitar pivotes nulos o muy pequeños y mejora la robustez numérica del proceso de eliminación.</p>
+</section>
+<section id="para-recordar" class="level1">
+<h1>Para recordar</h1>
+<p><span class="math display">\[
+\boxed{\text{LU}\longrightarrow\text{solución}\longrightarrow\text{condicionamiento}\longrightarrow\text{pivoteo}}
+\]</span></p>
 
 
 </section>

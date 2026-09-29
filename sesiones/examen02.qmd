@@ -1,0 +1,219 @@
+---
+title: "Examen 2"
+subtitle: "Análisis Numérico"
+author: "Francisco Sergio Salem Silva"
+format: html
+---
+
+## Indicaciones
+
+**Tiempo: 60 minutos**
+
+Puede consultar sus apuntes, libros, cuadernos Pluto y programas propios.  
+Puede utilizar Julia.  
+**No se permite el uso de Internet.**
+
+En los problemas donde se indique deberá utilizar sus propias rutinas de
+factorización LU, sustitución hacia adelante y sustitución hacia atrás.
+
+La instrucción `A \ b` puede utilizarse únicamente como comprobación final
+cuando así se indique.
+
+---
+
+## Problema 1. LU y solución de un sistema [35 puntos]
+
+Considere
+
+$$
+A=
+\begin{bmatrix}
+2&1&0&1\\
+2&4&1&1\\
+0&3&5&2\\
+2&1&4&8
+\end{bmatrix},
+\qquad
+b=
+\begin{bmatrix}
+5\\
+10\\
+3\\
+8
+\end{bmatrix}.
+$$
+
+Usando **sus propios programas** y **sin pivoteo**:
+
+1. Calcule una factorización
+
+$$
+A=LU.
+$$
+
+2. Resuelva
+
+$$
+Ly=b
+$$
+
+mediante sustitución hacia adelante.
+
+3. Resuelva
+
+$$
+Ux=y
+$$
+
+mediante sustitución hacia atrás.
+
+4. Muestre las matrices $L$, $U$, el vector $y$ y la solución $x$.
+
+5. Calcule el residuo
+
+$$
+r=b-Ax
+$$
+
+y su norma
+
+$$
+\|r\|_2.
+$$
+
+6. Sólo al final compare su resultado con
+
+A \ b
+
+y explique brevemente qué significa que ambos resultados sean prácticamente iguales.
+
+---
+
+## Problema 2. Número de condición y sensibilidad [35 puntos]
+
+Considere
+
+$$
+A=
+\begin{bmatrix}
+1&1\\
+1&1.0001
+\end{bmatrix},
+\qquad
+b=
+\begin{bmatrix}
+1\\
+0.9999
+\end{bmatrix}.
+$$
+
+Defina una pequeña perturbación
+
+$$
+\widetilde b=
+b+
+\begin{bmatrix}
+0\\
+10^{-5}
+\end{bmatrix}.
+$$
+
+Puede utilizar las herramientas de `LinearAlgebra` de Julia.
+
+1. **Resuelva numéricamente**
+
+$$
+Ax=b,
+\qquad
+A\widetilde x=\widetilde b,
+$$
+
+sin calcular explícitamente $A^{-1}$.
+
+2. Calcule
+
+$$
+\kappa_2(A).
+$$
+
+3. Calcule el cambio relativo en los datos,
+
+$$
+\frac{\|\widetilde b-b\|_2}{\|b\|_2},
+$$
+
+y el cambio relativo en la solución,
+
+$$
+\frac{\|\widetilde x-x\|_2}{\|x\|_2}.
+$$
+
+4. Compare el cambio relativo de la solución con
+
+$$
+\kappa_2(A)
+\frac{\|\widetilde b-b\|_2}{\|b\|_2}.
+$$
+
+5. Con base en los resultados anteriores, explique qué indica el valor de
+
+$$
+\kappa_2(A)
+$$
+
+acerca de la sensibilidad de la solución $x$ ante pequeñas perturbaciones en $b$.
+
+---
+
+## Problema 3. Cuando LU necesita ayuda [30 puntos]
+
+Considere
+
+$$
+A=
+\begin{bmatrix}
+0&2&1\\
+1&-2&-3\\
+2&3&1
+\end{bmatrix},
+\qquad
+b=
+\begin{bmatrix}
+3\\
+0\\
+7
+\end{bmatrix}.
+$$
+
+1. Intente aplicar su algoritmo de LU **sin pivoteo**.  
+   ¿Qué ocurre y por qué?
+
+2. Intercambie las filas necesarias para obtener un primer pivote adecuado.
+
+3. Aplique entonces sus rutinas de LU, sustitución hacia adelante y sustitución
+   hacia atrás para encontrar $x$.
+
+4. Compruebe el resultado calculando
+
+$$
+\|b-Ax\|_2
+$$
+
+usando el sistema original.
+
+5. Explique brevemente:
+
+> ¿Qué papel juega el pivoteo en la factorización LU?
+
+
+
+$$
+\boxed{
+\text{algoritmo}
+\longrightarrow
+\text{condicionamiento}
+\longrightarrow
+\text{pivoteo}
+}
+$$
+```

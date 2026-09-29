@@ -26,6 +26,10 @@ website:
         text: Soluciones
       - href: sesiones/sesion05.qmd
         text: Sesión 5
+      - href: sesiones/examen02.qmd
+        text: Examen 2
+      - href: sesiones/soluciones_examen02.qmd
+        text: Soluciones Examen 2
       - href: sesiones/sesion06.qmd
         text: Sesión 6
       - href: sesiones/sesion07.qmd
@@ -45,7 +49,10 @@ website:
           - sesiones/examen01.qmd
           - sesiones/soluciones_examen01.qmd
           - sesiones/sesion05.qmd
+          - sesiones/examen02.qmd
+          - sesiones/soluciones_examen02.qmd
           - sesiones/sesion06.qmd
+          - sesiones/sesion07.qmd
 
 format:
   html:

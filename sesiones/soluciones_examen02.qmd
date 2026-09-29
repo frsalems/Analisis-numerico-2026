@@ -1,0 +1,383 @@
+---
+title: "Soluciones del Examen 2"
+subtitle: "Análisis Numérico"
+author: "Francisco Sergio Salem Silva"
+format: html
+---
+
+# Problema 1. LU y solución de un sistema
+
+Consideramos
+
+$$
+A=
+\begin{bmatrix}
+2&1&0&1\\
+2&4&1&1\\
+0&3&5&2\\
+2&1&4&8
+\end{bmatrix},
+\qquad
+b=
+\begin{bmatrix}
+5\\
+10\\
+3\\
+8
+\end{bmatrix}.
+$$
+
+La factorización sin pivoteo es
+
+$$
+A=LU,
+$$
+
+con
+
+$$
+L=
+\begin{bmatrix}
+1&0&0&0\\
+1&1&0&0\\
+0&1&1&0\\
+1&0&1&1
+\end{bmatrix}
+$$
+
+y
+
+$$
+U=
+\begin{bmatrix}
+2&1&0&1\\
+0&3&1&0\\
+0&0&4&2\\
+0&0&0&5
+\end{bmatrix}.
+$$
+
+## Sustitución hacia adelante
+
+Resolvemos
+
+$$
+Ly=b.
+$$
+
+Esto produce
+
+$$
+y=
+\begin{bmatrix}
+5\\
+5\\
+-2\\
+5
+\end{bmatrix}.
+$$
+
+## Sustitución hacia atrás
+
+Ahora resolvemos
+
+$$
+Ux=y.
+$$
+
+De la última ecuación,
+
+$$
+5x_4=5,
+$$
+
+por lo que
+
+$$
+x_4=1.
+$$
+
+De la tercera,
+
+$$
+4x_3+2x_4=-2,
+$$
+
+y entonces
+
+$$
+x_3=-1.
+$$
+
+De la segunda,
+
+$$
+3x_2+x_3=5,
+$$
+
+de donde
+
+$$
+x_2=2.
+$$
+
+Finalmente,
+
+$$
+2x_1+x_2+x_4=5,
+$$
+
+por lo que
+
+$$
+x_1=1.
+$$
+
+Así,
+
+$$
+\boxed{
+x=
+\begin{bmatrix}
+1\\
+2\\
+-1\\
+1
+\end{bmatrix}.
+}
+$$
+
+El residuo es
+
+$$
+r=b-Ax=0,
+$$
+
+salvo errores de redondeo numérico.
+
+Por tanto,
+
+$$
+\boxed{
+\|r\|_2\approx0.
+}
+$$
+
+En Julia puede comprobarse con
+
+```julia
+A \ b
+```
+
+y debe obtenerse la misma solución.
+
+---
+
+# Problema 2. Número de condición y sensibilidad
+
+Tenemos
+
+$$
+A=
+\begin{bmatrix}
+1&1\\
+1&1.0001
+\end{bmatrix},
+\qquad
+b=
+\begin{bmatrix}
+1\\
+0.9999
+\end{bmatrix}.
+$$
+
+Además,
+
+$$
+\widetilde b=
+\begin{bmatrix}
+1\\
+0.99991
+\end{bmatrix}.
+$$
+
+Resolvemos
+
+$$
+Ax=b
+$$
+
+y
+
+$$
+A\widetilde x=\widetilde b.
+$$
+
+En Julia:
+
+```julia
+using LinearAlgebra
+
+A = [1.0 1.0;
+     1.0 1.0001]
+
+b = [1.0, 0.9999]
+
+btilde = b + [0.0, 1e-5]
+
+x = A \ b
+xtilde = A \ btilde
+```
+
+La solución original es aproximadamente
+
+$$
+x=
+\begin{bmatrix}
+2\\
+-1
+\end{bmatrix}.
+$$
+
+La solución perturbada es aproximadamente
+
+$$
+\widetilde x=
+\begin{bmatrix}
+1.9\\
+-0.9
+\end{bmatrix}.
+$$
+
+El número de condición en norma 2 es
+
+```julia
+cond(A,2)
+```
+
+y resulta aproximadamente
+
+$$
+\boxed{
+\kappa_2(A)\approx 4.0\times10^4.
+}
+$$
+
+El cambio relativo en los datos es
+
+$$
+\frac{\|\widetilde b-b\|_2}{\|b\|_2}.
+$$
+
+En Julia:
+
+```julia
+cambio_b = norm(btilde-b)/norm(b)
+```
+
+El cambio relativo en la solución es
+
+$$
+\frac{\|\widetilde x-x\|_2}{\|x\|_2}.
+$$
+
+En Julia:
+
+```julia
+cambio_x = norm(xtilde-x)/norm(x)
+```
+
+La estimación basada en el número de condición es
+
+$$
+\kappa_2(A)
+\frac{\|\widetilde b-b\|_2}{\|b\|_2}.
+$$
+
+El valor grande de $\kappa_2(A)$ indica que el problema es sensible:
+pequeñas perturbaciones relativas en los datos pueden producir cambios
+relativos mucho mayores en la solución.
+
+---
+
+# Problema 3. Cuando LU necesita ayuda
+
+Consideramos
+
+$$
+A=
+\begin{bmatrix}
+0&2&1\\
+1&-2&-3\\
+2&3&1
+\end{bmatrix},
+\qquad
+b=
+\begin{bmatrix}
+3\\
+0\\
+7
+\end{bmatrix}.
+$$
+
+El primer pivote es
+
+$$
+a_{11}=0.
+$$
+
+Por tanto, la eliminación gaussiana sin pivoteo no puede comenzar,
+ya que requeriría dividir entre cero.
+
+Intercambiamos, por ejemplo, la primera y la tercera fila:
+
+$$
+P A=
+\begin{bmatrix}
+2&3&1\\
+1&-2&-3\\
+0&2&1
+\end{bmatrix},
+$$
+
+y
+
+$$
+P b=
+\begin{bmatrix}
+7\\
+0\\
+3
+\end{bmatrix}.
+$$
+
+A partir de aquí puede aplicarse eliminación LU.
+
+La solución del sistema original es
+
+$$
+\boxed{
+x=
+\begin{bmatrix}
+1\\
+2\\
+-1
+\end{bmatrix}.
+}
+$$
+
+La comprobación debe dar
+
+$$
+\|b-Ax\|_2\approx0.
+$$
+
+El pivoteo permite evitar pivotes nulos o muy pequeños y mejora la
+robustez numérica del proceso de eliminación.
+
+
+# Para recordar
+
+$$
+\boxed{\text{LU}\longrightarrow\text{solución}\longrightarrow\text{condicionamiento}\longrightarrow\text{pivoteo}}
+$$
