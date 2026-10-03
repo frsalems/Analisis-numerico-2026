@@ -522,7 +522,7 @@ begin
         k2,
         hist2,
         marker=:circle,
-        yscale=:log10,
+
         xlabel="iteración k",
         ylabel="norma del residuo",
         title="Convergencia de Gradiente Conjugado",
@@ -710,7 +710,7 @@ begin
     plot(
         kk,
         hist_cg,
-        yscale=:log10,
+        
         xlabel="iteración k",
         ylabel="||rₖ||₂",
         title="CG para un sistema disperso",
@@ -739,24 +739,17 @@ No esperamos identidad bit por bit, pero sí diferencias muy pequeñas.
 """
 
 # ╔═╡ 37a49d91-989f-43db-8818-805db80980d3
-begin
-    x_paquete = cg(
-        A_poisson,
-        b_poisson;
-        reltol=1e-10,
-        maxiter=500
-    )
+md"""
+# 12. Comparación con la solución directa y con el paquete
 
-    x_directa = A_poisson \ b_poisson
+Comparamos tres procedimientos:
 
-    (
-        residuo_manual = norm(b_poisson - A_poisson*x_cg),
-        residuo_paquete = norm(b_poisson - A_poisson*x_paquete),
-        residuo_directa = norm(b_poisson - A_poisson*x_directa),
-        diferencia_manual_directa = norm(x_cg - x_directa),
-        diferencia_paquete_directa = norm(x_paquete - x_directa)
-    )
-end
+- **Gradiente Conjugado implementado por nosotros**
+- la función `cg(A,b)` de `IterativeSolvers`
+- la solución directa de Julia, `A \\ b`
+
+No esperamos identidad bit por bit, pero sí diferencias muy pequeñas.
+"""
 
 # ╔═╡ 927e0c35-db70-49df-b52b-5a97b9c2e1d8
 md"""
@@ -2003,7 +1996,7 @@ version = "1.13.0+0"
 # ╟─bde2d8f5-b934-4050-8c05-817b807e4cea
 # ╟─82c65fd6-2a4b-4bdd-af2d-c0ec86f7e189
 # ╟─a8b4abda-6c99-419f-9bf6-0e544822a798
-# ╠═6640cf70-110b-4ac5-b970-7e1ebe934a82
+# ╟─6640cf70-110b-4ac5-b970-7e1ebe934a82
 # ╟─95071e43-c68e-43de-abac-f7dc8121d5c8
 # ╟─10458cb3-4bb4-4624-ac05-31bef00ef95e
 # ╟─cb33e076-ecf0-4564-8a32-372c066897d2
