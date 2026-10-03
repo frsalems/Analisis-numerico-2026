@@ -33,7 +33,7 @@ $$
 
 y todo lo implementaremos en **Julia**.
 
----
+------------------------------------------------------------------------
 
 # ¿De dónde sale la ecuación que vamos a resolver?
 
@@ -67,8 +67,8 @@ $$
 
 donde
 
-- $\rho$ es la densidad del material,
-- $c$ es su calor específico.
+-   $\rho$ es la densidad del material,
+-   $c$ es su calor específico.
 
 Sustituyendo la ley de Fourier,
 
@@ -210,7 +210,7 @@ $$
 
 Cuando la malla crece, también crece el número de incógnitas, pero cada fila sigue teniendo muy pocos elementos distintos de cero.
 
----
+------------------------------------------------------------------------
 
 # ¿Por qué no usar siempre eliminación de Gauss?
 
@@ -220,15 +220,15 @@ Pero en un sistema grande y disperso, una eliminación puede producir **fill-in*
 
 Esto puede aumentar:
 
-- el almacenamiento,
-- el tiempo de cómputo,
-- y la pérdida de la estructura original.
+-   el almacenamiento,
+-   el tiempo de cómputo,
+-   y la pérdida de la estructura original.
 
 Los métodos iterativos, en cambio, pueden trabajar directamente con las relaciones locales del problema.
 
 En algunos casos ni siquiera necesitamos almacenar la matriz $A$ completa.
 
----
+------------------------------------------------------------------------
 
 # Idea general de un método iterativo
 
@@ -270,7 +270,7 @@ $$
 
 es pequeño, entonces $x^{(k)}$ satisface aproximadamente el sistema.
 
----
+------------------------------------------------------------------------
 
 # Método de Jacobi
 
@@ -353,7 +353,7 @@ $$
 
 Obsérvese que los tres valores fueron calculados usando exclusivamente $x^{(0)}$.
 
----
+------------------------------------------------------------------------
 
 # Jacobi en Julia
 
@@ -423,7 +423,7 @@ x=
 \end{pmatrix}.
 $$
 
----
+------------------------------------------------------------------------
 
 # De Jacobi a Gauss--Seidel
 
@@ -460,7 +460,7 @@ $$
 
 Ésa es la diferencia esencial.
 
----
+------------------------------------------------------------------------
 
 # Gauss--Seidel a mano
 
@@ -528,7 +528,7 @@ $$
 (3,1,1)^T.
 $$
 
----
+------------------------------------------------------------------------
 
 # Gauss--Seidel en Julia
 
@@ -572,7 +572,7 @@ println("iteraciones = ", itGS)
 println("||b-Ax||₂ = ", norm(b-A*xGS))
 ```
 
----
+------------------------------------------------------------------------
 
 # Comparación Jacobi vs Gauss--Seidel
 
@@ -602,7 +602,7 @@ plot!(
 )
 ```
 
----
+------------------------------------------------------------------------
 
 # Relajación
 
@@ -660,7 +660,7 @@ $$
 
 por *Successive Over-Relaxation*.
 
----
+------------------------------------------------------------------------
 
 # SOR en Julia
 
@@ -720,7 +720,7 @@ $$
 \boxed{\text{¿cómo elegir un buen }\omega?}
 $$
 
----
+------------------------------------------------------------------------
 
 # La idea de Kiusalaas para estimar $\omega$
 
@@ -764,14 +764,14 @@ si la cantidad dentro de la raíz es positiva.
 
 La estrategia es:
 
-1. hacer $k$ iteraciones con $\omega=1$;
-2. guardar $\Delta x^{(k)}$;
-3. hacer $p$ iteraciones adicionales;
-4. guardar $\Delta x^{(k+p)}$;
-5. estimar $\omega_{\text{opt}}$;
-6. continuar con ese valor.
+1.  hacer $k$ iteraciones con $\omega=1$;
+2.  guardar $\Delta x^{(k)}$;
+3.  hacer $p$ iteraciones adicionales;
+4.  guardar $\Delta x^{(k+p)}$;
+5.  estimar $\omega_{\text{opt}}$;
+6.  continuar con ese valor.
 
----
+------------------------------------------------------------------------
 
 # Traducción a Julia del algoritmo de Kiusalaas
 
@@ -818,7 +818,7 @@ function gauss_seidel_relajado(iterEqs, x;
 end
 ```
 
----
+------------------------------------------------------------------------
 
 # Un sistema cíclico tridiagonal
 
@@ -868,7 +868,7 @@ x_i^{\text{nuevo}}
 (1-\omega)x_i^{\text{viejo}}.
 $$
 
----
+------------------------------------------------------------------------
 
 # Ecuaciones iterativas en Julia
 
@@ -926,7 +926,7 @@ xexacta = [-n/4 + i/2 for i in 1:n]
 println("Error = ", norm(xrel-xexacta))
 ```
 
----
+------------------------------------------------------------------------
 
 # La estructura vale más que la matriz completa
 
@@ -956,7 +956,7 @@ $$
 
 elementos de una matriz densa.
 
----
+------------------------------------------------------------------------
 
 # Convergencia: una primera mirada
 
@@ -992,7 +992,7 @@ $$
 
 Un sistema puede converger aunque no sea estrictamente diagonal dominante.
 
----
+------------------------------------------------------------------------
 
 # Volvemos a la placa
 
@@ -1034,7 +1034,7 @@ $$
 \text{iteración local}.
 $$
 
----
+------------------------------------------------------------------------
 
 # Una placa pequeña en Julia
 
@@ -1042,9 +1042,9 @@ Vamos a resolver una placa cuadrada sencilla.
 
 Tomaremos:
 
-- borde superior: $100$,
-- borde inferior: $0$,
-- bordes izquierdo y derecho: $0$.
+-   borde superior: $100$,
+-   borde inferior: $0$,
+-   bordes izquierdo y derecho: $0$.
 
 ```{julia}
 function placa_gauss_seidel(n;
@@ -1117,7 +1117,7 @@ heatmap(
 )
 ```
 
----
+------------------------------------------------------------------------
 
 # Efecto de la relajación en la placa
 
@@ -1146,7 +1146,7 @@ No necesariamente.
 
 Un $\omega$ adecuado puede acelerar mucho la convergencia, pero un valor mal elegido puede empeorarla o incluso producir divergencia.
 
----
+------------------------------------------------------------------------
 
 # Resumen
 
@@ -1174,7 +1174,7 @@ $$
 
 para intentar acelerar la convergencia.
 
----
+------------------------------------------------------------------------
 
 # Ejercicios
 
@@ -1243,39 +1243,73 @@ Explique por qué en el problema de la placa no es indispensable formar explíci
 
 Para el sistema cíclico con $n=20$, compare:
 
-- Gauss--Seidel con $\omega=1$;
-- Gauss--Seidel con $\omega$ estimado automáticamente.
+-   Gauss--Seidel con $\omega=1$;
+-   Gauss--Seidel con $\omega$ estimado automáticamente.
 
----
+------------------------------------------------------------------------
 
-# Lo que viene: gradiente conjugado
+# 23. Lo que viene: gradiente conjugado
 
-En la siguiente sesión estudiaremos un método especialmente importante para sistemas grandes, dispersos, simétricos y definidos positivos.
-
-La idea comienza con la función
+Los métodos que hemos estudiado hasta ahora construyen sucesivamente aproximaciones a la solución de
 
 $$
-f(x)=\frac12x^TAx-b^Tx.
+Ax=b.
 $$
 
-Como
+Cuando la matriz $A$ es **simétrica y definida positiva**, podemos mirar el mismo problema desde otra perspectiva.
+
+Consideremos la función
 
 $$
-\nabla f(x)=Ax-b,
+f(x)=\frac12 x^TAx-b^Tx.
 $$
 
-resolver
+Su gradiente es
 
 $$
+\nabla f(x)=Ax-b.
+$$
+
+Por tanto, en un punto crítico,
+
+$$
+\nabla f(x)=0,
+$$
+
+y entonces
+
+$$
+Ax=b.
+$$
+
+Así, resolver el sistema lineal equivale a encontrar el mínimo de $f$:
+
+$$
+\boxed{
 Ax=b
+\qquad\Longleftrightarrow\qquad
+\min_x\left(
+\frac12x^TAx-b^Tx
+\right).
+}
 $$
 
-equivale a encontrar el mínimo de $f$.
+Esta interpretación nos llevará a construir direcciones de búsqueda especiales, llamadas **direcciones conjugadas**, que permiten aprovechar la geometría determinada por la matriz $A$.
 
-Esto nos llevará a:
+El resultado será uno de los métodos iterativos más importantes para sistemas grandes y dispersos:
 
 $$
-\boxed{\text{Gradiente Conjugado}}
+\boxed{\text{Método del Gradiente Conjugado}}
 $$
 
-y veremos por qué puede ser extraordinariamente eficiente en problemas grandes.
+En el cuaderno Pluto siguiente estudiaremos su construcción, lo implementaremos directamente en Julia y lo compararemos con la solución obtenida mediante `A \ b`.
+
+### Cuaderno Pluto: Gradiente Conjugado
+
+En este cuaderno se desarrolla la idea geométrica del método, su construcción paso a paso y una implementación en Julia.
+
+```{=html}
+<a href="gradiente_conjugado.jl" download>
+  Descargar cuaderno Pluto: Gradiente Conjugado
+</a>
+```
