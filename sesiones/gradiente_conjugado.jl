@@ -719,25 +719,6 @@ begin
     )
 end
 
-# ╔═╡ 11cc6745-24e4-4083-bf67-ee7ce02a7b18
-md"""
-
-# 12. Comparación con la solución directa y con el paquete
-
-Comparamos
-
-```math
-\text{CG propio},
-\qquad
-\texttt{cg(A,b)},
-\qquad
-\texttt{A \backslash b}.
-```
-
-No esperamos identidad bit por bit, pero sí diferencias muy pequeñas.
-
-"""
-
 # ╔═╡ 37a49d91-989f-43db-8818-805db80980d3
 md"""
 # 12. Comparación con la solución directa y con el paquete
@@ -750,6 +731,35 @@ Comparamos tres procedimientos:
 
 No esperamos identidad bit por bit, pero sí diferencias muy pequeñas.
 """
+
+# ╔═╡ 66fb259c-a56d-4b2f-bb15-1cbdf8f3ab31
+begin
+    x_paquete = cg(
+        A_poisson,
+        b_poisson;
+        reltol=1e-10,
+        maxiter=500
+    )
+
+    x_directa = A_poisson \ b_poisson
+
+    (
+        residuo_manual =
+            norm(b_poisson - A_poisson*x_cg),
+
+        residuo_paquete =
+            norm(b_poisson - A_poisson*x_paquete),
+
+        residuo_directa =
+            norm(b_poisson - A_poisson*x_directa),
+
+        diferencia_manual_directa =
+            norm(x_cg - x_directa),
+
+        diferencia_paquete_directa =
+            norm(x_paquete - x_directa)
+    )
+end
 
 # ╔═╡ 927e0c35-db70-49df-b52b-5a97b9c2e1d8
 md"""
@@ -2015,8 +2025,8 @@ version = "1.13.0+0"
 # ╠═338b0c33-9c75-43a4-8625-e272b11a4822
 # ╠═39d65de2-a91e-4bcc-b495-523969cd2b6c
 # ╠═63e753c4-61d7-4e5b-831b-07472147570b
-# ╟─11cc6745-24e4-4083-bf67-ee7ce02a7b18
-# ╠═37a49d91-989f-43db-8818-805db80980d3
+# ╟─37a49d91-989f-43db-8818-805db80980d3
+# ╠═66fb259c-a56d-4b2f-bb15-1cbdf8f3ab31
 # ╟─927e0c35-db70-49df-b52b-5a97b9c2e1d8
 # ╟─8aca7820-ec52-4aef-824e-08e84c628bd9
 # ╟─5f6cdf55-7de3-4980-a894-c71a5b23eca9
