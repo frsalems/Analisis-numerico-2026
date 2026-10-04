@@ -727,7 +727,7 @@ Comparamos tres procedimientos:
 
 - **Gradiente Conjugado implementado por nosotros**
 - la función `cg(A,b)` de `IterativeSolvers`
-- la solución directa de Julia, `A \\ b`
+- la solución directa de Julia, A \\ b
 
 No esperamos identidad bit por bit, pero sí diferencias muy pequeñas.
 """
@@ -847,7 +847,7 @@ x
 \end{bmatrix},
 ```
 
-partiendo de \(x_0=0\).
+partiendo de $x_0=0$.
 
 ### Ejercicio 2
 
@@ -2018,19 +2018,19 @@ version = "1.13.0+0"
 # ╠═563aa6bc-c476-4c88-9541-f8bebcf07eff
 # ╟─52c2fc3b-726c-45f1-b2e5-16dc770706dc
 # ╠═61a88cf2-e030-453b-9139-4b84298c966f
-# ╟─d6dc6372-a346-4101-a441-0b79e583c1f7
+# ╠═d6dc6372-a346-4101-a441-0b79e583c1f7
 # ╟─dd2d69ce-b14a-4988-871a-51e968604afd
 # ╠═8c8dda2f-3ce6-44a9-ba13-8f8feb885165
 # ╟─c277ec24-e84a-4850-b1f9-2e20e91a5f14
 # ╠═338b0c33-9c75-43a4-8625-e272b11a4822
 # ╠═39d65de2-a91e-4bcc-b495-523969cd2b6c
 # ╠═63e753c4-61d7-4e5b-831b-07472147570b
-# ╟─37a49d91-989f-43db-8818-805db80980d3
+# ╠═37a49d91-989f-43db-8818-805db80980d3
 # ╠═66fb259c-a56d-4b2f-bb15-1cbdf8f3ab31
 # ╟─927e0c35-db70-49df-b52b-5a97b9c2e1d8
 # ╟─8aca7820-ec52-4aef-824e-08e84c628bd9
 # ╟─5f6cdf55-7de3-4980-a894-c71a5b23eca9
-# ╟─1f9f6719-f7b2-4e40-bdb0-ec0dcbfdb28e
+# ╠═1f9f6719-f7b2-4e40-bdb0-ec0dcbfdb28e
 # ╟─9129167e-04be-45de-97d2-77707cda89fc
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
