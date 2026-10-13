@@ -1793,5 +1793,159 @@
       "Sesiones",
       "Soluciones del Examen 1"
     ]
+  },
+  {
+    "objectID": "sesiones/sesion08.html",
+    "href": "sesiones/sesion08.html",
+    "title": "Sesión 08 — Ecuaciones no lineales",
+    "section": "",
+    "text": "Hasta ahora hemos estudiado problemas lineales de la forma\n\\[\nAx=b.\n\\]\nEn muchas aplicaciones aparece, en cambio, una ecuación de la forma\n\\[\nf(x)=0,\n\\]\ndonde \\(f\\) es una función no lineal.\nEn algunos casos podemos encontrar una solución exacta, pero en muchos otros debemos obtener una aproximación numérica.\nLa idea general será construir una sucesión\n\\[\nx_0,x_1,x_2,\\ldots\n\\]\nque se aproxime progresivamente a una raíz \\(x^\\ast\\) tal que\n\\[\nf(x^\\ast)=0.\n\\]\nDurante esta sesión estudiaremos cuatro métodos:\n\nbisección;\niteración de punto fijo;\nmétodo de Newton;\nmétodo de la secante.\n\nCada uno utiliza una idea distinta para acercarse a una raíz."
+  },
+  {
+    "objectID": "sesiones/sesion08.html#localización-de-una-raíz",
+    "href": "sesiones/sesion08.html#localización-de-una-raíz",
+    "title": "Sesión 08 — Ecuaciones no lineales",
+    "section": "2.1 1. Localización de una raíz",
+    "text": "2.1 1. Localización de una raíz\nConsideremos\n\\[\nf(x)=x^3-x-2.\n\\]\nQueremos resolver\n\\[\nx^3-x-2=0.\n\\]\nEvaluamos\n\\[\nf(1)=-2,\n\\]\nmientras que\n\\[\nf(2)=4.\n\\]\nComo \\(f\\) es continua y cambia de signo entre \\(1\\) y \\(2\\), el teorema del valor intermedio garantiza que existe al menos una raíz en\n\\[\n(1,2).\n\\]\nEn Julia:\n\nf(x) = x^3 - x - 2\n\nf(1.0), f(2.0)\n\n(-2.0, 4.0)\n\n\nLa pregunta ahora es:\n\n¿Cómo podemos aproximar numéricamente esa raíz?"
+  },
+  {
+    "objectID": "sesiones/sesion08.html#método-de-bisección",
+    "href": "sesiones/sesion08.html#método-de-bisección",
+    "title": "Sesión 08 — Ecuaciones no lineales",
+    "section": "2.2 2. Método de bisección",
+    "text": "2.2 2. Método de bisección\nSupongamos que \\(f\\) es continua en \\([a,b]\\) y\n\\[\nf(a)f(b)&lt;0.\n\\]\nEntonces existe al menos una raíz en \\((a,b)\\).\nTomamos el punto medio\n\\[\nc=\\frac{a+b}{2}.\n\\]\nSi\n\\[\nf(a)f(c)&lt;0,\n\\]\nla raíz se encuentra en\n\\[\n[a,c].\n\\]\nEn caso contrario, se encuentra en\n\\[\n[c,b].\n\\]\nLa idea consiste simplemente en repetir este procedimiento.\n\n\n2.2.1 2.1 Primera iteración\nComenzamos con\n\\[\n[a_0,b_0]=[1,2].\n\\]\nEl punto medio es\n\\[\nc_0=\\frac{1+2}{2}=1.5.\n\\]\n\na = 1.0\nb = 2.0\n\nc = (a+b)/2\n\n(c, f(c))\n\n(1.5, -0.125)\n\n\nComo\n\\[\nf(1.5)&lt;0,\n\\]\nla raíz se encuentra ahora en\n\\[\n[1.5,2].\n\\]\n\n\n\n2.2.2 2.2 Segunda iteración\nTomamos nuevamente el punto medio:\n\na = 1.5\nb = 2.0\n\nc = (a+b)/2\n\n(c, f(c))\n\n(1.75, 1.609375)\n\n\nCada iteración encierra la raíz en un intervalo más pequeño."
+  },
+  {
+    "objectID": "sesiones/sesion08.html#error-en-bisección",
+    "href": "sesiones/sesion08.html#error-en-bisección",
+    "title": "Sesión 08 — Ecuaciones no lineales",
+    "section": "2.3 3. Error en bisección",
+    "text": "2.3 3. Error en bisección\nSi el intervalo inicial tiene longitud\n\\[\nb-a,\n\\]\ndespués de una iteración su longitud será\n\\[\n\\frac{b-a}{2}.\n\\]\nDespués de \\(n\\) iteraciones será\n\\[\n\\frac{b-a}{2^n}.\n\\]\nSi utilizamos como aproximación el punto medio del intervalo, entonces\n\\[\n|x_n-x^\\ast|\n\\leq\n\\frac{b-a}{2^{n+1}}.\n\\]\nPor tanto, podemos estimar de antemano cuántas iteraciones necesitamos.\nSi deseamos\n\\[\n|x_n-x^\\ast|&lt;\\varepsilon,\n\\]\nes suficiente exigir\n\\[\n\\frac{b-a}{2^{n+1}}&lt;\\varepsilon.\n\\]\nÉsta es una de las grandes virtudes de bisección: conocemos una cota del error sin conocer la raíz."
+  },
+  {
+    "objectID": "sesiones/sesion08.html#implementación-de-bisección",
+    "href": "sesiones/sesion08.html#implementación-de-bisección",
+    "title": "Sesión 08 — Ecuaciones no lineales",
+    "section": "2.4 4. Implementación de bisección",
+    "text": "2.4 4. Implementación de bisección\nDespués de comprender las primeras iteraciones podemos escribir el algoritmo.\n\nfunction biseccion(f,a,b; tol=1e-10, maxiter=100)\n\n    fa = f(a)\n    fb = f(b)\n\n    if fa*fb &gt; 0\n        error(\"El intervalo no encierra un cambio de signo.\")\n    end\n\n    historia = Float64[]\n\n    for k in 1:maxiter\n\n        c = (a+b)/2\n        push!(historia,c)\n\n        fc = f(c)\n\n        if abs(fc) &lt; tol || (b-a)/2 &lt; tol\n            return c,k,historia\n        end\n\n        if fa*fc &lt; 0\n            b = c\n            fb = fc\n        else\n            a = c\n            fa = fc\n        end\n\n    end\n\n    return (a+b)/2,maxiter,historia\nend\n\nbiseccion (generic function with 1 method)\n\n\nProbamos:\n\nraiz_bis, iter_bis, historia_bis =\n    biseccion(f,1.0,2.0)\n\nraiz_bis, iter_bis, f(raiz_bis)\n\n(1.5213797067990527, 33, -3.277955684666267e-11)\n\n\nBisección es un método muy robusto.\nSu principal desventaja es que su convergencia es relativamente lenta."
+  },
+  {
+    "objectID": "sesiones/sesion08.html#cuaderno-pluto-complementario",
+    "href": "sesiones/sesion08.html#cuaderno-pluto-complementario",
+    "title": "Sesión 08 — Ecuaciones no lineales",
+    "section": "2.5 Cuaderno Pluto complementario",
+    "text": "2.5 Cuaderno Pluto complementario\nPara explorar visualmente la geometría de la bisección y algunos comportamientos del método de Newton, puede consultarse el siguiente cuaderno Pluto:\nDescargar cuaderno Pluto: Visualizaciones de métodos no lineales"
+  },
+  {
+    "objectID": "sesiones/sesion08.html#iteración-de-punto-fijo",
+    "href": "sesiones/sesion08.html#iteración-de-punto-fijo",
+    "title": "Sesión 08 — Ecuaciones no lineales",
+    "section": "3.1 5. Iteración de punto fijo",
+    "text": "3.1 5. Iteración de punto fijo\nUna ecuación\n\\[\nf(x)=0\n\\]\npuede escribirse algunas veces en la forma\n\\[\nx=g(x).\n\\]\nUna solución \\(x^\\ast\\) satisface entonces\n\\[\nx^\\ast=g(x^\\ast),\n\\]\ny recibe el nombre de punto fijo de \\(g\\).\nLa iteración natural es\n\\[\nx_{k+1}=g(x_k).\n\\]\n\n\n3.1.1 5.1 Ejemplo\nDe\n\\[\nx^3-x-2=0\n\\]\nobtenemos\n\\[\nx^3=x+2,\n\\]\ny por tanto\n\\[\nx=(x+2)^{1/3}.\n\\]\nDefinimos\n\\[\ng(x)=(x+2)^{1/3}.\n\\]\nEn Julia:\n\ng(x) = (x+2)^(1/3)\n\nx0 = 1.0\n\nx1 = g(x0)\nx2 = g(x1)\nx3 = g(x2)\n\n(x0,x1,x2,x3)\n\n(1.0, 1.4422495703074083, 1.5098974493323554, 1.5197243049916358)\n\n\nPodemos continuar:\n\nx = 1.0\n\nfor k in 1:10\n    x = g(x)\n    println(k, \"   \", x)\nend\n\n1   1.4422495703074083\n2   1.5098974493323554\n3   1.5197243049916358\n4   1.5211412690627313\n5   1.5213453677519027\n6   1.521374761497894\n7   1.5213789946128164\n8   1.5213796042392627\n9   1.5213796920337685\n10   1.5213797046773716"
+  },
+  {
+    "objectID": "sesiones/sesion08.html#cuándo-converge-el-punto-fijo",
+    "href": "sesiones/sesion08.html#cuándo-converge-el-punto-fijo",
+    "title": "Sesión 08 — Ecuaciones no lineales",
+    "section": "3.2 6. ¿Cuándo converge el punto fijo?",
+    "text": "3.2 6. ¿Cuándo converge el punto fijo?\nSupongamos que\n\\[\nx^\\ast=g(x^\\ast).\n\\]\nEntonces\n\\[\nx_{k+1}-x^\\ast\n=\ng(x_k)-g(x^\\ast).\n\\]\nPor el teorema del valor medio existe un punto \\(\\xi_k\\) tal que\n\\[\nx_{k+1}-x^\\ast\n=\ng'(\\xi_k)(x_k-x^\\ast).\n\\]\nPor tanto,\n\\[\n|x_{k+1}-x^\\ast|\n=\n|g'(\\xi_k)|\\,|x_k-x^\\ast|.\n\\]\nSi\n\\[\n|g'(x)|\\leq q&lt;1\n\\]\nen una región alrededor del punto fijo, entonces\n\\[\n|x_{k+1}-x^\\ast|\n\\leq\nq|x_k-x^\\ast|.\n\\]\nAsí, los errores disminuyen.\nLa condición\n\\[\n|g'(x^\\ast)|&lt;1\n\\]\nes fundamental para la convergencia local."
+  },
+  {
+    "objectID": "sesiones/sesion08.html#método-de-newton",
+    "href": "sesiones/sesion08.html#método-de-newton",
+    "title": "Sesión 08 — Ecuaciones no lineales",
+    "section": "3.3 7. Método de Newton",
+    "text": "3.3 7. Método de Newton\nEl método de Newton utiliza información adicional: la derivada.\nSupongamos que \\(x_k\\) es una aproximación a una raíz.\nCerca de \\(x_k\\) aproximamos \\(f\\) mediante su recta tangente:\n\\[\nf(x)\n\\approx\nf(x_k)+f'(x_k)(x-x_k).\n\\]\nBuscamos dónde esta recta corta al eje horizontal.\nPor tanto,\n\\[\n0=\nf(x_k)+f'(x_k)(x_{k+1}-x_k).\n\\]\nDespejando obtenemos\n\\[\n\\boxed{\nx_{k+1}\n=\nx_k-\n\\frac{f(x_k)}{f'(x_k)}\n}\n\\]\nÉsta es la fórmula de Newton.\n\n\n3.3.1 7.1 Primeras iteraciones\nPara\n\\[\nf(x)=x^3-x-2,\n\\]\ntenemos\n\\[\nf'(x)=3x^2-1.\n\\]\nTomemos\n\\[\nx_0=1.5.\n\\]\n\nf(x)  = x^3 - x - 2\ndf(x) = 3x^2 - 1\n\nx0 = 1.5\n\nx1 = x0 - f(x0)/df(x0)\nx2 = x1 - f(x1)/df(x1)\nx3 = x2 - f(x2)/df(x2)\n\n(x0,x1,x2,x3)\n\n(1.5, 1.5217391304347827, 1.5213798059647863, 1.5213797068045751)\n\n\nNewton se aproxima a la raíz con gran rapidez."
+  },
+  {
+    "objectID": "sesiones/sesion08.html#convergencia-cuadrática-de-newton",
+    "href": "sesiones/sesion08.html#convergencia-cuadrática-de-newton",
+    "title": "Sesión 08 — Ecuaciones no lineales",
+    "section": "3.4 8. Convergencia cuadrática de Newton",
+    "text": "3.4 8. Convergencia cuadrática de Newton\nSea\n\\[\ne_k=x_k-x^\\ast.\n\\]\nBajo condiciones adecuadas, y si \\(x_k\\) está suficientemente cerca de una raíz simple, Newton satisface aproximadamente\n\\[\n|e_{k+1}|\n\\approx\nC|e_k|^2.\n\\]\nA esto se le llama convergencia cuadrática.\nPor ejemplo, si\n\\[\n|e_k|\\approx10^{-2},\n\\]\nla siguiente iteración puede producir aproximadamente\n\\[\n|e_{k+1}|\\approx10^{-4},\n\\]\ny posteriormente\n\\[\n|e_{k+2}|\\approx10^{-8}.\n\\]\nÉsta es una de las razones de la extraordinaria eficiencia de Newton."
+  },
+  {
+    "objectID": "sesiones/sesion08.html#newton-también-puede-fallar",
+    "href": "sesiones/sesion08.html#newton-también-puede-fallar",
+    "title": "Sesión 08 — Ecuaciones no lineales",
+    "section": "3.5 9. Newton también puede fallar",
+    "text": "3.5 9. Newton también puede fallar\nConsideremos\n\\[\nf(x)=x^3-2x+2.\n\\]\nSu derivada es\n\\[\nf'(x)=3x^2-2.\n\\]\nComencemos con\n\\[\nx_0=0.\n\\]\nEntonces\n\\[\nx_1\n=\n0-\\frac{2}{-2}\n=\n1.\n\\]\nDesde \\(x_1=1\\) obtenemos\n\\[\nx_2\n=\n1-\\frac{1}{1}\n=\n0.\n\\]\nPor tanto,\n\\[\n0\\longrightarrow1\\longrightarrow0\\longrightarrow1\\longrightarrow\\cdots\n\\]\nNewton entra en un ciclo.\nEn Julia:\n\nh(x)  = x^3 - 2x + 2\ndh(x) = 3x^2 - 2\n\nx = 0.0\n\nfor k in 1:8\n    println(k-1, \"   \", x)\n    x = x - h(x)/dh(x)\nend\n\n0   0.0\n1   1.0\n2   0.0\n3   1.0\n4   0.0\n5   1.0\n6   0.0\n7   1.0\n\n\nEsto muestra una diferencia fundamental:\n\nUn método rápido no necesariamente es un método robusto.\n3.6 Cuaderno Pluto complementario\nPara explorar visualmente la geometría de la bisección y algunos comportamientos del método de Newton, puede consultarse el siguiente cuaderno Pluto:\nDescargar cuaderno Pluto: Visualizaciones de métodos no lineales"
+  },
+  {
+    "objectID": "sesiones/sesion08.html#método-de-la-secante",
+    "href": "sesiones/sesion08.html#método-de-la-secante",
+    "title": "Sesión 08 — Ecuaciones no lineales",
+    "section": "4.1 10. Método de la secante",
+    "text": "4.1 10. Método de la secante\nNewton necesita evaluar\n\\[\nf'(x_k).\n\\]\nEn algunas aplicaciones calcular la derivada puede ser costoso, complicado o incluso imposible.\nPodemos aproximarla mediante la diferencia dividida\n\\[\nf'(x_k)\n\\approx\n\\frac{f(x_k)-f(x_{k-1})}\n{x_k-x_{k-1}}.\n\\]\nSustituyendo esta aproximación en la fórmula de Newton obtenemos\n\\[\n\\boxed{\nx_{k+1}\n=\nx_k\n-\nf(x_k)\n\\frac{x_k-x_{k-1}}\n{f(x_k)-f(x_{k-1})}\n}\n\\]\nÉste es el método de la secante.\n\n\n4.1.1 10.1 Primeras iteraciones\nTomamos nuevamente\n\\[\nf(x)=x^3-x-2.\n\\]\nUtilizamos\n\\[\nx_0=1,\n\\qquad\nx_1=2.\n\\]\n\nx0 = 1.0\nx1 = 2.0\n\nx2 =\n    x1 -\n    f(x1)*(x1-x0)/(f(x1)-f(x0))\n\nx3 =\n    x2 -\n    f(x2)*(x2-x1)/(f(x2)-f(x1))\n\n(x0,x1,x2,x3)\n\n(1.0, 2.0, 1.3333333333333335, 1.462686567164179)\n\n\nA diferencia de Newton, no necesitamos calcular la derivada."
+  },
+  {
+    "objectID": "sesiones/sesion08.html#comparación-de-los-métodos",
+    "href": "sesiones/sesion08.html#comparación-de-los-métodos",
+    "title": "Sesión 08 — Ecuaciones no lineales",
+    "section": "4.2 11. Comparación de los métodos",
+    "text": "4.2 11. Comparación de los métodos\n\n\n\nMétodo\nIntervalo inicial\nDerivada\nConvergencia típica\n\n\n\n\nBisección\nSí\nNo\nLineal\n\n\nPunto fijo\nNo necesariamente\nNo\nLineal\n\n\nNewton\nNo\nSí\nCuadrática\n\n\nSecante\nNo\nNo\nSuperlineal\n\n\n\nNo existe un método que sea siempre superior.\nLa elección depende de:\n\nla información disponible;\nla facilidad para evaluar derivadas;\nla calidad de la aproximación inicial;\nla necesidad de robustez;\nel costo de evaluar la función."
+  },
+  {
+    "objectID": "sesiones/sesion08.html#error-y-residuo",
+    "href": "sesiones/sesion08.html#error-y-residuo",
+    "title": "Sesión 08 — Ecuaciones no lineales",
+    "section": "4.3 12. Error y residuo",
+    "text": "4.3 12. Error y residuo\nConviene distinguir dos cantidades.\nEl error es\n\\[\ne_k=x_k-x^\\ast.\n\\]\nPero normalmente no conocemos \\(x^\\ast\\).\nEn cambio podemos calcular el residuo\n\\[\nr_k=f(x_k).\n\\]\nPor ello es común detener una iteración cuando\n\\[\n|f(x_k)|&lt;\\varepsilon\n\\]\no cuando\n\\[\n|x_{k+1}-x_k|&lt;\\varepsilon.\n\\]\nSin embargo,\n\nUn residuo pequeño no necesariamente significa que el error sea pequeño.\n\nEsta diferencia entre error y residuo volverá a aparecer en muchos problemas de análisis numérico."
+  },
+  {
+    "objectID": "sesiones/sesion08.html#comparación-numérica",
+    "href": "sesiones/sesion08.html#comparación-numérica",
+    "title": "Sesión 08 — Ecuaciones no lineales",
+    "section": "4.4 13. Comparación numérica",
+    "text": "4.4 13. Comparación numérica\nPara nuestra ecuación\n\\[\nx^3-x-2=0,\n\\]\nuna aproximación muy precisa de la raíz es\n\\[\nx^\\ast\\approx1.5213797068045676.\n\\]\nPodemos estudiar el error de bisección:\n\nraiz_ref = 1.5213797068045676\n\nerrores_bis =\n    abs.(historia_bis .- raiz_ref)\n\nerrores_bis\n\n33-element Vector{Float64}:\n 0.021379706804567578\n 0.22862029319543242\n 0.10362029319543242\n 0.04112029319543242\n 0.009870293195432422\n 0.0057547068045675775\n 0.0020577931954324225\n 0.0018484568045675775\n 0.00010466819543242245\n 0.0008718943045675775\n ⋮\n 2.7363115551182204e-8\n 1.2461954357334548e-8\n 5.01137376041072e-9\n 1.286083461948806e-9\n 5.765616872821511e-10\n 3.5476088733332745e-10\n 1.1090039997441181e-10\n 1.2193024367945782e-10\n 5.514921852523003e-12\n\n\nAhora hacemos lo mismo con Newton:\n\nx = 1.5\nhistoria_newton = [x]\n\nfor k in 1:8\n    x = x - f(x)/df(x)\n    push!(historia_newton,x)\nend\n\nerrores_newton =\n    abs.(historia_newton .- raiz_ref)\n\nerrores_newton\n\n9-element Vector{Float64}:\n 0.021379706804567578\n 0.0003594236302151277\n 9.916021870282066e-8\n 7.549516567451064e-15\n 0.0\n 0.0\n 0.0\n 0.0\n 0.0\n\n\nPodemos comparar la rapidez con la que disminuyen ambos errores."
+  },
+  {
+    "objectID": "sesiones/sesion08.html#implementación-de-newton",
+    "href": "sesiones/sesion08.html#implementación-de-newton",
+    "title": "Sesión 08 — Ecuaciones no lineales",
+    "section": "4.5 14. Implementación de Newton",
+    "text": "4.5 14. Implementación de Newton\nDespués de realizar las primeras iteraciones directamente, podemos encapsular el procedimiento.\n\nfunction newton(f,df,x0;\n                tol=1e-10,\n                maxiter=50)\n\n    x = x0\n    historia = [x]\n\n    for k in 1:maxiter\n\n        fx = f(x)\n\n        if abs(fx) &lt; tol\n            return x,k-1,historia\n        end\n\n        dfx = df(x)\n\n        if abs(dfx) &lt; eps()\n            error(\"La derivada es demasiado pequeña.\")\n        end\n\n        x = x - fx/dfx\n        push!(historia,x)\n\n    end\n\n    return x,maxiter,historia\nend\n\nnewton (generic function with 1 method)\n\n\nProbamos:\n\nraiz_newton, iter_newton, historia_newton =\n    newton(f,df,1.5)\n\nraiz_newton, iter_newton, f(raiz_newton)\n\n(1.5213797068045751, 3, 4.529709940470639e-14)"
+  },
+  {
+    "objectID": "sesiones/sesion08.html#preguntas-para-pensar",
+    "href": "sesiones/sesion08.html#preguntas-para-pensar",
+    "title": "Sesión 08 — Ecuaciones no lineales",
+    "section": "4.6 15. Preguntas para pensar",
+    "text": "4.6 15. Preguntas para pensar\nLos métodos anteriores dejan algunas preguntas importantes.\n\n¿Cómo debemos escoger la aproximación inicial?\n¿Cómo sabemos si Newton va a converger?\n¿Qué sucede cuando existen varias raíces?\n¿Qué ocurre cuando la raíz es múltiple?\n¿Qué criterio de paro debemos utilizar?\n¿Qué hacemos si calcular \\(f'(x)\\) es muy costoso?\n¿Podemos combinar la seguridad de bisección con la rapidez de Newton?"
+  },
+  {
+    "objectID": "sesiones/sesion08.html#ejercicio-1",
+    "href": "sesiones/sesion08.html#ejercicio-1",
+    "title": "Sesión 08 — Ecuaciones no lineales",
+    "section": "5.1 Ejercicio 1",
+    "text": "5.1 Ejercicio 1\nUtilice bisección para aproximar una raíz de\n\\[\nf(x)=x^3-2x-5\n\\]\nen el intervalo\n\\[\n[2,3].\n\\]\nRealice primero tres iteraciones explícitamente.\nDespués continúe con Julia."
+  },
+  {
+    "objectID": "sesiones/sesion08.html#ejercicio-2",
+    "href": "sesiones/sesion08.html#ejercicio-2",
+    "title": "Sesión 08 — Ecuaciones no lineales",
+    "section": "5.2 Ejercicio 2",
+    "text": "5.2 Ejercicio 2\nConsidere\n\\[\nf(x)=\\cos x-x.\n\\]\nCompruebe que existe una raíz en \\([0,1]\\).\nAproxímela mediante:\n\nbisección;\npunto fijo,\n\n\\[\nx_{k+1}=\\cos x_k;\n\\]\n\nNewton.\n\nCompare el comportamiento de los tres métodos."
+  },
+  {
+    "objectID": "sesiones/sesion08.html#ejercicio-3",
+    "href": "sesiones/sesion08.html#ejercicio-3",
+    "title": "Sesión 08 — Ecuaciones no lineales",
+    "section": "5.3 Ejercicio 3",
+    "text": "5.3 Ejercicio 3\nPara\n\\[\nf(x)=x^3-x-2,\n\\]\naplique Newton utilizando\n\\[\nx_0=-2,\\qquad\nx_0=0,\\qquad\nx_0=1,\\qquad\nx_0=2.\n\\]\nCompare los resultados.\n¿Qué tan importante es la elección del punto inicial?"
+  },
+  {
+    "objectID": "sesiones/sesion08.html#ejercicio-4",
+    "href": "sesiones/sesion08.html#ejercicio-4",
+    "title": "Sesión 08 — Ecuaciones no lineales",
+    "section": "5.4 Ejercicio 4",
+    "text": "5.4 Ejercicio 4\nConsidere\n\\[\nf(x)=x^3-2x+2.\n\\]\nAplique Newton comenzando con\n\\[\nx_0=0.\n\\]\nExplique el comportamiento obtenido."
+  },
+  {
+    "objectID": "sesiones/sesion08.html#ejercicio-5",
+    "href": "sesiones/sesion08.html#ejercicio-5",
+    "title": "Sesión 08 — Ecuaciones no lineales",
+    "section": "5.5 Ejercicio 5",
+    "text": "5.5 Ejercicio 5\nCompare Newton y secante para\n\\[\nf(x)=e^{-x}-x.\n\\]\nEn cada iteración registre\n\\[\nx_k,\n\\qquad\n|f(x_k)|,\n\\qquad\n|x_k-x_{k-1}|.\n\\]\nCompare la rapidez de ambos métodos."
   }
 ]

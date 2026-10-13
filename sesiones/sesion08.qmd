@@ -1,0 +1,1015 @@
+---
+title: "Sesión 08 — Ecuaciones no lineales"
+subtitle: "Bisección, punto fijo, Newton y secante"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+---
+
+# Introducción
+
+Hasta ahora hemos estudiado problemas lineales de la forma
+
+$$
+Ax=b.
+$$
+
+En muchas aplicaciones aparece, en cambio, una ecuación de la forma
+
+$$
+f(x)=0,
+$$
+
+donde $f$ es una función no lineal.
+
+En algunos casos podemos encontrar una solución exacta, pero en muchos otros debemos obtener una aproximación numérica.
+
+La idea general será construir una sucesión
+
+$$
+x_0,x_1,x_2,\ldots
+$$
+
+que se aproxime progresivamente a una raíz $x^\ast$ tal que
+
+$$
+f(x^\ast)=0.
+$$
+
+Durante esta sesión estudiaremos cuatro métodos:
+
+1.  bisección;
+2.  iteración de punto fijo;
+3.  método de Newton;
+4.  método de la secante.
+
+Cada uno utiliza una idea distinta para acercarse a una raíz.
+
+------------------------------------------------------------------------
+
+# Primera clase: bisección
+
+## 1. Localización de una raíz
+
+Consideremos
+
+$$
+f(x)=x^3-x-2.
+$$
+
+Queremos resolver
+
+$$
+x^3-x-2=0.
+$$
+
+Evaluamos
+
+$$
+f(1)=-2,
+$$
+
+mientras que
+
+$$
+f(2)=4.
+$$
+
+Como $f$ es continua y cambia de signo entre $1$ y $2$, el teorema del valor intermedio garantiza que existe al menos una raíz en
+
+$$
+(1,2).
+$$
+
+En Julia:
+
+```{julia}
+f(x) = x^3 - x - 2
+
+f(1.0), f(2.0)
+```
+
+La pregunta ahora es:
+
+> ¿Cómo podemos aproximar numéricamente esa raíz?
+
+------------------------------------------------------------------------
+
+## 2. Método de bisección
+
+Supongamos que $f$ es continua en $[a,b]$ y
+
+$$
+f(a)f(b)<0.
+$$
+
+Entonces existe al menos una raíz en $(a,b)$.
+
+Tomamos el punto medio
+
+$$
+c=\frac{a+b}{2}.
+$$
+
+Si
+
+$$
+f(a)f(c)<0,
+$$
+
+la raíz se encuentra en
+
+$$
+[a,c].
+$$
+
+En caso contrario, se encuentra en
+
+$$
+[c,b].
+$$
+
+La idea consiste simplemente en repetir este procedimiento.
+
+------------------------------------------------------------------------
+
+### 2.1 Primera iteración
+
+Comenzamos con
+
+$$
+[a_0,b_0]=[1,2].
+$$
+
+El punto medio es
+
+$$
+c_0=\frac{1+2}{2}=1.5.
+$$
+
+```{julia}
+a = 1.0
+b = 2.0
+
+c = (a+b)/2
+
+(c, f(c))
+```
+
+Como
+
+$$
+f(1.5)<0,
+$$
+
+la raíz se encuentra ahora en
+
+$$
+[1.5,2].
+$$
+
+------------------------------------------------------------------------
+
+### 2.2 Segunda iteración
+
+Tomamos nuevamente el punto medio:
+
+```{julia}
+a = 1.5
+b = 2.0
+
+c = (a+b)/2
+
+(c, f(c))
+```
+
+Cada iteración encierra la raíz en un intervalo más pequeño.
+
+------------------------------------------------------------------------
+
+## 3. Error en bisección
+
+Si el intervalo inicial tiene longitud
+
+$$
+b-a,
+$$
+
+después de una iteración su longitud será
+
+$$
+\frac{b-a}{2}.
+$$
+
+Después de $n$ iteraciones será
+
+$$
+\frac{b-a}{2^n}.
+$$
+
+Si utilizamos como aproximación el punto medio del intervalo, entonces
+
+$$
+|x_n-x^\ast|
+\leq
+\frac{b-a}{2^{n+1}}.
+$$
+
+Por tanto, podemos estimar de antemano cuántas iteraciones necesitamos.
+
+Si deseamos
+
+$$
+|x_n-x^\ast|<\varepsilon,
+$$
+
+es suficiente exigir
+
+$$
+\frac{b-a}{2^{n+1}}<\varepsilon.
+$$
+
+Ésta es una de las grandes virtudes de bisección: conocemos una cota del error sin conocer la raíz.
+
+------------------------------------------------------------------------
+
+## 4. Implementación de bisección
+
+Después de comprender las primeras iteraciones podemos escribir el algoritmo.
+
+```{julia}
+function biseccion(f,a,b; tol=1e-10, maxiter=100)
+
+    fa = f(a)
+    fb = f(b)
+
+    if fa*fb > 0
+        error("El intervalo no encierra un cambio de signo.")
+    end
+
+    historia = Float64[]
+
+    for k in 1:maxiter
+
+        c = (a+b)/2
+        push!(historia,c)
+
+        fc = f(c)
+
+        if abs(fc) < tol || (b-a)/2 < tol
+            return c,k,historia
+        end
+
+        if fa*fc < 0
+            b = c
+            fb = fc
+        else
+            a = c
+            fa = fc
+        end
+
+    end
+
+    return (a+b)/2,maxiter,historia
+end
+```
+
+Probamos:
+
+```{julia}
+raiz_bis, iter_bis, historia_bis =
+    biseccion(f,1.0,2.0)
+
+raiz_bis, iter_bis, f(raiz_bis)
+```
+
+Bisección es un método muy robusto.
+
+Su principal desventaja es que su convergencia es relativamente lenta.
+
+## Cuaderno Pluto complementario
+
+Para explorar visualmente la geometría de la bisección y algunos comportamientos del método de Newton, puede consultarse el siguiente cuaderno Pluto:
+
+[Descargar cuaderno Pluto: Visualizaciones de métodos no lineales](metodos_no_lineales_pluto.jl)
+
+------------------------------------------------------------------------
+
+# Segunda clase: punto fijo y Newton
+
+## 5. Iteración de punto fijo
+
+Una ecuación
+
+$$
+f(x)=0
+$$
+
+puede escribirse algunas veces en la forma
+
+$$
+x=g(x).
+$$
+
+Una solución $x^\ast$ satisface entonces
+
+$$
+x^\ast=g(x^\ast),
+$$
+
+y recibe el nombre de **punto fijo** de $g$.
+
+La iteración natural es
+
+$$
+x_{k+1}=g(x_k).
+$$
+
+------------------------------------------------------------------------
+
+### 5.1 Ejemplo
+
+De
+
+$$
+x^3-x-2=0
+$$
+
+obtenemos
+
+$$
+x^3=x+2,
+$$
+
+y por tanto
+
+$$
+x=(x+2)^{1/3}.
+$$
+
+Definimos
+
+$$
+g(x)=(x+2)^{1/3}.
+$$
+
+En Julia:
+
+```{julia}
+g(x) = (x+2)^(1/3)
+
+x0 = 1.0
+
+x1 = g(x0)
+x2 = g(x1)
+x3 = g(x2)
+
+(x0,x1,x2,x3)
+```
+
+Podemos continuar:
+
+```{julia}
+x = 1.0
+
+for k in 1:10
+    x = g(x)
+    println(k, "   ", x)
+end
+```
+
+------------------------------------------------------------------------
+
+## 6. ¿Cuándo converge el punto fijo?
+
+Supongamos que
+
+$$
+x^\ast=g(x^\ast).
+$$
+
+Entonces
+
+$$
+x_{k+1}-x^\ast
+=
+g(x_k)-g(x^\ast).
+$$
+
+Por el teorema del valor medio existe un punto $\xi_k$ tal que
+
+$$
+x_{k+1}-x^\ast
+=
+g'(\xi_k)(x_k-x^\ast).
+$$
+
+Por tanto,
+
+$$
+|x_{k+1}-x^\ast|
+=
+|g'(\xi_k)|\,|x_k-x^\ast|.
+$$
+
+Si
+
+$$
+|g'(x)|\leq q<1
+$$
+
+en una región alrededor del punto fijo, entonces
+
+$$
+|x_{k+1}-x^\ast|
+\leq
+q|x_k-x^\ast|.
+$$
+
+Así, los errores disminuyen.
+
+La condición
+
+$$
+|g'(x^\ast)|<1
+$$
+
+es fundamental para la convergencia local.
+
+------------------------------------------------------------------------
+
+## 7. Método de Newton
+
+El método de Newton utiliza información adicional: la derivada.
+
+Supongamos que $x_k$ es una aproximación a una raíz.
+
+Cerca de $x_k$ aproximamos $f$ mediante su recta tangente:
+
+$$
+f(x)
+\approx
+f(x_k)+f'(x_k)(x-x_k).
+$$
+
+Buscamos dónde esta recta corta al eje horizontal.
+
+Por tanto,
+
+$$
+0=
+f(x_k)+f'(x_k)(x_{k+1}-x_k).
+$$
+
+Despejando obtenemos
+
+$$
+\boxed{
+x_{k+1}
+=
+x_k-
+\frac{f(x_k)}{f'(x_k)}
+}
+$$
+
+Ésta es la fórmula de Newton.
+
+------------------------------------------------------------------------
+
+### 7.1 Primeras iteraciones
+
+Para
+
+$$
+f(x)=x^3-x-2,
+$$
+
+tenemos
+
+$$
+f'(x)=3x^2-1.
+$$
+
+Tomemos
+
+$$
+x_0=1.5.
+$$
+
+```{julia}
+f(x)  = x^3 - x - 2
+df(x) = 3x^2 - 1
+
+x0 = 1.5
+
+x1 = x0 - f(x0)/df(x0)
+x2 = x1 - f(x1)/df(x1)
+x3 = x2 - f(x2)/df(x2)
+
+(x0,x1,x2,x3)
+```
+
+Newton se aproxima a la raíz con gran rapidez.
+
+------------------------------------------------------------------------
+
+## 8. Convergencia cuadrática de Newton
+
+Sea
+
+$$
+e_k=x_k-x^\ast.
+$$
+
+Bajo condiciones adecuadas, y si $x_k$ está suficientemente cerca de una raíz simple, Newton satisface aproximadamente
+
+$$
+|e_{k+1}|
+\approx
+C|e_k|^2.
+$$
+
+A esto se le llama **convergencia cuadrática**.
+
+Por ejemplo, si
+
+$$
+|e_k|\approx10^{-2},
+$$
+
+la siguiente iteración puede producir aproximadamente
+
+$$
+|e_{k+1}|\approx10^{-4},
+$$
+
+y posteriormente
+
+$$
+|e_{k+2}|\approx10^{-8}.
+$$
+
+Ésta es una de las razones de la extraordinaria eficiencia de Newton.
+
+------------------------------------------------------------------------
+
+## 9. Newton también puede fallar
+
+Consideremos
+
+$$
+f(x)=x^3-2x+2.
+$$
+
+Su derivada es
+
+$$
+f'(x)=3x^2-2.
+$$
+
+Comencemos con
+
+$$
+x_0=0.
+$$
+
+Entonces
+
+$$
+x_1
+=
+0-\frac{2}{-2}
+=
+1.
+$$
+
+Desde $x_1=1$ obtenemos
+
+$$
+x_2
+=
+1-\frac{1}{1}
+=
+0.
+$$
+
+Por tanto,
+
+$$
+0\longrightarrow1\longrightarrow0\longrightarrow1\longrightarrow\cdots
+$$
+
+Newton entra en un ciclo.
+
+En Julia:
+
+```{julia}
+h(x)  = x^3 - 2x + 2
+dh(x) = 3x^2 - 2
+
+x = 0.0
+
+for k in 1:8
+    println(k-1, "   ", x)
+    x = x - h(x)/dh(x)
+end
+```
+
+Esto muestra una diferencia fundamental:
+
+> Un método rápido no necesariamente es un método robusto.
+>
+> ## Cuaderno Pluto complementario
+>
+> Para explorar visualmente la geometría de la bisección y algunos comportamientos del método de Newton, puede consultarse el siguiente cuaderno Pluto:
+>
+> [Descargar cuaderno Pluto: Visualizaciones de métodos no lineales](metodos_no_lineales_pluto.jl)
+
+------------------------------------------------------------------------
+
+# Tercera clase: secante y comparación
+
+## 10. Método de la secante
+
+Newton necesita evaluar
+
+$$
+f'(x_k).
+$$
+
+En algunas aplicaciones calcular la derivada puede ser costoso, complicado o incluso imposible.
+
+Podemos aproximarla mediante la diferencia dividida
+
+$$
+f'(x_k)
+\approx
+\frac{f(x_k)-f(x_{k-1})}
+{x_k-x_{k-1}}.
+$$
+
+Sustituyendo esta aproximación en la fórmula de Newton obtenemos
+
+$$
+\boxed{
+x_{k+1}
+=
+x_k
+-
+f(x_k)
+\frac{x_k-x_{k-1}}
+{f(x_k)-f(x_{k-1})}
+}
+$$
+
+Éste es el **método de la secante**.
+
+------------------------------------------------------------------------
+
+### 10.1 Primeras iteraciones
+
+Tomamos nuevamente
+
+$$
+f(x)=x^3-x-2.
+$$
+
+Utilizamos
+
+$$
+x_0=1,
+\qquad
+x_1=2.
+$$
+
+```{julia}
+x0 = 1.0
+x1 = 2.0
+
+x2 =
+    x1 -
+    f(x1)*(x1-x0)/(f(x1)-f(x0))
+
+x3 =
+    x2 -
+    f(x2)*(x2-x1)/(f(x2)-f(x1))
+
+(x0,x1,x2,x3)
+```
+
+A diferencia de Newton, no necesitamos calcular la derivada.
+
+------------------------------------------------------------------------
+
+## 11. Comparación de los métodos
+
+| Método     | Intervalo inicial | Derivada | Convergencia típica |
+|------------|------------------:|---------:|---------------------|
+| Bisección  |                Sí |       No | Lineal              |
+| Punto fijo | No necesariamente |       No | Lineal              |
+| Newton     |                No |       Sí | Cuadrática          |
+| Secante    |                No |       No | Superlineal         |
+
+No existe un método que sea siempre superior.
+
+La elección depende de:
+
+-   la información disponible;
+-   la facilidad para evaluar derivadas;
+-   la calidad de la aproximación inicial;
+-   la necesidad de robustez;
+-   el costo de evaluar la función.
+
+------------------------------------------------------------------------
+
+## 12. Error y residuo
+
+Conviene distinguir dos cantidades.
+
+El **error** es
+
+$$
+e_k=x_k-x^\ast.
+$$
+
+Pero normalmente no conocemos $x^\ast$.
+
+En cambio podemos calcular el **residuo**
+
+$$
+r_k=f(x_k).
+$$
+
+Por ello es común detener una iteración cuando
+
+$$
+|f(x_k)|<\varepsilon
+$$
+
+o cuando
+
+$$
+|x_{k+1}-x_k|<\varepsilon.
+$$
+
+Sin embargo,
+
+> Un residuo pequeño no necesariamente significa que el error sea pequeño.
+
+Esta diferencia entre error y residuo volverá a aparecer en muchos problemas de análisis numérico.
+
+------------------------------------------------------------------------
+
+## 13. Comparación numérica
+
+Para nuestra ecuación
+
+$$
+x^3-x-2=0,
+$$
+
+una aproximación muy precisa de la raíz es
+
+$$
+x^\ast\approx1.5213797068045676.
+$$
+
+Podemos estudiar el error de bisección:
+
+```{julia}
+raiz_ref = 1.5213797068045676
+
+errores_bis =
+    abs.(historia_bis .- raiz_ref)
+
+errores_bis
+```
+
+Ahora hacemos lo mismo con Newton:
+
+```{julia}
+x = 1.5
+historia_newton = [x]
+
+for k in 1:8
+    x = x - f(x)/df(x)
+    push!(historia_newton,x)
+end
+
+errores_newton =
+    abs.(historia_newton .- raiz_ref)
+
+errores_newton
+```
+
+Podemos comparar la rapidez con la que disminuyen ambos errores.
+
+------------------------------------------------------------------------
+
+## 14. Implementación de Newton
+
+Después de realizar las primeras iteraciones directamente, podemos encapsular el procedimiento.
+
+```{julia}
+function newton(f,df,x0;
+                tol=1e-10,
+                maxiter=50)
+
+    x = x0
+    historia = [x]
+
+    for k in 1:maxiter
+
+        fx = f(x)
+
+        if abs(fx) < tol
+            return x,k-1,historia
+        end
+
+        dfx = df(x)
+
+        if abs(dfx) < eps()
+            error("La derivada es demasiado pequeña.")
+        end
+
+        x = x - fx/dfx
+        push!(historia,x)
+
+    end
+
+    return x,maxiter,historia
+end
+```
+
+Probamos:
+
+```{julia}
+raiz_newton, iter_newton, historia_newton =
+    newton(f,df,1.5)
+
+raiz_newton, iter_newton, f(raiz_newton)
+```
+
+------------------------------------------------------------------------
+
+## 15. Preguntas para pensar
+
+Los métodos anteriores dejan algunas preguntas importantes.
+
+1.  ¿Cómo debemos escoger la aproximación inicial?
+2.  ¿Cómo sabemos si Newton va a converger?
+3.  ¿Qué sucede cuando existen varias raíces?
+4.  ¿Qué ocurre cuando la raíz es múltiple?
+5.  ¿Qué criterio de paro debemos utilizar?
+6.  ¿Qué hacemos si calcular $f'(x)$ es muy costoso?
+7.  ¿Podemos combinar la seguridad de bisección con la rapidez de Newton?
+
+------------------------------------------------------------------------
+
+# 16. Ejercicios
+
+## Ejercicio 1
+
+Utilice bisección para aproximar una raíz de
+
+$$
+f(x)=x^3-2x-5
+$$
+
+en el intervalo
+
+$$
+[2,3].
+$$
+
+Realice primero tres iteraciones explícitamente.
+
+Después continúe con Julia.
+
+------------------------------------------------------------------------
+
+## Ejercicio 2
+
+Considere
+
+$$
+f(x)=\cos x-x.
+$$
+
+Compruebe que existe una raíz en $[0,1]$.
+
+Aproxímela mediante:
+
+-   bisección;
+-   punto fijo,
+
+$$
+x_{k+1}=\cos x_k;
+$$
+
+-   Newton.
+
+Compare el comportamiento de los tres métodos.
+
+------------------------------------------------------------------------
+
+## Ejercicio 3
+
+Para
+
+$$
+f(x)=x^3-x-2,
+$$
+
+aplique Newton utilizando
+
+$$
+x_0=-2,\qquad
+x_0=0,\qquad
+x_0=1,\qquad
+x_0=2.
+$$
+
+Compare los resultados.
+
+¿Qué tan importante es la elección del punto inicial?
+
+------------------------------------------------------------------------
+
+## Ejercicio 4
+
+Considere
+
+$$
+f(x)=x^3-2x+2.
+$$
+
+Aplique Newton comenzando con
+
+$$
+x_0=0.
+$$
+
+Explique el comportamiento obtenido.
+
+------------------------------------------------------------------------
+
+## Ejercicio 5
+
+Compare Newton y secante para
+
+$$
+f(x)=e^{-x}-x.
+$$
+
+En cada iteración registre
+
+$$
+x_k,
+\qquad
+|f(x_k)|,
+\qquad
+|x_k-x_{k-1}|.
+$$
+
+Compare la rapidez de ambos métodos.
+
+------------------------------------------------------------------------
+
+# 17. Lo que sigue
+
+Hasta ahora hemos estudiado una sola ecuación
+
+$$
+f(x)=0.
+$$
+
+El siguiente paso consiste en considerar sistemas
+
+$$
+F(x)=0,
+$$
+
+donde
+
+$$
+F:\mathbb{R}^n\longrightarrow\mathbb{R}^n.
+$$
+
+En este caso la derivada será sustituida por el **Jacobiano**.
+
+El método de Newton tomará la forma
+
+$$
+J(x_k)s_k=-F(x_k),
+$$
+
+seguido de
+
+$$
+x_{k+1}=x_k+s_k.
+$$
+
+Más adelante veremos cómo evitar el cálculo repetido del Jacobiano mediante métodos cuasi-Newton, en particular el método de **Broyden**.
