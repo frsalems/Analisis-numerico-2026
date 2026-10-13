@@ -289,14 +289,6 @@ Bisección es un método muy robusto.
 
 Su principal desventaja es que su convergencia es relativamente lenta.
 
-## Cuaderno Pluto complementario
-
-Para explorar visualmente la geometría de la bisección y algunos comportamientos del método de Newton, puede consultarse el siguiente cuaderno Pluto:
-
-[Descargar cuaderno Pluto: Visualizaciones de métodos no lineales](metodos_no_lineales_pluto.jl)
-
-------------------------------------------------------------------------
-
 # Segunda clase: punto fijo y Newton
 
 ## 5. Iteración de punto fijo
@@ -621,11 +613,26 @@ Esto muestra una diferencia fundamental:
 
 > Un método rápido no necesariamente es un método robusto.
 >
-> ## Cuaderno Pluto complementario
+> ## 
 >
-> Para explorar visualmente la geometría de la bisección y algunos comportamientos del método de Newton, puede consultarse el siguiente cuaderno Pluto:
+> # Cuadernos Pluto complementarios
 >
-> [Descargar cuaderno Pluto: Visualizaciones de métodos no lineales](metodos_no_lineales_pluto.jl)
+> Para explorar visualmente la geometría de la bisección y del método de Newton, pueden utilizarse los siguientes cuadernos interactivos de Pluto.
+>
+> ## Bisección y Newton visual
+>
+> Este cuaderno muestra el cambio de signo en el método de bisección, la reducción sucesiva del intervalo y la interpretación geométrica de Newton mediante rectas tangentes.
+>
+> <a href="metodos_no_lineales_visual.jl" download> Descargar cuaderno Pluto: Bisección y Newton visual </a>
+>
+> ## Cuando Newton se porta mal
+>
+> Este cuaderno muestra dos comportamientos importantes del método de Newton:
+>
+> -   un ciclo de período dos;
+> -   un salto muy grande cuando la derivada está cerca de cero.
+>
+> <a href="newton_patologias.jl" download> Descargar cuaderno Pluto: Newton y sus patologías </a>
 
 ------------------------------------------------------------------------
 
